@@ -1,0 +1,135 @@
+﻿<!-- Olivia Anderson -->
+@page "/quizdisplay/{code}"
+@inject IHttpContextAccessor HttpContextAccessor
+@using StudentQuiz.Models
+@using Microsoft.EntityFrameworkCore
+@inject FelixDbContext DbContext
+
+<PageTitle>Quiz</PageTitle>
+
+<h3>Quiz</h3>
+<p>Parameter received: @Code</p>
+@if (Quiz == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h4>@Quiz.Title</h4>
+    <EditForm Model="this" method="post" OnValidSubmit="SubmitAnswers" FormName="UserAnswers" Enhance>
+        <DataAnnotationsValidator />
+        @* Initialize a question number *@
+        @for (int i = 0; i < Quiz.Questions.Count; i++)
+        {
+            var question = Quiz.Questions.ToList()[i];
+
+            <div class="question">
+                <p><strong>@($"{i + 1}. {question.QuestionText}")</strong></p>
+                <ul style="list-style-type: none; padding: 0;">
+                    @for (int j = 0; j < question.Answers.Count; j++)
+                    {
+                        var answer = question.Answers.ToList()[j];
+                        var answerLetter = (char)('A' + j);
+                        <li>
+                            <label>
+                                <input type="radio"
+                                       name="question-@i"
+                                       value="@answer.Id"
+                                       checked="@((UserAnswers.ContainsKey(question.Id) && UserAnswers[question.Id] == answer.Id))"
+                                       @onchange="@(e => OnAnswerSelected(question.Id, answer.Id))" />
+                                @($"{answerLetter}. {answer.AnswerText}")
+                            </label>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        <button type="submit">Submit</button>
+        <p>@ResultMessage</p>
+    </EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public string? Code { get; set; } // Parameter from the route
+
+
+    private Dictionary<int, int> UserAnswers = new();
+
+    private Quiz? Quiz { get; set; }
+    private string? Username;
+    private string ResultMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Retrieve session values
+        Username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
+
+        Console.WriteLine($"Quiz Display (OnInitializedAsync) retrieved from session: Username = {Username}");
+
+        Quiz = await DbContext.Quizzes
+            .Include(q => q.Questions)
+                .ThenInclude(q => q.Answers)
+            .FirstOrDefaultAsync(q => q.Password == Code);
+
+        if (Quiz == null)
+        {
+            Console.WriteLine("Quiz not found!");
+        }
+        else
+        {
+            // ✅ Initialize dictionary with all questions to prevent KeyNotFoundException
+            foreach (var question in Quiz.Questions)
+            {
+                if (!UserAnswers.ContainsKey(question.Id))
+                {
+                    UserAnswers[question.Id] = -1; // Default answer ID (assuming 0 is an invalid answer)
+                }
+            }
+        }
+    }
+
+    private void OnAnswerSelected(int questionId, int answerId)
+    {
+        Console.WriteLine("OnAnswerSelected(" + questionId + ", " + answerId + ")");
+
+        // Store the selected answer ID for the given question ID
+        UserAnswers[questionId] = answerId;
+    }
+
+    private async Task SubmitAnswers()
+    {
+        Console.WriteLine("SubmitAnswers()");
+
+        if (Quiz == null)
+        {
+            Console.WriteLine("Quiz is null for SubmitAnswers!");
+            return;
+        }
+        int correctAnswers = 0;
+
+        foreach (var entry in UserAnswers)
+        {
+            int questionId = entry.Key;
+            int selectedAnswerId = entry.Value;
+            Console.WriteLine($"Processing: QuestionID = {questionId}, SelectedAnswerID = {selectedAnswerId}");
+
+            var question = Quiz.Questions.FirstOrDefault(q => q.Id == questionId);
+            if (question != null)
+            {
+                var correctAnswer = question.Answers.FirstOrDefault(a => a.CorrectValue.Equals("T"));
+                if (correctAnswer != null && correctAnswer.Id == selectedAnswerId)
+                {
+                    correctAnswers++;
+                }
+            }
+        }
+
+        ResultMessage = $"You got {correctAnswers} out of {Quiz.Questions.Count} correct!";
+
+        // Force UI to update
+        await InvokeAsync(StateHasChanged);
+    }
+}
+

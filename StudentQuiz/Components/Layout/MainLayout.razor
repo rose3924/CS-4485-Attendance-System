@@ -1,0 +1,51 @@
+﻿<!-- Olivia Anderson -->
+
+@inherits LayoutComponentBase
+@inject IHttpContextAccessor HttpContextAccessor
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4 d-flex justify-content-between align-items-center"> 
+            <div class="title">
+                <h2>Attendance</h2>
+            </div>
+            <div class="right-side">
+                @if (string.IsNullOrEmpty(Username))
+                {
+                    <a href="/login" class="text-right small ml-3">Login</a>
+                }
+                else
+                {
+                    <span class="text-right small mr-3">Hello, @Username</span>
+                    <a class="text-right small ml-3 disabled-link" style="pointer-events: none; color: gray;">Login</a>
+                }
+            </div>
+        </div>
+        
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+
+@code {
+    private string Username = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Retrieve session values
+        Username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
+    }
+}

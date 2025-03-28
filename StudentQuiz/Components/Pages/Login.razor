@@ -1,0 +1,55 @@
+﻿<!-- Olivia Anderson -->
+
+@page "/login"
+@inject IHttpContextAccessor HttpContextAccessor
+@inject Components.Service.UserState UserState
+@inject NavigationManager NavigationManager
+
+
+<h3>Login</h3>
+<EditForm Model="StudentModel" OnValidSubmit="HandleRegistration" FormName="UserRegistration">
+    <DataAnnotationsValidator />
+    <div>
+        <label for="username">Username:</label>
+        <InputText id="username" class="form-control" style="max-width: 200px;" @bind-Value="StudentModel.Username" />
+    </div>
+
+    <button type="submit">Register</button>
+</EditForm>
+
+
+@code {
+    [SupplyParameterFromForm]
+    protected UserData StudentModel { get; set; } = new();
+
+    private async Task HandleRegistration()
+    {
+        Console.WriteLine("Form submitted successfully.");
+
+        // This is where you'd handle DB insertion or API call
+        Console.WriteLine($"User: {StudentModel.Username}");
+
+        if (string.IsNullOrWhiteSpace(StudentModel.Username))
+        {
+            Console.WriteLine("Validation failed!");
+            return;
+        }
+        // Set UserState properties
+        UserState.Username = StudentModel.Username;
+        Console.WriteLine($"UserState: Username = {UserState.Username}");
+
+        // Store user details in session
+        HttpContextAccessor.HttpContext.Session.SetString("Username", UserState.Username);
+
+        // Navigate to home page
+        await InvokeAsync(() => NavigationManager.NavigateTo("/quiz"));
+    }
+    public class UserData
+    {
+        public string? Username { get; set; }
+
+        public string? Identifier { get; set; }
+
+        public string? IpAddress { get; set; }
+    }
+}

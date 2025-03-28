@@ -1,0 +1,55 @@
+﻿<!-- Olivia Anderson -->
+@page "/quiz"
+@inject IHttpContextAccessor HttpContextAccessor
+@inject Components.Service.UserState UserState
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Quiz Code</PageTitle>
+
+<h3>Quiz</h3>
+<h3>Required Quiz Code</h3>
+<EditForm Model="QuizModel" OnValidSubmit="HandleRegistration" FormName="QuizRegistration">
+    <DataAnnotationsValidator />
+    <div>
+        <label for="quizcode">Enter the attendance quiz code:</label>
+        <InputText id="quizcode" class="form-control" style="max-width: 200px;" @bind-Value="QuizModel.QuizCode" />
+    </div>
+
+    <button type="submit">Register</button>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    protected QuizCodeLocal QuizModel { get; set; } = new();
+    private string? Username;
+
+    protected override void OnInitialized()
+    {
+        // Retrieve session values
+        Username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
+        Console.WriteLine($"Quiz retrieved from session: Username = {Username}");
+    }
+
+    private async Task HandleRegistration()
+    {
+        // This is where you'd handle DB insertion or API call
+        Console.WriteLine($"Quiz HandleQuizRegistration code entered: {QuizModel.QuizCode}");
+        if (string.IsNullOrWhiteSpace(QuizModel.QuizCode))
+        {
+            Console.WriteLine("Quiz code is required.");
+            return;
+        }
+
+        // Logic to validate the QuizCode if needed (e.g., match a predefined code)
+        // TODO: need to validate the Code
+        Console.WriteLine("Validating Quiz Code...");
+        // Navigate to home page
+        await InvokeAsync(() => NavigationManager.NavigateTo("/quizdisplay/" + QuizModel.QuizCode));
+    }
+
+    public class QuizCodeLocal
+    {
+        public string? QuizCode { get; set; }
+    }
+}
