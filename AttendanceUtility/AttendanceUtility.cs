@@ -10,6 +10,10 @@ namespace AttendanceUtility
         public AttandenceUtility()
         {
             InitializeComponent();
+
+            // Center the form on the screen
+            this.StartPosition = FormStartPosition.CenterScreen;
+
             dbobject = InitDbObject();
         }
 
@@ -38,6 +42,18 @@ namespace AttendanceUtility
             {
                 MessageBox.Show("An error occurred: " + ex.Message);
             }
+        }
+
+        private void LoginTesterButton_Click(object sender, EventArgs e)
+        {
+            //Login button creates new home page form
+            ClassesHomePage classesPage = new ClassesHomePage(this);
+
+            //Show the new form
+            classesPage.Show();
+
+            //Login button hides the current form, starter form
+            this.Hide();
         }
     }
 }
