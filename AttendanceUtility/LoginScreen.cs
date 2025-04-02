@@ -10,22 +10,20 @@ using System.Windows.Forms;
 
 namespace AttendanceUtility
 {
-    public partial class ClassPage : Form
+    public partial class LoginScreen : Form
     {
         // Instance of database object
         private Database dbobject = null;
-
-        public ClassPage(Database dbobject)
+        public LoginScreen(Database dbobject)
         {
             InitializeComponent();
             this.dbobject = dbobject;
         }
 
-        private void LogoutLabel_Click(object sender, EventArgs e)
+        private void LoginButton_Click(object sender, EventArgs e)
         {
-            // Close the current form and show the login form
             this.Close();
-            new LoginScreen(dbobject).Show();
+            new ClassesHomePage(dbobject).Show();
         }
     }
 }

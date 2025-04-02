@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AttendanceUtility
 {
-    internal class Database
+    public class Database
     {
         private string db_server = "";
         private string database_name = "";

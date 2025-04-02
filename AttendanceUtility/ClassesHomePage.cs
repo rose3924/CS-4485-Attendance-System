@@ -10,27 +10,23 @@ using System.Windows.Forms;
 
 namespace AttendanceUtility
 {
+    //Page displays the classes of the professor
     public partial class ClassesHomePage : Form
     {
-        // Form to go back to login screen when logging out
-        private Form loginForm;
+        // Instance of database object
+        private Database dbobject = null;
 
-        // Modified constructor to take in login form
-        public ClassesHomePage(Form login)
+        public ClassesHomePage(Database dbobject)
         {
             InitializeComponent();
-
-            // Center the form on the screen
-            this.StartPosition = FormStartPosition.CenterScreen;
-            // Set the login form to the form passed in
-            this.loginForm = login;
+            this.dbobject = dbobject;
         }
 
         private void LogoutLabel_Click(object sender, EventArgs e)
         {
             // Close the current form and show the login form
             this.Close();
-            loginForm.Show();
+            new LoginScreen(dbobject).Show();
         }
     }
 }

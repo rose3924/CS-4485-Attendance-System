@@ -1,6 +1,6 @@
 ﻿namespace AttendanceUtility
 {
-    partial class ClassesHomePage
+    partial class LoginScreen
     {
         /// <summary>
         /// Required designer variable.
@@ -28,12 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClassesHomePage));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginScreen));
             BannerPanel = new Panel();
-            CourseLabel = new Label();
-            LogoutLabel = new Label();
             UTDLogoBox = new PictureBox();
-            CourseButton = new Button();
+            LoginButton = new Button();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             SuspendLayout();
@@ -41,8 +39,6 @@
             // BannerPanel
             // 
             BannerPanel.BackColor = Color.FromArgb(29, 75, 54);
-            BannerPanel.Controls.Add(CourseLabel);
-            BannerPanel.Controls.Add(LogoutLabel);
             BannerPanel.Controls.Add(UTDLogoBox);
             BannerPanel.Dock = DockStyle.Top;
             BannerPanel.Location = new Point(0, 0);
@@ -50,29 +46,6 @@
             BannerPanel.RightToLeft = RightToLeft.Yes;
             BannerPanel.Size = new Size(960, 103);
             BannerPanel.TabIndex = 0;
-            // 
-            // CourseLabel
-            // 
-            CourseLabel.AutoSize = true;
-            CourseLabel.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            CourseLabel.ForeColor = Color.White;
-            CourseLabel.Location = new Point(349, 27);
-            CourseLabel.Name = "CourseLabel";
-            CourseLabel.Size = new Size(171, 48);
-            CourseLabel.TabIndex = 2;
-            CourseLabel.Text = "COURSES";
-            // 
-            // LogoutLabel
-            // 
-            LogoutLabel.AutoSize = true;
-            LogoutLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LogoutLabel.ForeColor = Color.FromArgb(192, 92, 31);
-            LogoutLabel.Location = new Point(885, 73);
-            LogoutLabel.Name = "LogoutLabel";
-            LogoutLabel.Size = new Size(72, 25);
-            LogoutLabel.TabIndex = 1;
-            LogoutLabel.Text = "Logout";
-            LogoutLabel.Click += LogoutLabel_Click;
             // 
             // UTDLogoBox
             // 
@@ -84,31 +57,29 @@
             UTDLogoBox.TabIndex = 0;
             UTDLogoBox.TabStop = false;
             // 
-            // CourseButton
+            // LoginButton
             // 
-            CourseButton.BackColor = Color.WhiteSmoke;
-            CourseButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            CourseButton.Location = new Point(30, 130);
-            CourseButton.Name = "CourseButton";
-            CourseButton.Size = new Size(887, 134);
-            CourseButton.TabIndex = 1;
-            CourseButton.Text = "CSXXXX.xxx";
-            CourseButton.TextAlign = ContentAlignment.TopLeft;
-            CourseButton.UseVisualStyleBackColor = false;
+            LoginButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LoginButton.Location = new Point(303, 432);
+            LoginButton.Name = "LoginButton";
+            LoginButton.Size = new Size(334, 72);
+            LoginButton.TabIndex = 1;
+            LoginButton.Text = "LOGIN";
+            LoginButton.UseVisualStyleBackColor = true;
+            LoginButton.Click += LoginButton_Click;
             // 
-            // ClassesHomePage
+            // LoginScreen
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(960, 600);
-            Controls.Add(CourseButton);
+            Controls.Add(LoginButton);
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "ClassesHomePage";
+            Name = "LoginScreen";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "ClassesHomePage";
+            Text = "LoginScreen";
             BannerPanel.ResumeLayout(false);
-            BannerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();
             ResumeLayout(false);
         }
@@ -117,8 +88,6 @@
 
         private Panel BannerPanel;
         private PictureBox UTDLogoBox;
-        private Label LogoutLabel;
-        private Label CourseLabel;
-        private Button CourseButton;
+        private Button LoginButton;
     }
 }

@@ -3,16 +3,13 @@ using System.Data;
 
 namespace AttendanceUtility
 {
-    public partial class AttandenceUtility : Form
+    public partial class WelcomeScreen: Form
     {
-        //instance of database object
+        // Instance of database object
         private Database dbobject = null;
-        public AttandenceUtility()
+        public WelcomeScreen ()
         {
             InitializeComponent();
-
-            // Center the form on the screen
-            this.StartPosition = FormStartPosition.CenterScreen;
 
             dbobject = InitDbObject();
         }
@@ -26,6 +23,7 @@ namespace AttendanceUtility
             string dbpwd = AttendanceUtility.Properties.Settings.Default.DBPassword;
             return new Database(dbserver, dbname, dbuser, dbpwd);
         }
+
 
         private void testconnectionbutton_Click(object sender, EventArgs e)
         {
@@ -44,16 +42,19 @@ namespace AttendanceUtility
             }
         }
 
-        private void LoginTesterButton_Click(object sender, EventArgs e)
+        // Method to wait for 3 seconds then move to login screen
+        private async void MoveToLoginScreen()
         {
-            //Login button creates new home page form
-            ClassesHomePage classesPage = new ClassesHomePage(this);
-
-            //Show the new form
-            classesPage.Show();
-
-            //Login button hides the current form, starter form
+            dbobject = InitDbObject();
+            await Task.Delay(5000);
             this.Hide();
+            new LoginScreen(dbobject).Show();
+        }
+
+        // Method to move to login screen when loading
+        private void WelcomeScreen_Load(object sender, EventArgs e)
+        {
+            MoveToLoginScreen();
         }
     }
 }

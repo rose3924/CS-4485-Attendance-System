@@ -179,6 +179,7 @@
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
             Name = "ClassPage";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "ClassPage";
             BannerPanel.ResumeLayout(false);
             BannerPanel.PerformLayout();
