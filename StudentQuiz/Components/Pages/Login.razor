@@ -1,17 +1,32 @@
 ﻿<!-- Olivia Anderson -->
 
 @page "/login"
+@using System.ComponentModel.DataAnnotations;
+@using Microsoft.EntityFrameworkCore
+@using StudentQuiz.Models
 @inject IHttpContextAccessor HttpContextAccessor
 @inject Components.Service.UserState UserState
 @inject NavigationManager NavigationManager
+@inject FelixDbContext DbContext
 
 
 <h3>Login</h3>
 <EditForm Model="StudentModel" OnValidSubmit="HandleRegistration" FormName="UserRegistration">
     <DataAnnotationsValidator />
+    <ValidationSummary />
+    @if (!string.IsNullOrWhiteSpace(StudentModel.ValidationErrorMessage))
+    {
+        <div class="alert alert-danger">@StudentModel.ValidationErrorMessage</div>
+    }
     <div>
-        <label for="username">Username:</label>
-        <InputText id="username" class="form-control" style="max-width: 200px;" @bind-Value="StudentModel.Username" />
+        <label for="username">StudentID:</label>
+        <InputText id="username" class="form-control" style="max-width: 200px;" @bind-Value="StudentModel.Identifier" />
+        <ValidationMessage For="@(() => StudentModel.Identifier)" />
+    </div>
+    <div>
+        <label for="quizcode">Enter the attendance quiz code:</label>
+        <InputText id="quizcode" class="form-control" style="max-width: 200px;" @bind-Value="StudentModel.QuizCode" />
+        <ValidationMessage For="@(() => StudentModel.QuizCode)" />
     </div>
 
     <button type="submit">Register</button>
@@ -27,29 +42,68 @@
         Console.WriteLine("Form submitted successfully.");
 
         // This is where you'd handle DB insertion or API call
-        Console.WriteLine($"User: {StudentModel.Username}");
+        Console.WriteLine($"User: {StudentModel.Identifier}");
 
-        if (string.IsNullOrWhiteSpace(StudentModel.Username))
+        if (string.IsNullOrWhiteSpace(StudentModel.Identifier) || string.IsNullOrWhiteSpace(StudentModel.QuizCode))
         {
             Console.WriteLine("Validation failed!");
             return;
         }
+        if (DbContext == null)
+        {
+            throw new InvalidOperationException("DbContext is not initialized.");
+        }
+
+        var username = await GetUserByStudentId();
+
+        // make sure that user object isn't null
+        if (username != null)
+        {
+            Console.WriteLine("Quiz found!");
+            StudentModel.Username = username.LoginId;
+            UserState.Username = StudentModel.Username;
+            // THIS IS A VALIDATION ERROR
+        }
+        else
+        {
+            // Set validation error manually
+            StudentModel.ValidationErrorMessage = "Identifier not found. Please enter a valid UTD Identifier.";
+            return;
+        }
+
         // Set UserState properties
-        UserState.Username = StudentModel.Username;
-        Console.WriteLine($"UserState: Username = {UserState.Username}");
+        UserState.Identifier = StudentModel.Identifier;
+        Console.WriteLine($"UserState: StudentID = {UserState.Identifier}");
 
         // Store user details in session
-        HttpContextAccessor.HttpContext.Session.SetString("Username", UserState.Username);
+        HttpContextAccessor.HttpContext.Session.SetString("Identifier", UserState.Identifier);
+        if (UserState.Username != null)
+        {
+            HttpContextAccessor.HttpContext.Session.SetString("Username", UserState.Username);
+        }
 
         // Navigate to home page
-        await InvokeAsync(() => NavigationManager.NavigateTo("/quiz"));
+        await InvokeAsync(() => NavigationManager.NavigateTo("/quizdisplay/"+StudentModel.QuizCode));
     }
+
+    public async Task<User?> GetUserByStudentId()
+    {
+        return await DbContext.Users.FirstOrDefaultAsync(q => q.StudentId == StudentModel.Identifier);
+    }
+
+    // Collects data from the form
     public class UserData
     {
         public string? Username { get; set; }
 
+        [Required(ErrorMessage = "Identifier is required.")]
         public string? Identifier { get; set; }
 
         public string? IpAddress { get; set; }
+
+        [Required(ErrorMessage = "Quiz code is required.")]
+        public string? QuizCode { get; set; }
+
+        public string? ValidationErrorMessage { get; set; }
     }
 }
