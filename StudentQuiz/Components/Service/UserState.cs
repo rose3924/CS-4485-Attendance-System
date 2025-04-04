@@ -7,5 +7,7 @@ namespace StudentQuiz.Components.Service
         public string? Username { get; set; }
         public string? IpAddress { get; set; }
         public bool IsLoggedIn => !string.IsNullOrEmpty(Username);
+        public string? Identifier { get; set; }
+       
     }
 }
