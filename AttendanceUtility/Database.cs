@@ -1,4 +1,16 @@
-﻿using Microsoft.Data.SqlClient;
+﻿/* Database
+ * 
+ * ---description here ---
+ * Contains methods to retrieve information from the connected database.
+ *      Student Data
+ *      Professor Courses Data
+ *      Course Details Data
+ *      Semester Details Data
+ * 
+ * Written by Olivia Anderson (ova210001) and Cristina Adame (caa220007)
+ * starting March XX, 2025???
+ */
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -68,6 +80,112 @@ namespace AttendanceUtility
                 Console.WriteLine(e.ToString());
             }
             Console.WriteLine("\nQuery finished for Users.");
+            return dataTable;
+        }
+
+        /*
+         * Gathers information of the courses taught by a Professor given the professorId.
+         * Creates/Returns a data table with the course id, department name, course number, course section,
+         * professor id, start time, end time, and semester.
+         */
+        public DataTable GetProfessorClasses(int professorId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to the class table in the database
+                    string profQuery = @"SELECT id, department, number, section, prof_id, start_time, end_time, semester_id FROM class WHERE prof_id = @professorId";
+
+                    using (SqlCommand command = new SqlCommand(profQuery, connection))
+                    {
+                        // Adds the input professor id to the professorId
+                        command.Parameters.Add("@professorId", SqlDbType.Int).Value = professorId;
+
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dataTable;
+        }
+
+        /*
+         * Gathers information of the course taught given course id
+         * Creates/Returns a data table with the course id, department name, course number, course section,
+         * professor id, start time, end time, and semester.
+         */
+        public DataTable GetCourseDetails(int classId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to the class table in the database
+                    string classQuery = @"SELECT id, department, number, section, prof_id, start_time, end_time, semester_id FROM class WHERE id = @classId";
+                    using (SqlCommand command = new SqlCommand(classQuery, connection))
+                    {
+                        // Adds the input class id to the classId
+                        command.Parameters.Add("@classId", SqlDbType.Int).Value = classId;
+
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dataTable;
+        }
+
+        /*
+         * Gathers information of the semester taught given semester id
+         * Creates/Returns a data table with the semester id, start date, end date, and description.
+         */
+        public DataTable GetSemesterDetails(int semesterId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to the semester table in the database
+                    string classQuery = @"SELECT id, start_date, end_date, description FROM semester WHERE id = @semesterId";
+                    
+                    using (SqlCommand command = new SqlCommand(classQuery, connection))
+                    {
+                        // Adds the input semester id to the semesterId
+                        command.Parameters.Add("@semester", SqlDbType.Int).Value = semesterId;
+
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
             return dataTable;
         }
     }

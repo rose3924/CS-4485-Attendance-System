@@ -33,7 +33,7 @@
             CourseLabel = new Label();
             LogoutLabel = new Label();
             UTDLogoBox = new PictureBox();
-            CourseButton = new Button();
+            ClassesHomeLayoutPanel = new FlowLayoutPanel();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             SuspendLayout();
@@ -84,24 +84,21 @@
             UTDLogoBox.TabIndex = 0;
             UTDLogoBox.TabStop = false;
             // 
-            // CourseButton
+            // ClassesHomeLayoutPanel
             // 
-            CourseButton.BackColor = Color.WhiteSmoke;
-            CourseButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            CourseButton.Location = new Point(30, 130);
-            CourseButton.Name = "CourseButton";
-            CourseButton.Size = new Size(887, 134);
-            CourseButton.TabIndex = 1;
-            CourseButton.Text = "CSXXXX.xxx";
-            CourseButton.TextAlign = ContentAlignment.TopLeft;
-            CourseButton.UseVisualStyleBackColor = false;
+            ClassesHomeLayoutPanel.AutoScroll = true;
+            ClassesHomeLayoutPanel.Dock = DockStyle.Bottom;
+            ClassesHomeLayoutPanel.Location = new Point(0, 103);
+            ClassesHomeLayoutPanel.Name = "ClassesHomeLayoutPanel";
+            ClassesHomeLayoutPanel.Size = new Size(960, 497);
+            ClassesHomeLayoutPanel.TabIndex = 1;
             // 
             // ClassesHomePage
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(960, 600);
-            Controls.Add(CourseButton);
+            Controls.Add(ClassesHomeLayoutPanel);
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
             Name = "ClassesHomePage";
@@ -119,6 +116,6 @@
         private PictureBox UTDLogoBox;
         private Label LogoutLabel;
         private Label CourseLabel;
-        private Button CourseButton;
+        private FlowLayoutPanel ClassesHomeLayoutPanel;
     }
 }

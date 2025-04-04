@@ -1,3 +1,12 @@
+/*
+ * Welcome Screen for the Professor Desktop app. Also functions as the starter form.
+ * Welcomes the user and after three seconds moves to the login screen.
+ * 
+ * For connection testing, the 'testconnectionbutton' remains.
+ * 
+ * Written by Olivia Anderson (ova210001) and Cristina Adame (caa220007)
+ * starting March XX, 2025???
+ */
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -6,15 +15,16 @@ namespace AttendanceUtility
     public partial class WelcomeScreen: Form
     {
         // Instance of database object
-        private Database dbobject = null;
+        private Database dbobject;
         public WelcomeScreen ()
         {
             InitializeComponent();
-
             dbobject = InitDbObject();
         }
 
-        // 
+        /*
+         * Creation of the database
+         */
         private Database InitDbObject()
         {
             string dbserver = AttendanceUtility.Properties.Settings.Default.DBServer;
@@ -24,7 +34,10 @@ namespace AttendanceUtility
             return new Database(dbserver, dbname, dbuser, dbpwd);
         }
 
-
+        /*
+         * Creates instance of database if it does not exits, connects to database and loads students.
+         * Likely to be deleted toward end of project
+         */
         private void testconnectionbutton_Click(object sender, EventArgs e)
         {
             if (dbobject == null)
@@ -42,7 +55,9 @@ namespace AttendanceUtility
             }
         }
 
-        // Method to wait for 3 seconds then move to login screen
+        /*
+         * Creates instance of database, hides welcome screen(starter screen), and loads a login screen.
+         */
         private async void MoveToLoginScreen()
         {
             dbobject = InitDbObject();
@@ -51,7 +66,9 @@ namespace AttendanceUtility
             new LoginScreen(dbobject).Show();
         }
 
-        // Method to move to login screen when loading
+        /*
+         * Calls for login screen as the WelcomeScreen loads
+         */
         private void WelcomeScreen_Load(object sender, EventArgs e)
         {
             MoveToLoginScreen();

@@ -11,6 +11,8 @@ namespace AttendanceUtility
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+            
+            // Sets the starter form to 'WelcomeScreen'
             Application.Run(new WelcomeScreen());
         }
     }
