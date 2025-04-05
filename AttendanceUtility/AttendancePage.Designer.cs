@@ -1,6 +1,6 @@
 ﻿namespace AttendanceUtility
 {
-    partial class ClassPage
+    partial class AttendancePage
     {
         /// <summary>
         /// Required designer variable.
@@ -32,15 +32,13 @@
             LogoutLabel = new Label();
             CourseLabel = new Label();
             UTDLogoBox = new PictureBox();
-            AttendanceButton = new Button();
-            PasswordButton = new Button();
-            QuizzesButton = new Button();
-            EnrollmentButton = new Button();
-            ClassDetailsButton = new Button();
             BackButtonBox = new PictureBox();
+            CSVButton = new Button();
+            AttendanceDataGrid = new DataGridView();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)BackButtonBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AttendanceDataGrid).BeginInit();
             SuspendLayout();
             // 
             // BannerPanel
@@ -92,68 +90,6 @@
             UTDLogoBox.TabIndex = 0;
             UTDLogoBox.TabStop = false;
             // 
-            // AttendanceButton
-            // 
-            AttendanceButton.BackColor = Color.White;
-            AttendanceButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            AttendanceButton.Location = new Point(91, 154);
-            AttendanceButton.Name = "AttendanceButton";
-            AttendanceButton.Size = new Size(198, 170);
-            AttendanceButton.TabIndex = 2;
-            AttendanceButton.Text = "Attendance";
-            AttendanceButton.TextAlign = ContentAlignment.BottomCenter;
-            AttendanceButton.UseVisualStyleBackColor = false;
-            AttendanceButton.Click += AttendanceButton_Click;
-            // 
-            // PasswordButton
-            // 
-            PasswordButton.AccessibleDescription = "";
-            PasswordButton.AccessibleName = "";
-            PasswordButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            PasswordButton.Location = new Point(650, 154);
-            PasswordButton.Name = "PasswordButton";
-            PasswordButton.Size = new Size(198, 170);
-            PasswordButton.TabIndex = 3;
-            PasswordButton.Text = "Password";
-            PasswordButton.TextAlign = ContentAlignment.BottomCenter;
-            PasswordButton.UseVisualStyleBackColor = true;
-            // 
-            // QuizzesButton
-            // 
-            QuizzesButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            QuizzesButton.Location = new Point(378, 154);
-            QuizzesButton.Name = "QuizzesButton";
-            QuizzesButton.Size = new Size(198, 170);
-            QuizzesButton.TabIndex = 4;
-            QuizzesButton.Text = "Quizzes";
-            QuizzesButton.TextAlign = ContentAlignment.BottomCenter;
-            QuizzesButton.UseVisualStyleBackColor = true;
-            QuizzesButton.Click += QuizzesButton_Click;
-            // 
-            // EnrollmentButton
-            // 
-            EnrollmentButton.BackColor = Color.White;
-            EnrollmentButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            EnrollmentButton.Location = new Point(232, 389);
-            EnrollmentButton.Name = "EnrollmentButton";
-            EnrollmentButton.Size = new Size(198, 170);
-            EnrollmentButton.TabIndex = 5;
-            EnrollmentButton.Text = "Enrollment??";
-            EnrollmentButton.TextAlign = ContentAlignment.BottomCenter;
-            EnrollmentButton.UseVisualStyleBackColor = false;
-            // 
-            // ClassDetailsButton
-            // 
-            ClassDetailsButton.BackColor = Color.White;
-            ClassDetailsButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            ClassDetailsButton.Location = new Point(516, 389);
-            ClassDetailsButton.Name = "ClassDetailsButton";
-            ClassDetailsButton.Size = new Size(198, 170);
-            ClassDetailsButton.TabIndex = 6;
-            ClassDetailsButton.Text = "Class Details???";
-            ClassDetailsButton.TextAlign = ContentAlignment.BottomCenter;
-            ClassDetailsButton.UseVisualStyleBackColor = false;
-            // 
             // BackButtonBox
             // 
             BackButtonBox.Image = Properties.Resources.backButton;
@@ -165,27 +101,44 @@
             BackButtonBox.TabStop = false;
             BackButtonBox.Click += BackButtonBox_Click;
             // 
-            // ClassPage
+            // CSVButton
+            // 
+            CSVButton.Location = new Point(809, 109);
+            CSVButton.Name = "CSVButton";
+            CSVButton.Size = new Size(116, 54);
+            CSVButton.TabIndex = 8;
+            CSVButton.Text = "Upload CSV";
+            CSVButton.UseVisualStyleBackColor = true;
+            // 
+            // AttendanceDataGrid
+            // 
+            AttendanceDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            AttendanceDataGrid.Location = new Point(45, 176);
+            AttendanceDataGrid.Name = "AttendanceDataGrid";
+            AttendanceDataGrid.RowHeadersWidth = 62;
+            AttendanceDataGrid.Size = new Size(870, 400);
+            AttendanceDataGrid.TabIndex = 9;
+            // 
+            // AttendancePage
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             BackColor = Color.WhiteSmoke;
             ClientSize = new Size(960, 600);
+            Controls.Add(AttendanceDataGrid);
+            Controls.Add(CSVButton);
             Controls.Add(BackButtonBox);
-            Controls.Add(ClassDetailsButton);
-            Controls.Add(EnrollmentButton);
-            Controls.Add(QuizzesButton);
-            Controls.Add(PasswordButton);
-            Controls.Add(AttendanceButton);
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "ClassPage";
+            Name = "AttendancePage";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "ClassPage";
+            Text = "AttendancePage";
             BannerPanel.ResumeLayout(false);
             BannerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)BackButtonBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AttendanceDataGrid).EndInit();
             ResumeLayout(false);
         }
 
@@ -194,12 +147,9 @@
         private Panel BannerPanel;
         private PictureBox UTDLogoBox;
         private Label CourseLabel;
-        private Button AttendanceButton;
-        private Button PasswordButton;
-        private Button QuizzesButton;
         private Label LogoutLabel;
-        private Button EnrollmentButton;
-        private Button ClassDetailsButton;
         private PictureBox BackButtonBox;
+        private Button CSVButton;
+        private DataGridView AttendanceDataGrid;
     }
 }

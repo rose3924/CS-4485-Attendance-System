@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClassesHomePage));
             BannerPanel = new Panel();
             CourseLabel = new Label();
             LogoutLabel = new Label();
@@ -76,7 +75,7 @@
             // 
             // UTDLogoBox
             // 
-            UTDLogoBox.Image = (Image)resources.GetObject("UTDLogoBox.Image");
+            UTDLogoBox.Image = Properties.Resources.utdlogo;
             UTDLogoBox.Location = new Point(0, 0);
             UTDLogoBox.Name = "UTDLogoBox";
             UTDLogoBox.Size = new Size(153, 101);

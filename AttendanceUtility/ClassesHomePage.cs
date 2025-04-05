@@ -25,16 +25,18 @@ namespace AttendanceUtility
         private Database dbobject;
 
         // Professor ID, following succesful login
-        private int prof_id = 3;
+        private int profId;
 
         // Course ID, needed to pass to the ClassPage form
-        private int course_id;
+        private int courseId;
 
         // Constructor takes instance of database
-        public ClassesHomePage(Database dbobject)
+        public ClassesHomePage(Database dbobject, int profId)
         {
             InitializeComponent();
             this.dbobject = dbobject;
+            this.profId = profId;
+
             LoadProfClasses();
         }
 
@@ -44,7 +46,7 @@ namespace AttendanceUtility
          */
         private void LoadProfClasses()
         {
-            DataTable profClasses = dbobject.GetProfessorClasses(prof_id);
+            DataTable profClasses = dbobject.GetProfessorClasses(profId);
 
             //Clears the layout panel of any residual buttons
             ClassesHomeLayoutPanel.Controls.Clear();
@@ -90,7 +92,7 @@ namespace AttendanceUtility
                 int courseId = (int)pressedButton.Tag;
 
                 this.Close();
-                new ClassPage(dbobject, courseId).Show();
+                new ClassPage(dbobject, profId, courseId).Show();
             }
         }
 

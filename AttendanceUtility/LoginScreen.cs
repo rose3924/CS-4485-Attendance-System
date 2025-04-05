@@ -24,6 +24,9 @@ namespace AttendanceUtility
         // Instance of database object
         private Database dbobject;
 
+        // Professor ID, following succesful login
+        private int profId = 3;
+
         public LoginScreen(Database dbobject)
         {
             InitializeComponent();
@@ -38,7 +41,7 @@ namespace AttendanceUtility
         private void LoginButton_Click(object sender, EventArgs e)
         {
             this.Close();
-            new ClassesHomePage(dbobject).Show();
+            new ClassesHomePage(dbobject, profId).Show();
         }
     }
 }
