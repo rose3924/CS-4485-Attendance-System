@@ -25,11 +25,15 @@ public partial class FelixDbContext : DbContext
 
     public virtual DbSet<Quiz> Quizzes { get; set; }
 
+    public virtual DbSet<QuizRecord> QuizRecords { get; set; }
+
     public virtual DbSet<Semester> Semesters { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
- 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=grapefruitfreesqldbserver.database.windows.net;Database=felixchococat;User Id=strawberrycat;Password=fel97531ixco*co;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,7 +72,6 @@ public partial class FelixDbContext : DbContext
             entity.Property(e => e.Department)
                 .HasMaxLength(4)
                 .IsUnicode(false)
-                .IsFixedLength()
                 .HasColumnName("department");
             entity.Property(e => e.EndTime)
                 .HasColumnType("datetime")
@@ -175,6 +178,44 @@ public partial class FelixDbContext : DbContext
                         j.IndexerProperty<int>("QuizId").HasColumnName("quiz_id");
                         j.IndexerProperty<int>("QuestionId").HasColumnName("question_id");
                     });
+        });
+
+        modelBuilder.Entity<QuizRecord>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__quiz_rec__3213E83FD3F8B289");
+
+            entity.ToTable("quiz_records");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CorrectAnswers).HasColumnName("correct_answers");
+            entity.Property(e => e.IpAddress)
+                .HasMaxLength(45)
+                .IsUnicode(false)
+                .HasColumnName("ip_address");
+            entity.Property(e => e.QuizId).HasColumnName("quiz_id");
+            entity.Property(e => e.QuizResults)
+                .HasColumnType("decimal(5, 2)")
+                .HasColumnName("quiz_results");
+            entity.Property(e => e.Status)
+                .HasMaxLength(7)
+                .IsUnicode(false)
+                .HasDefaultValue("ABSENT")
+                .IsFixedLength()
+                .HasColumnName("status");
+            entity.Property(e => e.Submitted)
+                .HasColumnType("datetime")
+                .HasColumnName("submitted");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.Quiz).WithMany(p => p.QuizRecords)
+                .HasForeignKey(d => d.QuizId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_quizrec_id_quiz");
+
+            entity.HasOne(d => d.User).WithMany(p => p.QuizRecords)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_quizrec_userid");
         });
 
         modelBuilder.Entity<Semester>(entity =>

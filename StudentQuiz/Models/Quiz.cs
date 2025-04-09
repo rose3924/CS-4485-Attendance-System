@@ -13,5 +13,7 @@ public partial class Quiz
 
     public string ValidateAnswers { get; set; } = null!;
 
+    public virtual ICollection<QuizRecord> QuizRecords { get; set; } = new List<QuizRecord>();
+
     public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
 }

@@ -9,6 +9,7 @@
 @using System.ComponentModel.DataAnnotations;
 @inject FelixDbContext DbContext
 @inject NavigationManager NavigationManager
+@inject QuizRegistration QuizService
 
 <PageTitle>Quiz</PageTitle>
 
@@ -38,10 +39,10 @@ else
                         <li>
                             <label>
                                 <input type="radio"
-                                       name="question-@i"
-                                       value="@answer.Id"
-                                       checked="@((UserAnswers.ContainsKey(question.Id) && UserAnswers[question.Id] == answer.Id))"
-                                       @onchange="@(e => OnAnswerSelected(question.Id, answer.Id))" />
+                                name="question-@i"
+                                value="@answer.Id"
+                                checked="@((UserAnswers.ContainsKey(question.Id) && UserAnswers[question.Id] == answer.Id))"
+                                @onchange="@(e => OnAnswerSelected(question.Id, answer.Id))" />
                                 @($"{answerLetter}. {answer.AnswerText}")
                             </label>
                         </li>
@@ -59,11 +60,15 @@ else
     [Parameter]
     public string? Code { get; set; } // Parameter from the route
 
+    // <!-- Use an Integer Instead for HasQuestions (0 for false, 1 for true) -->
+    int HasQuestions = 0;
 
     private Dictionary<int, int> UserAnswers = new();
 
     private Quiz? Quiz { get; set; }
     private string? Username;
+    private string? Identifier;
+    private string? IpAddress;
     private string ResultMessage = "";
 
     protected override async Task OnInitializedAsync()
@@ -72,27 +77,15 @@ else
         Username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
 
         Console.WriteLine($"Quiz Display (OnInitializedAsync) retrieved from session: Username = {Username}");
+        IpAddress = QuizService.GetIpAddress();
 
-        Quiz = await DbContext.Quizzes
-            .Include(q => q.Questions)
-                .ThenInclude(q => q.Answers)
-            .FirstOrDefaultAsync(q => q.Password == Code);
+        if (Code != null)
+        {
+            Quiz = await QuizService.GetQuizzes(DbContext, Code);
+        }
 
-        if (Quiz == null)
-        {
-            Console.WriteLine("Quiz not found!");
-        }
-        else
-        {
-            // ✅ Initialize dictionary with all questions to prevent KeyNotFoundException
-            foreach (var question in Quiz.Questions)
-            {
-                if (!UserAnswers.ContainsKey(question.Id))
-                {
-                    UserAnswers[question.Id] = -1; // Default answer ID (assuming 0 is an invalid answer)
-                }
-            }
-        }
+
+
     }
 
     private void OnAnswerSelected(int questionId, int answerId)
@@ -110,6 +103,12 @@ else
         if (Quiz == null)
         {
             Console.WriteLine("Quiz is null for SubmitAnswers!");
+            return;
+        }
+        if (SelectedAnswers() == false)
+        {
+            Console.WriteLine("User did not enter all values for all questions.");
+
             return;
         }
         int correctAnswers = 0;
@@ -131,10 +130,78 @@ else
             }
         }
 
+        if (Username == null || IpAddress == null || Quiz == null)
+        {
+            Console.WriteLine("Unable to process Quiz information! User name or ip address are not available.");
+            return;
+        }
+        else
+        {
+            int questioncount = Quiz.Questions.Count;
+            if (questioncount > 0)
+            {
+                HasQuestions = 1;
+            }
+            var qrecord = await QuizService.GetQRecordByQuizIdIpAddress(DbContext, Quiz.Id, IpAddress);
+            // If the qrecord is NULL, the quiz information should be save to the quiz_record table.
+            if (qrecord == null)
+            {
+                decimal percentage = (decimal)correctAnswers / questioncount * 100;
+
+                var currentuser = await QuizService.GetUserByLoginId(DbContext, Username);
+                if (currentuser == null)
+                {
+                    Console.WriteLine("User not found!");
+                    return;
+                }
+
+                //TODO: Add time stuff
+
+                // Add the record
+                await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, "PRESENT");
+            }
+            else
+            {
+                int uid = qrecord.UserId.HasValue ? qrecord.UserId.Value : 0;
+                var quser = await GetUserById(uid);
+                StringBuilder str = new StringBuilder();
+                str.Append("A Quiz record already exists for ");
+                if (quser != null)
+                {
+                    str.Append(quser.LoginId);
+                }
+                else {
+                    str.Append("Unknown");
+                }
+                str.Append(" from ip address ");
+                str.Append(qrecord.IpAddress);
+                str.Append(". A second quiz cannot be registered for this ip address.");
+                ResultMessage = str.ToString();
+            }
+        }
+
         ResultMessage = $"You got {correctAnswers} out of {Quiz.Questions.Count} correct!";
 
         // Force UI to update
         await InvokeAsync(StateHasChanged);
+    }
+
+    private bool SelectedAnswers()
+    {
+        if (UserAnswers.Count() == 0)
+        {
+            return false;
+        }
+        if (((Quiz != null) && UserAnswers.Count() < Quiz.Questions.Count()))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public async Task<User?> GetUserById(int uId)
+    {
+        return await DbContext.Users.FirstOrDefaultAsync(q => q.Id == uId);
     }
 }
 

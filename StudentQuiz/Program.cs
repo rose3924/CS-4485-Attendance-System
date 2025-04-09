@@ -23,6 +23,7 @@ builder.Services.AddDbContext<FelixDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection")));
 ///////////////////////////////////////////////////////////////
 
+builder.Services.AddScoped<QuizRegistration>();
 builder.Services.AddScoped<UserState>();
 builder.Services.AddDistributedMemoryCache();
 // Begin test
