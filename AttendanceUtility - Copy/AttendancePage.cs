@@ -130,7 +130,7 @@ namespace AttendanceUtility
                     csvTable.Rows.Add(row);
                 }
                 AttendanceDataGrid.DataSource = csvTable;
-                //file open dialogue
+                //fileopen dialogue
             }
         }
 
