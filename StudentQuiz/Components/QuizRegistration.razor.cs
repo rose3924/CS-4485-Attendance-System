@@ -58,6 +58,13 @@ namespace StudentQuiz.Components
             return await _context.QuizRecords.FirstOrDefaultAsync(q => q.QuizId == qid && q.IpAddress == ipAddress);
         }
 
+        public async Task<QuizRecord?> GetQRecordByQuizIdStudentID(FelixDbContext _context, int qid, string studentID)
+        {
+            return await _context.QuizRecords
+                .Include(q => q.User) // Ensure related user data is fetched
+                .FirstOrDefaultAsync(q => q.QuizId == qid && q.User != null && q.User.StudentId == studentID);
+        }
+
         // Create the quiz record and saves to the database
         public async Task AddQuizRecordAsync(FelixDbContext _context, int qid, int uid, string ipaddress, int correct, decimal percent, string status)
         {

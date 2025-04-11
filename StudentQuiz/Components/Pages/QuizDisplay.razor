@@ -7,9 +7,11 @@
 @using System.Linq
 @using System.Text
 @using System.ComponentModel.DataAnnotations;
+@using StudentQuiz.Components.Service
 @inject FelixDbContext DbContext
 @inject NavigationManager NavigationManager
 @inject QuizRegistration QuizService
+@inject QuizResult QuizResult
 
 <PageTitle>Quiz</PageTitle>
 
@@ -60,8 +62,6 @@ else
     [Parameter]
     public string? Code { get; set; } // Parameter from the route
 
-    // <!-- Use an Integer Instead for HasQuestions (0 for false, 1 for true) -->
-    int HasQuestions = 0;
 
     private Dictionary<int, int> UserAnswers = new();
 
@@ -112,6 +112,7 @@ else
             return;
         }
         int correctAnswers = 0;
+        int incorrectAnswers = Quiz.Questions.Count();
 
         foreach (var entry in UserAnswers)
         {
@@ -126,6 +127,7 @@ else
                 if (correctAnswer != null && correctAnswer.Id == selectedAnswerId)
                 {
                     correctAnswers++;
+                    incorrectAnswers--;
                 }
             }
         }
@@ -138,10 +140,7 @@ else
         else
         {
             int questioncount = Quiz.Questions.Count;
-            if (questioncount > 0)
-            {
-                HasQuestions = 1;
-            }
+
             var qrecord = await QuizService.GetQRecordByQuizIdIpAddress(DbContext, Quiz.Id, IpAddress);
             // If the qrecord is NULL, the quiz information should be save to the quiz_record table.
             if (qrecord == null)
@@ -177,13 +176,19 @@ else
                 str.Append(qrecord.IpAddress);
                 str.Append(". A second quiz cannot be registered for this ip address.");
                 ResultMessage = str.ToString();
+                return;
             }
+
         }
 
-        ResultMessage = $"You got {correctAnswers} out of {Quiz.Questions.Count} correct!";
+        
 
-        // Force UI to update
-        await InvokeAsync(StateHasChanged);
+        QuizResult.CorrectAnswers = correctAnswers;
+        QuizResult.QuizCount = Quiz.Questions.Count;
+        QuizResult.IncorrectAnswers = incorrectAnswers;
+        // Navigate to quizdisplay page
+        string navUrl = $"/quizcomplete";
+        await InvokeAsync(() => NavigationManager.NavigateTo(navUrl)); 
     }
 
     private bool SelectedAnswers()

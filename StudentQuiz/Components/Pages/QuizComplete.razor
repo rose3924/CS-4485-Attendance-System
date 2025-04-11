@@ -1,0 +1,24 @@
+﻿<!-- > Olivia Anderson -->
+@page "/quizcomplete"
+@using StudentQuiz.Components.Service 
+@inject QuizResult QuizResult
+
+<PageTitle>Quiz Complete</PageTitle>
+
+<h3>Complete!</h3>
+
+@if (QuizResult.CorrectAnswers == 0 && QuizResult.QuizCount == 0)
+{
+    <p>Thank you for completing the class attendance. Simply close the web application.</p>
+
+}
+else
+{
+    <p>
+        You got @QuizResult.CorrectAnswers
+        out of @QuizResult.QuizCount
+        correct!
+    </p>
+    <p>Thank you for completing the class attendance. Simply close the web application.</p>
+}
+

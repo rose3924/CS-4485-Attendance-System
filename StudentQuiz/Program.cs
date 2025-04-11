@@ -25,6 +25,7 @@ builder.Services.AddDbContext<FelixDbContext>(options =>
 
 builder.Services.AddScoped<QuizRegistration>();
 builder.Services.AddScoped<UserState>();
+builder.Services.AddScoped<QuizResult>();
 builder.Services.AddDistributedMemoryCache();
 // Begin test
 // Configure cookie policy

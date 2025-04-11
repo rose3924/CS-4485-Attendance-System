@@ -4,11 +4,13 @@
 @using System.ComponentModel.DataAnnotations;
 @using Microsoft.EntityFrameworkCore
 @using StudentQuiz.Models
+@using StudentQuiz.Components.Service
 @inject IHttpContextAccessor HttpContextAccessor
 @inject Components.Service.UserState UserState
 @inject NavigationManager NavigationManager
 @inject FelixDbContext DbContext
-
+@inject QuizResult QuizResult
+@inject QuizRegistration QuizService
 
 <h3>Login</h3>
 <EditForm Model="StudentModel" OnValidSubmit="HandleRegistration" FormName="UserRegistration">
@@ -30,12 +32,15 @@
     </div>
 
     <button type="submit">Register</button>
+    <p>@message</p>
 </EditForm>
 
 
 @code {
     [SupplyParameterFromForm]
     protected UserData StudentModel { get; set; } = new();
+    private Quiz? Quiz { get; set; }
+    private String message = string.Empty;
 
     private async Task HandleRegistration()
     {
@@ -80,6 +85,75 @@
         if (UserState.Username != null)
         {
             HttpContextAccessor.HttpContext.Session.SetString("Username", UserState.Username);
+        }
+
+        // Before continuing, ensure the quiz has at least one question.
+        Quiz = await QuizService.GetQuizzes(DbContext, StudentModel.QuizCode);
+        if (Quiz == null)
+        {
+            message = "Invlaid Quiz Code";
+            return;
+        }
+        else
+        {
+            if (Quiz != null && Quiz.Questions.Count > 0)
+            {
+                // Navigate to quizdisplay page
+                await InvokeAsync(() => NavigationManager.NavigateTo("/quizdisplay/" + StudentModel.QuizCode));
+            }
+            else
+            {
+                int correctAnswers = 0;
+
+                string IpAddress = QuizService.GetIpAddress();
+                Console.WriteLine($"Login.razor GetIpAddress() = {IpAddress}");
+
+                string uname = "";
+                if (StudentModel.Username != null)
+                    uname = StudentModel.Username;
+
+                var qrecord = await QuizService.GetQRecordByQuizIdIpAddress(DbContext, Quiz.Id, IpAddress);
+                var qrecordForStudentId = await QuizService.GetQRecordByQuizIdStudentID(DbContext, Quiz.Id, UserState.Identifier);
+
+                if (qrecord == null)
+                {
+                    decimal percentage = 100;
+                    var currentuser = await QuizService.GetUserByLoginId(DbContext, uname);
+                    if (currentuser == null)
+                    {
+                        Console.WriteLine("User not found!");
+                        message = "Invalid user name";
+                        return;
+                    }
+
+                    // Add the record
+                    await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, "PRESENT");
+                }
+                else
+                {
+
+                        if (qrecord == null)
+                        {
+                            message = $"The client ip address: {IpAddress} has already been used to register.";
+
+                        }
+                        else if (qrecordForStudentId == null)
+                        {
+                            message = $"The specified student id: {UserState.Identifier} has already been used to register.";
+                        }
+                        else
+                        {
+                            message = $"Either the ip address: {IpAddress} or the specified student id: {UserState.Identifier} has been used for this quiz.";
+                        }
+                        return;
+                    
+                }
+                QuizResult.CorrectAnswers = 0;
+                QuizResult.QuizCount = 0;
+                QuizResult.IncorrectAnswers = 0;
+                string navUrl = $"/quizcomplete";
+                await InvokeAsync(() => NavigationManager.NavigateTo(navUrl));
+            }
         }
 
         // Navigate to home page
