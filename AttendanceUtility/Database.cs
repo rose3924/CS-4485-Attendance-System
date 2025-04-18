@@ -155,23 +155,26 @@ namespace AttendanceUtility
         }
 
         /*
-         * Gathers information of the semester taught given semester id
-         * Creates/Returns a data table with the semester id, start date, end date, and description.
+         * Gathers the semesters the professor teaches given the professorId.
+         * Creates/Returns a data table with the semester id and description.
          */
-        public DataTable GetSemesterDetails(int semesterId)
+        public DataTable GetProfessorSemesters(int professorId)
         {
             DataTable dataTable = new DataTable();
             try
             {
                 using (var connection = GetAzureMySQLConnection())
                 {
-                    // Query for table, specific to the semester table in the database
-                    string classQuery = @"SELECT id, start_date, end_date, description FROM semester WHERE id = @semesterId";
+                    // Query for table, specific to get semesters the professor teaches
+                    string classQuery = @"SELECT DISTINCT semester.id, semester.description 
+                                        FROM semester 
+                                        INNER JOIN class ON semester.id = class.semester_id 
+                                        WHERE class.prof_id = @profId";
                     
                     using (SqlCommand command = new SqlCommand(classQuery, connection))
                     {
-                        // Adds the input semester id to the semesterId
-                        command.Parameters.Add("@semester", SqlDbType.Int).Value = semesterId;
+                        // Adds the input professor id to the profId
+                        command.Parameters.Add("@profId", SqlDbType.Int).Value = professorId;
 
                         using (var dataAdapter = new SqlDataAdapter(command))
                         {

@@ -86,11 +86,12 @@
             // ClassesHomeLayoutPanel
             // 
             ClassesHomeLayoutPanel.AutoScroll = true;
-            ClassesHomeLayoutPanel.Dock = DockStyle.Bottom;
+            ClassesHomeLayoutPanel.FlowDirection = FlowDirection.TopDown;
             ClassesHomeLayoutPanel.Location = new Point(0, 103);
             ClassesHomeLayoutPanel.Name = "ClassesHomeLayoutPanel";
             ClassesHomeLayoutPanel.Size = new Size(960, 497);
             ClassesHomeLayoutPanel.TabIndex = 1;
+            ClassesHomeLayoutPanel.WrapContents = false;
             // 
             // ClassesHomePage
             // 
