@@ -26,6 +26,7 @@ namespace StudentQuiz.Components
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext?.Connection?.RemoteIpAddress != null)
             {
+                // since running locally during testing don't get real ip address it is local host
                 ip = httpContext.Connection.RemoteIpAddress.ToString();
                 if (ip == "::1")
                 {
@@ -46,9 +47,11 @@ namespace StudentQuiz.Components
         public async Task<Quiz?> GetQuizzes(FelixDbContext _context, string code)
         {
             return await _context.Quizzes
+            .Include(q => q.Class)
             .Include(q => q.Questions)
                 .ThenInclude(q => q.Answers)
             .FirstOrDefaultAsync(q => q.Password == code);
+
         }
 
         // Used to help find out if the student has already taken quiz
@@ -91,6 +94,77 @@ namespace StudentQuiz.Components
             {
                 Console.WriteLine($"Records saved successfully! Changes: {changes}");
             }
+        }
+
+
+        public class QuizTime
+        {
+            private TimeOnly start_range = TimeOnly.MinValue;
+            private TimeOnly end_range = TimeOnly.MaxValue;
+            private TimeOnly class_end = TimeOnly.MaxValue;
+            private string attendanceStatus = "ABSENT";
+            private string errorMessage = string.Empty;
+
+            public string AttendanceStatus
+            {
+                get { return attendanceStatus; }
+                set { attendanceStatus = value; }
+            }
+            public string ErrorMessage
+            {
+                get { return errorMessage; }
+                set { errorMessage = value; }
+            }
+            public TimeOnly StartRange
+            {
+                get { return start_range; }
+                set { start_range = value; }
+            }
+            public TimeOnly EndRange
+            {
+                get { return end_range; }
+                set { end_range = value; }
+            }
+            public QuizTime(Quiz quizObj, string code)
+            {
+                TimeOnly locTime = TimeOnly.FromDateTime(DateTime.Now);
+                init(quizObj, code, locTime);
+            }
+            public QuizTime(Quiz quizObj, string code, TimeOnly currTime)
+            {
+                init(quizObj, code, currTime);
+            }
+
+            public void init(Quiz quizObj, string code, TimeOnly currTime)
+            {
+                if (quizObj != null && quizObj.Class != null && quizObj.Class.StartTime.HasValue)
+                {
+                    // TODO make be able to chnage
+                    start_range = quizObj.Class.StartTime.Value.AddMinutes(-15); // Subtract 15 minutes
+                    end_range = quizObj.Class.StartTime.Value.AddMinutes(15);
+                    if (quizObj.Class.EndTime.HasValue) {
+                        class_end = quizObj.Class.EndTime.Value;
+                    }
+                }
+
+                if (currTime < start_range)
+                {
+                    errorMessage = "It's to early to register for class, wait until " + start_range.ToString() + ".";
+                }
+                else if (currTime >= start_range && currTime <= end_range)
+                {
+                    AttendanceStatus = "PRESENT";
+                }
+                else if (currTime > end_range && currTime < class_end)
+                {
+                    AttendanceStatus = "LATE";
+                }
+                else
+                {
+                    errorMessage = "Invalid time, unable to register for quiz identified by " + code + ".";
+                }
+            }
+             
         }
     }
 }

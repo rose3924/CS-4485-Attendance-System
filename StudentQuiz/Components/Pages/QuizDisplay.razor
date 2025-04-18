@@ -66,6 +66,7 @@ else
     private Dictionary<int, int> UserAnswers = new();
 
     private Quiz? Quiz { get; set; }
+    private TimeOnly QTime { get; set; } = TimeOnly.MinValue;
     private string? Username;
     private string? Identifier;
     private string? IpAddress;
@@ -82,6 +83,7 @@ else
         if (Code != null)
         {
             Quiz = await QuizService.GetQuizzes(DbContext, Code);
+            QTime = TimeOnly.FromDateTime(DateTime.Now);
         }
 
 
@@ -132,6 +134,18 @@ else
             }
         }
 
+        QuizRegistration.QuizTime? quizTime = null;
+        if (Quiz != null && Code != null)
+        {
+            // Grabbed the QTime when the page was first loaded
+            quizTime = new QuizRegistration.QuizTime(Quiz, Code, QTime);
+        }
+        if (quizTime != null && quizTime.ErrorMessage.Equals("") == false)
+        {
+            ResultMessage = quizTime.ErrorMessage;
+            return;
+        }
+
         if (Username == null || IpAddress == null || Quiz == null)
         {
             Console.WriteLine("Unable to process Quiz information! User name or ip address are not available.");
@@ -143,7 +157,7 @@ else
 
             var qrecord = await QuizService.GetQRecordByQuizIdIpAddress(DbContext, Quiz.Id, IpAddress);
             // If the qrecord is NULL, the quiz information should be save to the quiz_record table.
-            if (qrecord == null)
+            if (qrecord == null && quizTime != null)
             {
                 decimal percentage = (decimal)correctAnswers / questioncount * 100;
 
@@ -157,7 +171,7 @@ else
                 //TODO: Add time stuff
 
                 // Add the record
-                await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, "PRESENT");
+                await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, quizTime.AttendanceStatus);
             }
             else
             {

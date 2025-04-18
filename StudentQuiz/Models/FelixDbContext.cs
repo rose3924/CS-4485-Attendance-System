@@ -19,6 +19,8 @@ public partial class FelixDbContext : DbContext
 
     public virtual DbSet<Class> Classes { get; set; }
 
+    public virtual DbSet<DaysOfWeek> DaysOfWeeks { get; set; }
+
     public virtual DbSet<Enrollment> Enrollments { get; set; }
 
     public virtual DbSet<Question> Questions { get; set; }
@@ -31,9 +33,9 @@ public partial class FelixDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=grapefruitfreesqldbserver.database.windows.net;Database=felixchococat;User Id=strawberrycat;Password=fel97531ixco*co;");
+   // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+    //    => optionsBuilder.UseSqlServer("Server=grapefruitfreesqldbserver.database.windows.net;Database=felixchococat;User Id=strawberrycat;Password=fel97531ixco*co;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -73,9 +75,17 @@ public partial class FelixDbContext : DbContext
                 .HasMaxLength(4)
                 .IsUnicode(false)
                 .HasColumnName("department");
+            entity.Property(e => e.Description)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("description");
             entity.Property(e => e.EndTime)
-                .HasColumnType("datetime")
+                .HasPrecision(3)
                 .HasColumnName("end_time");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("name");
             entity.Property(e => e.Number)
                 .HasMaxLength(4)
                 .IsUnicode(false)
@@ -89,7 +99,7 @@ public partial class FelixDbContext : DbContext
                 .HasColumnName("section");
             entity.Property(e => e.SemesterId).HasColumnName("semester_id");
             entity.Property(e => e.StartTime)
-                .HasColumnType("datetime")
+                .HasPrecision(3)
                 .HasColumnName("start_time");
 
             entity.HasOne(d => d.Prof).WithMany(p => p.Classes)
@@ -99,6 +109,38 @@ public partial class FelixDbContext : DbContext
             entity.HasOne(d => d.Semester).WithMany(p => p.Classes)
                 .HasForeignKey(d => d.SemesterId)
                 .HasConstraintName("fk_semesterID");
+
+            entity.HasMany(d => d.Days).WithMany(p => p.Classes)
+                .UsingEntity<Dictionary<string, object>>(
+                    "ClassDay",
+                    r => r.HasOne<DaysOfWeek>().WithMany()
+                        .HasForeignKey("DayId")
+                        .HasConstraintName("FK__class_day__day_i__0C50D423"),
+                    l => l.HasOne<Class>().WithMany()
+                        .HasForeignKey("ClassId")
+                        .HasConstraintName("FK__class_day__class__0B5CAFEA"),
+                    j =>
+                    {
+                        j.HasKey("ClassId", "DayId").HasName("PK__class_da__55416F2D0B13263F");
+                        j.ToTable("class_days");
+                        j.IndexerProperty<int>("ClassId").HasColumnName("class_id");
+                        j.IndexerProperty<int>("DayId").HasColumnName("day_id");
+                    });
+        });
+
+        modelBuilder.Entity<DaysOfWeek>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__days_of___3213E83F97330A47");
+
+            entity.ToTable("days_of_week");
+
+            entity.HasIndex(e => e.Day, "UQ__days_of___D87793208E32A0AF").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Day)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("day");
         });
 
         modelBuilder.Entity<Enrollment>(entity =>
@@ -146,6 +188,7 @@ public partial class FelixDbContext : DbContext
             entity.HasIndex(e => e.Password, "UQ__quiz__6E2DBEDEC605EF87").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ClassId).HasColumnName("class_id");
             entity.Property(e => e.Password)
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -161,6 +204,10 @@ public partial class FelixDbContext : DbContext
                 .HasDefaultValue("T")
                 .IsFixedLength()
                 .HasColumnName("validate_answers");
+
+            entity.HasOne(d => d.Class).WithMany(p => p.Quizzes)
+                .HasForeignKey(d => d.ClassId)
+                .HasConstraintName("fk_quiz_classID");
 
             entity.HasMany(d => d.Questions).WithMany(p => p.Quizzes)
                 .UsingEntity<Dictionary<string, object>>(

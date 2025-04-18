@@ -13,6 +13,10 @@ public partial class Quiz
 
     public string ValidateAnswers { get; set; } = null!;
 
+    public int? ClassId { get; set; }
+
+    public virtual Class? Class { get; set; }
+
     public virtual ICollection<QuizRecord> QuizRecords { get; set; } = new List<QuizRecord>();
 
     public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
