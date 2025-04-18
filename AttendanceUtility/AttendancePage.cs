@@ -50,7 +50,7 @@ namespace AttendanceUtility
             DataRow row = courseDetails.Rows[0];
 
             //Name comprised of department, course number and course section, ex CS 1334.004
-            string courseName = $"{row["department"]}{row["number"]}.{row["section"]}";
+            string courseName = $"{row["department"]}{row["number"]}.{row["section"]} {row["name"]}";
 
             CourseLabel.Text = courseName;
         }

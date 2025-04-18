@@ -96,12 +96,48 @@ namespace AttendanceUtility
                 using (var connection = GetAzureMySQLConnection())
                 {
                     // Query for table, specific to the class table in the database
-                    string profQuery = @"SELECT id, department, number, section, prof_id, start_time, end_time, semester_id FROM class WHERE prof_id = @professorId";
+                    string profQuery = @"SELECT id, department, number, section, prof_id, start_time, end_time, semester_id, name, description FROM class WHERE prof_id = @professorId";
 
                     using (SqlCommand command = new SqlCommand(profQuery, connection))
                     {
                         // Adds the input professor id to the professorId
                         command.Parameters.Add("@professorId", SqlDbType.Int).Value = professorId;
+
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dataTable;
+        }
+        /*
+         * Gathers information of the professor given the professorId.
+         * Creates/Returns a data table with the first name and last name of the professor.
+        */
+        public DataTable GetProfessorName(int professorId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to get semesters the professor teaches
+                    string profNameQuery = @"SELECT firstname, lastname 
+                                        FROM users 
+                                        WHERE id = @profId";
+
+                    using (SqlCommand command = new SqlCommand(profNameQuery, connection))
+                    {
+                        // Adds the input professor id to the profId
+                        command.Parameters.Add("@profId", SqlDbType.Int).Value = professorId;
 
                         using (var dataAdapter = new SqlDataAdapter(command))
                         {
@@ -132,7 +168,7 @@ namespace AttendanceUtility
                 using (var connection = GetAzureMySQLConnection())
                 {
                     // Query for table, specific to the class table in the database
-                    string classQuery = @"SELECT id, department, number, section, prof_id, start_time, end_time, semester_id FROM class WHERE id = @classId";
+                    string classQuery = @"SELECT id, department, number, section, prof_id, start_time, end_time, semester_id, name FROM class WHERE id = @classId";
                     using (SqlCommand command = new SqlCommand(classQuery, connection))
                     {
                         // Adds the input class id to the classId
@@ -166,7 +202,7 @@ namespace AttendanceUtility
                 using (var connection = GetAzureMySQLConnection())
                 {
                     // Query for table, specific to get semesters the professor teaches
-                    string classQuery = @"SELECT DISTINCT semester.id, semester.description 
+                    string classQuery = @"SELECT DISTINCT semester.id, semester.description, semester.start_date 
                                         FROM semester 
                                         INNER JOIN class ON semester.id = class.semester_id 
                                         WHERE class.prof_id = @profId";
@@ -175,6 +211,84 @@ namespace AttendanceUtility
                     {
                         // Adds the input professor id to the profId
                         command.Parameters.Add("@profId", SqlDbType.Int).Value = professorId;
+
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dataTable;
+        }
+
+        /*
+        * Gathers information of the courses taught by a Professor given the professorId and a semester
+        * Creates/Returns a data table with the course id, department name, course number, course section,
+        * professor id, start time, end time, and semester.
+        */
+        public DataTable GetProfessorSemesterClasses(int professorId, int semesterId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to the class table in the database
+                    string profSemQuery = @"SELECT id, department, number, section, prof_id, start_time, end_time, semester_id, name, description 
+                                        FROM class 
+                                        WHERE prof_id = @professorId AND semester_id = @semesterId";
+
+                    using (SqlCommand command = new SqlCommand(profSemQuery, connection))
+                    {
+                        // Adds the input professor id to the professorId
+                        command.Parameters.Add("@professorId", SqlDbType.Int).Value = professorId;
+                        command.Parameters.Add("@semesterId", SqlDbType.Int).Value = semesterId;
+
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dataTable;
+        }
+
+        /*
+         * Gathers information of the quiz passwords and day of week given a class id.
+         * Creates/Returns a data table with the quiz id, title, password, and class id.
+         */
+        public DataTable GetQuizPasswords(int classId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to the class table in the database
+                    string quizQuery = @"SELECT days_of_week.day, quiz.password
+                                         FROM quiz 
+                                         INNER JOIN class_days ON quiz.class_id = class_days.class_id
+                                         INNER JOIN days_of_week ON class_days.day_id = days_of_week.id
+                                         WHERE quiz.class_id = @classId";
+
+                    using (SqlCommand command = new SqlCommand(quizQuery, connection))
+                    {
+                        // Adds the input class id to the classId
+                        command.Parameters.Add("@classId", SqlDbType.Int).Value = classId;
 
                         using (var dataAdapter = new SqlDataAdapter(command))
                         {

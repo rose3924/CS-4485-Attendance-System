@@ -1,6 +1,6 @@
 ﻿namespace AttendanceUtility
 {
-    partial class QuizzesPage
+    partial class PasswordPage
     {
         /// <summary>
         /// Required designer variable.
@@ -117,9 +117,9 @@
             PasswordDataGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
             PasswordDataGrid.RowHeadersWidth = 62;
             PasswordDataGrid.Size = new Size(870, 400);
-            PasswordDataGrid.TabIndex = 9;
+            PasswordDataGrid.TabIndex = 8;
             // 
-            // QuizzesPage
+            // PasswordPage
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -129,9 +129,9 @@
             Controls.Add(BackButtonBox);
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "QuizzesPage";
+            Name = "PasswordPage";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "QuizzesPage";
+            Text = "PasswordPage";
             BannerPanel.ResumeLayout(false);
             BannerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();

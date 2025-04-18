@@ -32,9 +32,13 @@
             CourseLabel = new Label();
             LogoutLabel = new Label();
             UTDLogoBox = new PictureBox();
+            ProfNameLabel = new Label();
             ClassesHomeLayoutPanel = new FlowLayoutPanel();
+            NoCoursesMessageLabel = new Label();
+            SemesterComboBox = new ComboBox();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
+            ClassesHomeLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 
             // BannerPanel
@@ -53,11 +57,11 @@
             // CourseLabel
             // 
             CourseLabel.AutoSize = true;
-            CourseLabel.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            CourseLabel.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             CourseLabel.ForeColor = Color.White;
-            CourseLabel.Location = new Point(349, 27);
+            CourseLabel.Location = new Point(358, 27);
             CourseLabel.Name = "CourseLabel";
-            CourseLabel.Size = new Size(171, 48);
+            CourseLabel.Size = new Size(178, 48);
             CourseLabel.TabIndex = 2;
             CourseLabel.Text = "COURSES";
             // 
@@ -83,21 +87,58 @@
             UTDLogoBox.TabIndex = 0;
             UTDLogoBox.TabStop = false;
             // 
+            // ProfNameLabel
+            // 
+            ProfNameLabel.AutoSize = true;
+            ProfNameLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            ProfNameLabel.ForeColor = Color.Black;
+            ProfNameLabel.Location = new Point(587, 108);
+            ProfNameLabel.Name = "ProfNameLabel";
+            ProfNameLabel.Size = new Size(171, 25);
+            ProfNameLabel.TabIndex = 3;
+            ProfNameLabel.Text = "Welcome, Professor";
+            // 
             // ClassesHomeLayoutPanel
             // 
             ClassesHomeLayoutPanel.AutoScroll = true;
+            ClassesHomeLayoutPanel.Controls.Add(NoCoursesMessageLabel);
+            ClassesHomeLayoutPanel.Dock = DockStyle.Bottom;
             ClassesHomeLayoutPanel.FlowDirection = FlowDirection.TopDown;
-            ClassesHomeLayoutPanel.Location = new Point(0, 103);
+            ClassesHomeLayoutPanel.Location = new Point(0, 140);
             ClassesHomeLayoutPanel.Name = "ClassesHomeLayoutPanel";
-            ClassesHomeLayoutPanel.Size = new Size(960, 497);
+            ClassesHomeLayoutPanel.Size = new Size(960, 460);
             ClassesHomeLayoutPanel.TabIndex = 1;
             ClassesHomeLayoutPanel.WrapContents = false;
+            // 
+            // NoCoursesMessageLabel
+            // 
+            NoCoursesMessageLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            NoCoursesMessageLabel.ForeColor = SystemColors.ButtonShadow;
+            NoCoursesMessageLabel.ImageAlign = ContentAlignment.MiddleLeft;
+            NoCoursesMessageLabel.Location = new Point(3, 0);
+            NoCoursesMessageLabel.Name = "NoCoursesMessageLabel";
+            NoCoursesMessageLabel.Size = new Size(945, 460);
+            NoCoursesMessageLabel.TabIndex = 1;
+            NoCoursesMessageLabel.Text = "No Courses to Display";
+            NoCoursesMessageLabel.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // SemesterComboBox
+            // 
+            SemesterComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            SemesterComboBox.FormattingEnabled = true;
+            SemesterComboBox.Location = new Point(2, 105);
+            SemesterComboBox.Name = "SemesterComboBox";
+            SemesterComboBox.Size = new Size(180, 33);
+            SemesterComboBox.TabIndex = 0;
+            SemesterComboBox.SelectedIndexChanged += SemesterComboBox_SelectedIndexChanged;
             // 
             // ClassesHomePage
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(960, 600);
+            Controls.Add(ProfNameLabel);
+            Controls.Add(SemesterComboBox);
             Controls.Add(ClassesHomeLayoutPanel);
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
@@ -107,7 +148,9 @@
             BannerPanel.ResumeLayout(false);
             BannerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();
+            ClassesHomeLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -117,5 +160,8 @@
         private Label LogoutLabel;
         private Label CourseLabel;
         private FlowLayoutPanel ClassesHomeLayoutPanel;
+        private ComboBox SemesterComboBox;
+        private Label NoCoursesMessageLabel;
+        private Label ProfNameLabel;
     }
 }

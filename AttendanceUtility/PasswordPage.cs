@@ -1,11 +1,10 @@
 ﻿/*
- * Individual Class Page for the Courses taught by the currently active Professor user.
- * Displays options for: Attendance, Quizzes and Passwords.
- * 
- * Not functional to go to other pages
+ * Password Page for Course.
+ * Will allow for professor to add questions 
+ * and set password for course.
  * 
  * Written by Cristina Adame (caa220007)
- * starting March 28, 2025
+ * starting April , 2025
  */
 using System;
 using System.Collections.Generic;
@@ -16,12 +15,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace AttendanceUtility
 {
-    public partial class ClassPage : Form
+    public partial class PasswordPage : Form
     {
+
         // Instance of database object
         private Database dbobject;
 
@@ -30,9 +29,7 @@ namespace AttendanceUtility
 
         // Course ID, needed to pass to the following forms
         private int courseId;
-
-
-        public ClassPage(Database dbobject, int profId, int courseId)
+        public PasswordPage(Database dbobject, int profId, int courseId)
         {
             InitializeComponent();
             this.dbobject = dbobject;
@@ -56,7 +53,13 @@ namespace AttendanceUtility
 
             CourseLabel.Text = courseName;
         }
+        public void LoadQuizPasswords()
+        {
+            DataTable passwordTable = dbobject.GetQuizPasswords(courseId);
 
+            // Bind the DataTable to the PasswordDataGrid
+            PasswordDataGrid.DataSource = passwordTable;
+        }
         /*
          * Closes the current form and creates a new login screen
          */
@@ -68,41 +71,13 @@ namespace AttendanceUtility
         }
 
         /*
-         * Closes the current form and creates a AttendancePage form
-         */
-        private void AttendanceButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-            new AttendancePage(dbobject, profId, courseId).Show();
-        }
-
-        /*
-         * Closes the current form and creates a QuizzesPage form
-         */
-        private void QuizzesButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-            new QuizzesPage(dbobject, profId, courseId).Show();
-
-        }
-
-        /*
-         * Closes the current form and creates a PasswordPage form
-         */
-        private void PasswordButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-            new PasswordPage(dbobject, profId, courseId).Show();
-        }
-
-        /*
-         * Back Button
-         * Closes the current form and creates a ClassesHomePage form
-         */
+        * Back Button
+        * Closes the current form and creates a ClassPage form
+        */
         private void BackButtonBox_Click(object sender, EventArgs e)
         {
             this.Close();
-            new ClassesHomePage(dbobject, profId).Show();
+            new ClassPage(dbobject, profId, courseId).Show();
         }
     }
 }

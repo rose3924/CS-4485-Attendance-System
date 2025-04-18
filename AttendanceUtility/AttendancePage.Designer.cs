@@ -53,9 +53,8 @@
             BannerPanel.Controls.Add(UTDLogoBox);
             BannerPanel.Dock = DockStyle.Top;
             BannerPanel.Location = new Point(0, 0);
-            BannerPanel.Margin = new Padding(5);
             BannerPanel.Name = "BannerPanel";
-            BannerPanel.Size = new Size(1632, 169);
+            BannerPanel.Size = new Size(960, 103);
             BannerPanel.TabIndex = 1;
             // 
             // LogoutLabel
@@ -65,10 +64,9 @@
             LogoutLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             LogoutLabel.ForeColor = Color.FromArgb(192, 92, 31);
             LogoutLabel.ImageAlign = ContentAlignment.BottomRight;
-            LogoutLabel.Location = new Point(1504, 120);
-            LogoutLabel.Margin = new Padding(5, 0, 5, 0);
+            LogoutLabel.Location = new Point(885, 73);
             LogoutLabel.Name = "LogoutLabel";
-            LogoutLabel.Size = new Size(116, 41);
+            LogoutLabel.Size = new Size(72, 25);
             LogoutLabel.TabIndex = 5;
             LogoutLabel.Text = "Logout";
             LogoutLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -77,12 +75,11 @@
             // CourseLabel
             // 
             CourseLabel.AutoSize = true;
-            CourseLabel.Font = new Font("Segoe UI", 18F);
+            CourseLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point, 0);
             CourseLabel.ForeColor = Color.White;
-            CourseLabel.Location = new Point(673, 46);
-            CourseLabel.Margin = new Padding(5, 0, 5, 0);
+            CourseLabel.Location = new Point(159, 27);
             CourseLabel.Name = "CourseLabel";
-            CourseLabel.Size = new Size(605, 81);
+            CourseLabel.Size = new Size(355, 45);
             CourseLabel.TabIndex = 3;
             CourseLabel.Text = "CSXXXX.xxx -- NAME ";
             CourseLabel.TextAlign = ContentAlignment.BottomLeft;
@@ -91,9 +88,8 @@
             // 
             UTDLogoBox.Image = Properties.Resources.utdlogo;
             UTDLogoBox.Location = new Point(0, 0);
-            UTDLogoBox.Margin = new Padding(5);
             UTDLogoBox.Name = "UTDLogoBox";
-            UTDLogoBox.Size = new Size(260, 166);
+            UTDLogoBox.Size = new Size(153, 101);
             UTDLogoBox.SizeMode = PictureBoxSizeMode.Zoom;
             UTDLogoBox.TabIndex = 0;
             UTDLogoBox.TabStop = false;
@@ -101,10 +97,9 @@
             // BackButtonBox
             // 
             BackButtonBox.Image = Properties.Resources.backButton;
-            BackButtonBox.Location = new Point(10, 190);
-            BackButtonBox.Margin = new Padding(5);
+            BackButtonBox.Location = new Point(6, 116);
             BackButtonBox.Name = "BackButtonBox";
-            BackButtonBox.Size = new Size(95, 61);
+            BackButtonBox.Size = new Size(56, 37);
             BackButtonBox.SizeMode = PictureBoxSizeMode.Zoom;
             BackButtonBox.TabIndex = 7;
             BackButtonBox.TabStop = false;
@@ -112,10 +107,9 @@
             // 
             // csvUpload
             // 
-            csvUpload.Location = new Point(1383, 183);
-            csvUpload.Margin = new Padding(5);
+            csvUpload.Location = new Point(814, 112);
             csvUpload.Name = "csvUpload";
-            csvUpload.Size = new Size(197, 89);
+            csvUpload.Size = new Size(116, 54);
             csvUpload.TabIndex = 8;
             csvUpload.Text = "Upload CSV";
             csvUpload.UseVisualStyleBackColor = true;
@@ -124,20 +118,18 @@
             // AttendanceDataGrid
             // 
             AttendanceDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            AttendanceDataGrid.Location = new Point(76, 289);
-            AttendanceDataGrid.Margin = new Padding(5);
+            AttendanceDataGrid.Location = new Point(45, 176);
             AttendanceDataGrid.Name = "AttendanceDataGrid";
             AttendanceDataGrid.RowHeadersWidth = 62;
-            AttendanceDataGrid.Size = new Size(1479, 656);
+            AttendanceDataGrid.Size = new Size(870, 400);
             AttendanceDataGrid.TabIndex = 9;
             AttendanceDataGrid.CellContentClick += AttendanceDataGrid_CellContentClick;
             // 
             // button1
             // 
-            button1.Location = new Point(1165, 183);
-            button1.Margin = new Padding(5);
+            button1.Location = new Point(685, 112);
             button1.Name = "button1";
-            button1.Size = new Size(197, 89);
+            button1.Size = new Size(116, 54);
             button1.TabIndex = 10;
             button1.Text = "Browse CSVs";
             button1.UseVisualStyleBackColor = true;
@@ -148,18 +140,20 @@
             filterCSV.DropDownStyle = ComboBoxStyle.DropDownList;
             filterCSV.FormattingEnabled = true;
             filterCSV.Items.AddRange(new object[] { "More Than 3 Consecutive Absences ", "More Than _____ Total Absences " });
-            filterCSV.Location = new Point(277, 202);
+            filterCSV.Location = new Point(163, 123);
+            filterCSV.Margin = new Padding(2, 2, 2, 2);
             filterCSV.Name = "filterCSV";
-            filterCSV.Size = new Size(302, 49);
+            filterCSV.Size = new Size(179, 33);
             filterCSV.TabIndex = 11;
             filterCSV.SelectedIndexChanged += filterCSV_SelectedIndexChanged;
             // 
             // filter
             // 
             filter.AutoSize = true;
-            filter.Location = new Point(188, 202);
+            filter.Location = new Point(111, 123);
+            filter.Margin = new Padding(2, 0, 2, 0);
             filter.Name = "filter";
-            filter.Size = new Size(83, 41);
+            filter.Size = new Size(50, 25);
             filter.TabIndex = 12;
             filter.Text = "Filter";
             filter.Click += label1_Click;
@@ -167,9 +161,10 @@
             // userFilepath
             // 
             userFilepath.AcceptsReturn = true;
-            userFilepath.Location = new Point(652, 494);
+            userFilepath.Location = new Point(384, 301);
+            userFilepath.Margin = new Padding(2, 2, 2, 2);
             userFilepath.Name = "userFilepath";
-            userFilepath.Size = new Size(250, 47);
+            userFilepath.Size = new Size(149, 31);
             userFilepath.TabIndex = 13;
             userFilepath.Text = "Enter File Path...";
             userFilepath.Visible = false;
@@ -178,11 +173,11 @@
             // 
             // AttendancePage
             // 
-            AutoScaleDimensions = new SizeF(17F, 41F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             BackColor = Color.WhiteSmoke;
-            ClientSize = new Size(1632, 984);
+            ClientSize = new Size(960, 600);
             Controls.Add(userFilepath);
             Controls.Add(filter);
             Controls.Add(filterCSV);
@@ -192,7 +187,6 @@
             Controls.Add(BackButtonBox);
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
-            Margin = new Padding(5);
             Name = "AttendancePage";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "AttendancePage";

@@ -37,23 +37,53 @@ namespace AttendanceUtility
             this.dbobject = dbobject;
             this.profId = profId;
 
-            LoadProfClasses();
-            LoadSemesterComboBox();
+            // Load the professor's name
+            LoadProfName();
+
+            // Load the initial classes for the professor
+            LoadInitialProfClasses();
         }
 
         /*
-         * Dynamically creates buttons based on number of course the Professor teaches.
+         * Adds name of current professor to header
+         */
+        private void LoadProfName()
+        {
+            // Get the professor's name from the database
+            DataTable profDetails = dbobject.GetProfessorName(profId);
+            // First/Only row in the table
+            DataRow row = profDetails.Rows[0];
+            // Set the label text to the professor's name
+            ProfNameLabel.Text = $"Welcome, Professor {row["firstname"]} {row["lastname"]}";
+        }
+
+        /*
+         * Loads the semester drop down option and displays the first semester courses
+         */
+        private void LoadInitialProfClasses()
+        {
+            //Loads the semesters to the combo box
+            LoadSemesterComboBox();
+
+            // If there are semesters, select the first one and load the classes for that semester
+            if (SemesterComboBox.Items.Count > 0)
+            {
+                SemesterComboBox.SelectedIndex = 0;
+                LoadSelectedSemesterProfClasses((int)SemesterComboBox.SelectedValue);
+            }
+        }
+
+        /*
+         * Loads the classes for the selected semester.
+         * Clears the layout panel and dynamically creates buttons based on number of course the Professor teaches.
          * Creates DataTable, for each row displays a button.
          */
-        private void LoadProfClasses()
+        private void LoadSelectedSemesterProfClasses(int semesterId)
         {
-            DataTable profClasses = dbobject.GetProfessorClasses(profId);
+            DataTable profClasses = dbobject.GetProfessorSemesterClasses(profId, semesterId);
 
-            // Clears the layout panel of any residual buttons
+            // Clear the layout panel before adding new buttons 
             ClassesHomeLayoutPanel.Controls.Clear();
-
-            // Adds padding to the top of the buttons for room of dropdown semester selection
-            ClassesHomeLayoutPanel.Padding = new Padding(0, 60, 0, 0);
 
             foreach (DataRow row in profClasses.Rows)
             {
@@ -61,8 +91,10 @@ namespace AttendanceUtility
                 Button CourseButton = new Button
                 {
                     // Displays for example: 'CS 1337.002' on button with time of class hh:mm tt so 10:23 AM
-                    Text = $"{row["department"]}{row["number"]}.{row["section"]}" +
-                    $"\n Time: {Convert.ToDateTime(row["start_time"]).ToString("hh:mm tt")} - {Convert.ToDateTime(row["end_time"]).ToString("hh:mm tt")}",
+                    Text = $"{row["department"]}{row["number"]}.{row["section"]} - {row["name"]}" +
+                            $"\n{row["description"]}" +
+                            $"\nTime: {DateTime.Today.Add((TimeSpan)row["start_time"]).ToString("hh:mm tt")} - {DateTime.Today.Add((TimeSpan)row["end_time"]).ToString("hh:mm tt")}",
+
 
                     // Tag stores the course id, to be retrieved later and passed to ClassPage
                     Tag = row["id"],
@@ -90,8 +122,6 @@ namespace AttendanceUtility
             // Adds the new spacer panel to the form layout panel
             ClassesHomeLayoutPanel.Controls.Add(spacerPanel);
 
-
-
         }
 
         /*
@@ -113,36 +143,43 @@ namespace AttendanceUtility
                 new ClassPage(dbobject, profId, courseId).Show();
             }
         }
+
         /*
          * Dynamically adds the semesters to a drop down selection box combo for filtering.
          */
         private void LoadSemesterComboBox()
         {
-            // Get the list of classes professor teaches from the database
+            // Get the list of semesters the professor teaches from the database
             DataTable semesters = dbobject.GetProfessorSemesters(profId);
 
-            // Create combo box
-
-            ComboBox SemesterComboBox = new ComboBox
+            if (semesters.Rows.Count == 0)
             {
-                Name = "SemesterComboBox",
-                Location = new Point(20, 20), // X, Y position
-                Size = new Size(200, 30),
-                DropDownStyle = ComboBoxStyle.DropDownList,
-
-                DisplayMember = "description",
-                ValueMember = "id",
-                DataSource = semesters
-            };
-
-            // Set the default selected item to the first semester
-            if (SemesterComboBox.Items.Count > 0)
-            {
-                SemesterComboBox.SelectedIndex = 0;
+                // If no semesters are found, show no classes message and return
+                NoCoursesMessageLabel.Visible = true;
+                SemesterComboBox.Visible = false;
             }
+            else
+            {
+                // If semesters are found, hide the message
+                NoCoursesMessageLabel.Visible = false;
 
-            // Add to the form
-            this.Controls.Add(SemesterComboBox);
+
+                // Load the description and store the value for the semesters
+                SemesterComboBox.DisplayMember = "description";
+                SemesterComboBox.ValueMember = "id";
+                SemesterComboBox.DataSource = semesters;
+            }
+        }
+
+        // Method to call semesters from combo box selection
+        private void SemesterComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Retrieve and store the semesterId
+            int semesterId = (int)SemesterComboBox.SelectedValue;
+
+            // Load courses based on selected semester
+            LoadSelectedSemesterProfClasses(semesterId);
+
         }
 
         /*
