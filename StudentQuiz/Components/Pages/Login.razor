@@ -94,8 +94,16 @@
             message = "Invlaid Quiz Code";
             return;
         }
-        else
+
+        QuizRegistration.QuizTime qTime = new QuizRegistration.QuizTime(Quiz, StudentModel.QuizCode);
+        if (qTime.ErrorMessage.Equals("") == false)
         {
+            message = qTime.ErrorMessage;
+            return;
+
+        }
+        
+        
             if (Quiz != null && Quiz.Questions.Count > 0)
             {
                 // Navigate to quizdisplay page
@@ -110,12 +118,14 @@
 
                 string uname = "";
                 if (StudentModel.Username != null)
+                {
                     uname = StudentModel.Username;
+                }
 
                 var qrecord = await QuizService.GetQRecordByQuizIdIpAddress(DbContext, Quiz.Id, IpAddress);
                 var qrecordForStudentId = await QuizService.GetQRecordByQuizIdStudentID(DbContext, Quiz.Id, UserState.Identifier);
 
-                if (qrecord == null)
+                if (qrecord == null && qrecordForStudentId == null)
                 {
                     decimal percentage = 100;
                     var currentuser = await QuizService.GetUserByLoginId(DbContext, uname);
@@ -153,7 +163,7 @@
                 QuizResult.IncorrectAnswers = 0;
                 string navUrl = $"/quizcomplete";
                 await InvokeAsync(() => NavigationManager.NavigateTo(navUrl));
-            }
+            //TODO see if person is in class
         }
 
         // Navigate to home page
