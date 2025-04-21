@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\AttendanceUtility"
   ],
-  "SelectedNode": "\\AttendanceUtility.sln",
+  "SelectedNode": "\\AttendanceUtility\\AttendancePage.cs",
   "PreviewInSolutionExplorer": false
 }

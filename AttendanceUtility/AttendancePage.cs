@@ -86,9 +86,37 @@ namespace AttendanceUtility
 
         private void CSVButton_Click(object sender, EventArgs e)
         {
-            userFilepath.Visible = true;
+            OpenFileDialog openCSV = new OpenFileDialog();
+            //openCSV.Filter = "Text files| *.txt | All files | *.*";
+            if (openCSV.ShowDialog() == DialogResult.OK)
+            {
+                filePath = openCSV.FileName;
+                string[] data = File.ReadAllLines(filePath);
+                string[] fields;
+                fields = data[0].Split(new char[] { '\t' });
+                int col = fields.GetLength(0);
+                DataTable csvTable = new DataTable();
+                for (int i = 0; i < col; i++)
+                {
+                    csvTable.Columns.Add(fields[i].ToLower(), typeof(String));
 
+                }
+                DataRow row;
+                for (int i = 1; i < data.GetLength(0); i++)
+                {
+                    fields = data[i].Split(new char[] { '\t' });
+                    row = csvTable.NewRow();
+                    for (int x = 0; x < col; x++)
+                    {
+                        row[x] = fields[x];
+                    }
+                    csvTable.Rows.Add(row);
+                }
+                AttendanceDataGrid.DataSource = csvTable;
+                dbobject.insertAttendenceRec(csvTable);
+            }
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {

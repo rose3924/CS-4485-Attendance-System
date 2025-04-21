@@ -206,7 +206,7 @@ namespace AttendanceUtility
                                         FROM semester 
                                         INNER JOIN class ON semester.id = class.semester_id 
                                         WHERE class.prof_id = @profId";
-                    
+
                     using (SqlCommand command = new SqlCommand(classQuery, connection))
                     {
                         // Adds the input professor id to the profId
@@ -304,6 +304,52 @@ namespace AttendanceUtility
             }
 
             return dataTable;
+        }
+        //angelica bell
+        public void insertAttendenceRec(DataTable csvTable)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+
+                    connection.Open();
+                    foreach (DataRow row in csvTable.Rows)
+                    {
+                        string loginId = row["Username"].ToString();
+                        string fName = row["First Name"].ToString();
+                        string lName = row["Last Name"].ToString();
+                        string studentId = row["Student ID"].ToString();
+                        string query = @"IF NOT EXISTS (SELECT 1 FROM [users] WHERE login_id = @loginId)
+                        BEGIN
+                            INSERT INTO [users] (login_id, firstname, lastname, student_id, passcode, user_role)
+                            VALUES (@loginId, @firstName, @lastName, @studentId, @password, @userRole)
+                        END";
+
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@loginId", loginId);
+                            command.Parameters.AddWithValue("@firstName", fName);
+                            command.Parameters.AddWithValue("@lastName", lName);
+                            command.Parameters.AddWithValue("@studentId", studentId);
+                            command.Parameters.AddWithValue("@password", null);
+                            command.Parameters.AddWithValue("@userRole", "STUDENT");
+
+                            command.ExecuteNonQuery();
+                        }
+
+
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+
+            }
+
         }
     }
 }
