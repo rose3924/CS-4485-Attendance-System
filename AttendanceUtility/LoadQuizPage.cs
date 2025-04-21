@@ -1,11 +1,11 @@
 ﻿/*
- * Quizzes Page for Course.
- * Will allow for professor to add questions 
- * and set password for course.
+ * A page that lets the user craete a new quiz
+ * The user can either choose an existing quiz or they can create a new quiz
  * 
- * Written by Cristina Adame (caa220007)
- * starting April XX, 2025
- */
+ * Written by Olivia Anderson (ova210001)
+ * Started 4/20/2025
+*/
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace AttendanceUtility
 {
-    public partial class QuizzesPage : Form
+    public partial class LoadQuizPage : Form
     {
         // Instance of database object
         private Database dbobject;
@@ -28,7 +28,9 @@ namespace AttendanceUtility
 
         // Course ID, needed to pass to the following forms
         private int courseId;
-        public QuizzesPage(Database dbobject, int profId, int courseId)
+
+        // constructor 
+        public LoadQuizPage(Database dbobject, int profId, int courseId)
         {
             InitializeComponent();
             this.dbobject = dbobject;
@@ -38,8 +40,8 @@ namespace AttendanceUtility
         }
 
         /*
-         * Adds name of current course to header
-         */
+        * Adds name of current course to header
+        */
         public void LoadCourseName()
         {
             DataTable courseDetails = dbobject.GetCourseDetails(courseId);
@@ -53,31 +55,8 @@ namespace AttendanceUtility
             CourseLabel.Text = courseName;
         }
 
-        /*
-         * Closes the current form and creates a new login screen
-         */
-        private void LogoutLabel_Click(object sender, EventArgs e)
-        {
-            // Close the current form and show the login form
-            this.Close();
-            new LoginScreen(dbobject).Show();
-        }
+     
 
-        /*
-        * Back Button
-        * Closes the current form and creates a ClassPage form
-        */
-        private void BackButtonBox_Click(object sender, EventArgs e)
-        {
-            this.Close();
-            new ClassPage(dbobject, profId, courseId).Show();
-        }
 
-        private void NewQuizButton_Click(object sender, EventArgs e)
-        {
-            LoadQuizPage qpage = new LoadQuizPage(dbobject, profId, courseId);
-            qpage.ShowDialog();
-
-        }
     }
 }
