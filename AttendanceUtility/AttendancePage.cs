@@ -30,6 +30,8 @@ namespace AttendanceUtility
 
         // Course ID, needed to pass to the following forms
         private int courseId;
+
+
         public AttendancePage(Database dbobject, int profId, int courseId)
         {
             InitializeComponent();
@@ -37,6 +39,10 @@ namespace AttendanceUtility
             this.courseId = courseId;
             this.profId = profId;
             LoadCourseName();
+            label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+            attendecneDataGrid.Columns["attendance"].ReadOnly = false;
+            //timer();
         }
 
         /*
@@ -86,41 +92,41 @@ namespace AttendanceUtility
 
         private void CSVButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openCSV = new OpenFileDialog();
-            //openCSV.Filter = "Text files| *.txt | All files | *.*";
-            if (openCSV.ShowDialog() == DialogResult.OK)
-            {
-                filePath = openCSV.FileName;
-                string[] data = File.ReadAllLines(filePath);
-                string[] fields;
-                fields = data[0].Split(new char[] { '\t' });
-                int col = fields.GetLength(0);
-                DataTable csvTable = new DataTable();
-                for (int i = 0; i < col; i++)
+            /*    OpenFileDialog openCSV = new OpenFileDialog();
+                //openCSV.Filter = "Text files| *.txt | All files | *.*";
+                if (openCSV.ShowDialog() == DialogResult.OK)
                 {
-                    csvTable.Columns.Add(fields[i].ToLower(), typeof(String));
-
-                }
-                DataRow row;
-                for (int i = 1; i < data.GetLength(0); i++)
-                {
-                    fields = data[i].Split(new char[] { '\t' });
-                    row = csvTable.NewRow();
-                    for (int x = 0; x < col; x++)
+                    filePath = openCSV.FileName;
+                    string[] data = File.ReadAllLines(filePath);
+                    string[] fields;
+                    fields = data[0].Split(new char[] { '\t' });
+                    int col = fields.GetLength(0);
+                    DataTable csvTable = new DataTable();
+                    for (int i = 0; i < col; i++)
                     {
-                        row[x] = fields[x];
+                        csvTable.Columns.Add(fields[i].ToLower(), typeof(String));
+
                     }
-                    csvTable.Rows.Add(row);
-                }
-                AttendanceDataGrid.DataSource = csvTable;
-                dbobject.insertAttendenceRec(csvTable);
-            }
+                    DataRow row;
+                    for (int i = 1; i < data.GetLength(0); i++)
+                    {
+                        fields = data[i].Split(new char[] { '\t' });
+                        row = csvTable.NewRow();
+                        for (int x = 0; x < col; x++)
+                        {
+                            row[x] = fields[x];
+                        }
+                        csvTable.Rows.Add(row);
+                    }
+                    AttendanceDataGrid.DataSource = csvTable;
+                    dbobject.insertAttendenceRec(csvTable);
+                }*/
         }
 
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            new csv(dbobject).Show();
         }
 
         private void userFilepath_TextChanged(object sender, EventArgs e)
@@ -128,43 +134,103 @@ namespace AttendanceUtility
 
         }
 
-        private void userFilepath_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true; // Optional: prevents ding sound
-                filePath = userFilepath.Text;
-                userFilepath.Visible = false;
 
-                string[] data = File.ReadAllLines(filePath);
-                string[] fields;
-                fields = data[0].Split(new char[] { '\t' });
-                int col = fields.GetLength(0);
-                DataTable csvTable = new DataTable();
-                for (int i = 0; i < col; i++)
-                {
-                    csvTable.Columns.Add(fields[i].ToLower(), typeof(String));
-
-                }
-                DataRow row;
-                for (int i = 1; i < data.GetLength(0); i++)
-                {
-                    fields = data[i].Split(new char[] { '\t' });
-                    row = csvTable.NewRow();
-                    for (int x = 0; x < col; x++)
-                    {
-                        row[x] = fields[x];
-                    }
-                    csvTable.Rows.Add(row);
-                }
-                AttendanceDataGrid.DataSource = csvTable;
-                //file open dialogue
-            }
-        }
 
         private void AttendanceDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
-    }
-}
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+        System.Windows.Forms.Timer date = null;
+        private void timer()
+        {
+            date = new System.Windows.Forms.Timer();
+            date.Interval = 1000;
+            date.Tick += new EventHandler(currentDate_Tick);
+            date.Enabled = true;
+            label1.Text = DateOnly.FromDateTime(DateTime.Now).ToString("MMMM dd, yyyy");
+            //attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(DateOnly.FromDateTime(DateTime.Now));
+
+        }
+        private void currentDate_Tick(object sender, EventArgs e)
+        {
+            date = new System.Windows.Forms.Timer();
+            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void monthCalendar1_DateSelected(object sender, DateRangeEventArgs e)
+        {
+            label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+        }
+
+        private void TodayButton_Click(object sender, EventArgs e)
+        {
+            timer();
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            monthCalendar1.SelectionStart = monthCalendar1.SelectionStart.AddDays(-1);
+            label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            monthCalendar1.SelectionStart = monthCalendar1.SelectionStart.AddDays(1);
+            label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+        }
+        private void changeDate()
+        {
+        }
+
+        private void attendecneDataGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (attendecneDataGrid.Columns[e.ColumnIndex].Name == "attendance")
+            {
+                var row = attendecneDataGrid.Rows[e.RowIndex];
+                string cellChanged = row.Cells["attendance"].Value?.ToString();
+                if (cellChanged == "Present")
+                {
+                    string sid = row.Cells["student_id"].Value.ToString();
+                    DateTime day = monthCalendar1.SelectionRange.Start.Date;
+
+                    DialogResult confirmation = MessageBox.Show(
+                        "Confirming will change " + row.Cells["firstname"].Value.ToString() + " " + row.Cells["lastname"].Value.ToString() + " to " + row.Cells["attendance"].Value.ToString(),
+                        "Confirm Change",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (confirmation == DialogResult.Yes)
+                    {
+                        dbobject.changeAttendenceRecord(sid, day);
+
+                    }
+                    else
+                    {
+
+
+                    }
+
+
+                }
+                else 
+                {
+                    MessageBox.Show("Please enter valid attendance status: Present, Absent, or Late", "Invalid Attendance Status",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+        }
+    } }
