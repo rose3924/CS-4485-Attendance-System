@@ -27,17 +27,19 @@ namespace AttendanceUtility
         private string db_user = "";
         string db_pwd = "";
 
-        // Ideally the password should be encrypted and the Database object will know how to decrypt.
+        // Giving constructor parameters needed to intiate databse connection
+        // Olivia Anderson
         public Database(string server, string name, string uname, string encrypted_pwd)
         {
             db_server = server;
             database_name = name;
             db_user = uname;
-            // TODO: The encryption and decryption needs to be added.
+
             db_pwd = encrypted_pwd;
         }
 
-        // get connect to sql server
+        // establish connection to Azure database
+        // Olivia Anderson
         protected SqlConnection GetAzureMySQLConnection()
         {
             var builder = new SqlConnectionStringBuilder
@@ -55,6 +57,8 @@ namespace AttendanceUtility
         // funtions that return info 
 
         // returns students as data table
+        // this was an usage example
+        // Olivia Anderson
         public DataTable GetStudents()
         {
             DataTable dataTable = new DataTable();
@@ -351,5 +355,86 @@ namespace AttendanceUtility
             }
 
         }
+
+        // Return any existing quizes for a given class
+        // Olivia Anderson
+        public DataTable GetCourseQuizzes(int courseId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+
+
+                    // Query for table, specific to the class table in the database
+                    string quizQuery = @"select id, title, password, validate_answers from quiz where class_id = @courseId ";
+                    using (SqlCommand command = new SqlCommand(quizQuery, connection))
+                    {
+                        command.Parameters.Add("@courseId", SqlDbType.Int).Value = courseId;
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dataTable;
+        }
+
+
+        /*
+         * Create a new Quiz entry given the provided information and return the id
+         *  for the newly created quiz
+         *  Olivia Anderson
+        */
+        public int CreateNewQuiz(string title, string passcode, bool validatequiz, int courseId)
+        {
+            int newQuizId = 0;
+
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    // Insert a new quiz record into the Azure database, then
+                    // select the last id added to the database.
+                    string quizInsert = @"INSERT INTO quiz (title, password, class_id, validate_answers) 
+                                 VALUES (@title, @passcode, @classId, @valanswers); 
+                                 SELECT LAST_INSERT_ID();";
+                    using (SqlCommand command = new SqlCommand(quizInsert, connection))
+                    {
+                        // Set parameter values
+                        command.Parameters.AddWithValue("@title", title);
+                        command.Parameters.AddWithValue("@passcode", passcode);
+                        command.Parameters.AddWithValue("@classId", courseId);
+                        command.Parameters.AddWithValue("@valanswers", validatequiz ? 1 : 0); // Converts bool to MySQL TINYINT
+
+                        object result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            newQuizId = Convert.ToInt32(result);
+                        }
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Error inserting quiz: " + e.Message);
+            }
+
+            return newQuizId;
+        }
+
+
     }
 }
