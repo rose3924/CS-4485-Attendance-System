@@ -387,6 +387,80 @@ namespace AttendanceUtility
             }
 
         }
+        public DataTable getStudentQuizzesForDay(DateTime day)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"
+                Select u.student_id, u.firstname, u.lastname, 
+                    CASE WHEN q.user_id IS NOT NULL THEN 'Present' ELSE 'Absent' END AS attendance
+                FROM users AS u
+                LEFT JOIN (
+                    SELECT DISTINCT user_id 
+                    FROM quiz_records 
+                    WHERE CAST(submitted AS DATE) = @SelectedDate
+                ) AS q 
+                   ON u.id =  q.user_id
+                WHERE u.user_role = 'STUDENT'
+                ORDER BY u.lastname, u.firstname;
+            ";
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.Add(new SqlParameter("@SelectedDate", SqlDbType.Date)).Value = day;
+
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+                        adapter.Fill(dataTable);
+
+
+                    }
+                }
+                return dataTable;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+
+            }
+            return dataTable;
+        }
+        public void changeAttendenceRecord(String student_id, DateTime day)
+        {
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    string query = @"
+                        INSERT INTO quiz_records (quiz_id, user_id, submitted, status)
+                            SELECT 1, u.id, @Date, 'excused' 
+                            FROM users u 
+                        WHERE u.student_id = @student_id
+                            AND NOT EXISTS (
+                                SELECT 1 FROM quiz_records q
+                                WHERE q.user_id = u.id AND CAST(q.submitted AS DATE) = @Date
+                            )";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@student_id", student_id);
+                        command.Parameters.AddWithValue("@Date", day);
+
+                        command.ExecuteNonQuery();
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+
+            }
+        }
 
         // Return any existing quizes for a given class
         // Olivia Anderson
