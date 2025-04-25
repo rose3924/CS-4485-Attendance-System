@@ -27,17 +27,19 @@ namespace AttendanceUtility
         private string db_user = "";
         string db_pwd = "";
 
-        // Ideally the password should be encrypted and the Database object will know how to decrypt.
+        // Giving constructor parameters needed to intiate databse connection
+        // Olivia Anderson
         public Database(string server, string name, string uname, string encrypted_pwd)
         {
             db_server = server;
             database_name = name;
             db_user = uname;
-            // TODO: The encryption and decryption needs to be added.
+
             db_pwd = encrypted_pwd;
         }
 
-        // get connect to sql server
+        // establish connection to Azure database
+        // Olivia Anderson
         protected SqlConnection GetAzureMySQLConnection()
         {
             var builder = new SqlConnectionStringBuilder
@@ -55,6 +57,8 @@ namespace AttendanceUtility
         // funtions that return info 
 
         // returns students as data table
+        // this was an usage example
+        // Olivia Anderson
         public DataTable GetStudents()
         {
             DataTable dataTable = new DataTable();
@@ -174,6 +178,38 @@ namespace AttendanceUtility
                         // Adds the input class id to the classId
                         command.Parameters.Add("@classId", SqlDbType.Int).Value = classId;
 
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dataTable;
+        }
+
+        /*
+         * Gathers the semesters
+         * Creates/Returns a data table with the semester description.
+         */
+        public DataTable GetSemesters()
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to get semesters 
+                    string semesterQuery = "SELECT description FROM semester";
+
+                    using (SqlCommand command = new SqlCommand(semesterQuery, connection))
+                    {
                         using (var dataAdapter = new SqlDataAdapter(command))
                         {
                             connection.Open();
@@ -351,86 +387,95 @@ namespace AttendanceUtility
             }
 
         }
-        public DataTable getStudentQuizzesForDay(DateTime day)
+
+        // Return any existing quizes for a given class
+        // Olivia Anderson
+        public DataTable GetCourseQuizzes(int courseId)
         {
             DataTable dataTable = new DataTable();
-            string query = @"
-                Select u.student_id, u.firstname, u.lastname, 
-                    CASE WHEN q.user_id IS NOT NULL THEN 'Present' ELSE 'Absent' END AS attendance
-                FROM users AS u
-                LEFT JOIN (
-                    SELECT DISTINCT user_id 
-                    FROM quiz_records 
-                    WHERE CAST(submitted AS DATE) = @SelectedDate
-                ) AS q 
-                   ON u.id =  q.user_id
-                WHERE u.user_role = 'STUDENT'
-                ORDER BY u.lastname, u.firstname;
-            ";
             try
             {
                 using (var connection = GetAzureMySQLConnection())
                 {
-                    connection.Open();
-                    using (SqlCommand command = new SqlCommand(query, connection))
+
+
+                    // Query for table, specific to the class table in the database
+                    string quizQuery = @"select id, title, password, validate_answers from quiz where class_id = @courseId ";
+                    using (SqlCommand command = new SqlCommand(quizQuery, connection))
                     {
-                        command.Parameters.Add(new SqlParameter("@SelectedDate", SqlDbType.Date)).Value = day;
+                        command.Parameters.Add("@courseId", SqlDbType.Int).Value = courseId;
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
 
-                        SqlDataAdapter adapter = new SqlDataAdapter(command);
-                        adapter.Fill(dataTable);
-
-                       
+                        }
                     }
-                }
-                return dataTable; 
 
+                    connection.Close();
+                }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-
             }
+
             return dataTable;
         }
-        public void changeAttendenceRecord(String student_id, DateTime day)
+
+
+        /*
+         * Create a new Quiz entry given the provided information and return the id
+         *  for the newly created quiz
+         *  Olivia Anderson
+        */
+        public int CreateNewQuiz(string title, string passcode, bool validatequiz, int courseId)
         {
+            int newQuizId = 0;
+
             try
             {
                 using (var connection = GetAzureMySQLConnection())
                 {
                     connection.Open();
-                    string query = @"
-                        INSERT INTO quiz_records (quiz_id, user_id, submitted, status)
-                            SELECT 1, u.id, @Date, 'excused' 
-                            FROM users u 
-                        WHERE u.student_id = @student_id
-                            AND NOT EXISTS (
-                                SELECT 1 FROM quiz_records q
-                                WHERE q.user_id = u.id AND CAST(q.submitted AS DATE) = @Date
-                            )";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    // Insert a new quiz record into the Azure database, then
+                    // select the last id added to the database.
+                    string quizInsert = @"INSERT INTO quiz (title, password, class_id, validate_answers) 
+                                 VALUES (@title, @passcode, @classId, @valanswers); 
+                                 SELECT LAST_INSERT_ID();";
+                    using (SqlCommand command = new SqlCommand(quizInsert, connection))
                     {
-                        command.Parameters.AddWithValue("@student_id", student_id);
-                        command.Parameters.AddWithValue("@Date", day);
+                        // Set parameter values
+                        command.Parameters.AddWithValue("@title", title);
+                        command.Parameters.AddWithValue("@passcode", passcode);
+                        command.Parameters.AddWithValue("@classId", courseId);
+                        command.Parameters.AddWithValue("@valanswers", validatequiz ? 1 : 0); // Converts bool to MySQL TINYINT
 
-                        command.ExecuteNonQuery();
-
+                        object result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            newQuizId = Convert.ToInt32(result);
+                        }
                     }
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                Console.WriteLine(e.ToString());
-
+                Console.WriteLine("Error inserting quiz: " + e.Message);
             }
+
+            return newQuizId;
         }
 
-        
-           
-
-
+        /*
+         * Empty method to insert a new class
+         */
+        public void InsertNewClass(string department, string number, string section, string profId, 
+                                    string startTime, string endTime, int semesterId, string name, string description)
+        {
 
         }
+
+
     }
-
+}
