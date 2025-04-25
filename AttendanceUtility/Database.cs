@@ -195,6 +195,38 @@ namespace AttendanceUtility
         }
 
         /*
+         * Gathers the semesters
+         * Creates/Returns a data table with the semester description.
+         */
+        public DataTable GetSemesters()
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to get semesters 
+                    string semesterQuery = "SELECT description FROM semester";
+
+                    using (SqlCommand command = new SqlCommand(semesterQuery, connection))
+                    {
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dataTable;
+        }
+
+        /*
          * Gathers the semesters the professor teaches given the professorId.
          * Creates/Returns a data table with the semester id and description.
          */
@@ -433,6 +465,15 @@ namespace AttendanceUtility
             }
 
             return newQuizId;
+        }
+
+        /*
+         * Empty method to insert a new class
+         */
+        public void InsertNewClass(string department, string number, string section, string profId, 
+                                    string startTime, string endTime, int semesterId, string name, string description)
+        {
+
         }
 
 

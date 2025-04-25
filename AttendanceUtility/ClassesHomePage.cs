@@ -132,7 +132,7 @@ namespace AttendanceUtility
         {
             // Button instance of pressed button
             Button pressedButton = sender as Button;
-            
+
             // When a button is pressed, gathers data of Button + Action
             if (pressedButton != null)
             {
@@ -190,6 +190,14 @@ namespace AttendanceUtility
             // Close the current form and show the login form
             this.Close();
             new LoginScreen(dbobject).Show();
+        }
+
+        /*
+         * Adds form to create a new class and add it to the database
+         */
+        private void AddClassButton_Click(object sender, EventArgs e)
+        {
+            new CreateClassForm(dbobject, profId).ShowDialog();
         }
     }
 }

@@ -36,6 +36,7 @@
             ClassesHomeLayoutPanel = new FlowLayoutPanel();
             NoCoursesMessageLabel = new Label();
             SemesterComboBox = new ComboBox();
+            AddClassButton = new Button();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             ClassesHomeLayoutPanel.SuspendLayout();
@@ -132,11 +133,22 @@
             SemesterComboBox.TabIndex = 0;
             SemesterComboBox.SelectedIndexChanged += SemesterComboBox_SelectedIndexChanged;
             // 
+            // AddClassButton
+            // 
+            AddClassButton.Location = new Point(439, 105);
+            AddClassButton.Name = "AddClassButton";
+            AddClassButton.Size = new Size(145, 33);
+            AddClassButton.TabIndex = 4;
+            AddClassButton.Text = "Add Course";
+            AddClassButton.UseVisualStyleBackColor = true;
+            AddClassButton.Click += AddClassButton_Click;
+            // 
             // ClassesHomePage
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(960, 600);
+            Controls.Add(AddClassButton);
             Controls.Add(ProfNameLabel);
             Controls.Add(SemesterComboBox);
             Controls.Add(ClassesHomeLayoutPanel);
@@ -163,5 +175,6 @@
         private ComboBox SemesterComboBox;
         private Label NoCoursesMessageLabel;
         private Label ProfNameLabel;
+        private Button AddClassButton;
     }
 }
