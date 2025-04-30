@@ -28,117 +28,88 @@
         /// </summary>
         private void InitializeComponent()
         {
-            maintabControl = new TabControl();
-            usertabpage = new TabPage();
-            userdatagridview = new DataGridView();
-            testconnectionbutton = new Button();
             WelcomeLabel = new Label();
-            SuggestionBox = new TextBox();
-            maintabControl.SuspendLayout();
-            usertabpage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)userdatagridview).BeginInit();
+            BannerPanel = new Panel();
+            LogoutLabel = new Label();
+            UTDLogoBox = new PictureBox();
+            BannerPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             SuspendLayout();
-            // 
-            // maintabControl
-            // 
-            maintabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            maintabControl.Controls.Add(usertabpage);
-            maintabControl.Location = new Point(4, 461);
-            maintabControl.Margin = new Padding(4);
-            maintabControl.Name = "maintabControl";
-            maintabControl.SelectedIndex = 0;
-            maintabControl.Size = new Size(533, 135);
-            maintabControl.TabIndex = 0;
-            // 
-            // usertabpage
-            // 
-            usertabpage.Controls.Add(userdatagridview);
-            usertabpage.Location = new Point(4, 34);
-            usertabpage.Margin = new Padding(4);
-            usertabpage.Name = "usertabpage";
-            usertabpage.Padding = new Padding(4);
-            usertabpage.Size = new Size(525, 97);
-            usertabpage.TabIndex = 0;
-            usertabpage.Text = "User";
-            usertabpage.UseVisualStyleBackColor = true;
-            // 
-            // userdatagridview
-            // 
-            userdatagridview.AllowUserToAddRows = false;
-            userdatagridview.AllowUserToDeleteRows = false;
-            userdatagridview.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            userdatagridview.Dock = DockStyle.Fill;
-            userdatagridview.EditMode = DataGridViewEditMode.EditProgrammatically;
-            userdatagridview.Location = new Point(4, 4);
-            userdatagridview.Margin = new Padding(4);
-            userdatagridview.MultiSelect = false;
-            userdatagridview.Name = "userdatagridview";
-            userdatagridview.ReadOnly = true;
-            userdatagridview.RowHeadersWidth = 51;
-            userdatagridview.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            userdatagridview.Size = new Size(517, 89);
-            userdatagridview.TabIndex = 0;
-            // 
-            // testconnectionbutton
-            // 
-            testconnectionbutton.Location = new Point(677, 523);
-            testconnectionbutton.Margin = new Padding(4);
-            testconnectionbutton.Name = "testconnectionbutton";
-            testconnectionbutton.Size = new Size(184, 34);
-            testconnectionbutton.TabIndex = 1;
-            testconnectionbutton.Text = "Test Connection";
-            testconnectionbutton.UseVisualStyleBackColor = true;
-            testconnectionbutton.Click += testconnectionbutton_Click;
             // 
             // WelcomeLabel
             // 
             WelcomeLabel.AutoSize = true;
             WelcomeLabel.Font = new Font("Segoe UI", 22F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            WelcomeLabel.Location = new Point(383, 242);
+            WelcomeLabel.Location = new Point(268, 145);
+            WelcomeLabel.Margin = new Padding(2, 0, 2, 0);
             WelcomeLabel.Name = "WelcomeLabel";
-            WelcomeLabel.Size = new Size(217, 60);
+            WelcomeLabel.Size = new Size(147, 41);
             WelcomeLabel.TabIndex = 3;
             WelcomeLabel.Text = "Welcome";
             // 
-            // SuggestionBox
+            // BannerPanel
             // 
-            SuggestionBox.BackColor = Color.WhiteSmoke;
-            SuggestionBox.Location = new Point(625, 485);
-            SuggestionBox.Name = "SuggestionBox";
-            SuggestionBox.Size = new Size(298, 31);
-            SuggestionBox.TabIndex = 4;
-            SuggestionBox.Text = "Add a progress bar??";
+            BannerPanel.BackColor = Color.FromArgb(29, 75, 54);
+            BannerPanel.Controls.Add(LogoutLabel);
+            BannerPanel.Controls.Add(UTDLogoBox);
+            BannerPanel.Dock = DockStyle.Top;
+            BannerPanel.Location = new Point(0, 0);
+            BannerPanel.Margin = new Padding(2);
+            BannerPanel.Name = "BannerPanel";
+            BannerPanel.Size = new Size(672, 62);
+            BannerPanel.TabIndex = 4;
+            // 
+            // LogoutLabel
+            // 
+            LogoutLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            LogoutLabel.AutoSize = true;
+            LogoutLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LogoutLabel.ForeColor = Color.FromArgb(192, 92, 31);
+            LogoutLabel.ImageAlign = ContentAlignment.BottomRight;
+            LogoutLabel.Location = new Point(1092, -30);
+            LogoutLabel.Margin = new Padding(2, 0, 2, 0);
+            LogoutLabel.Name = "LogoutLabel";
+            LogoutLabel.Size = new Size(45, 15);
+            LogoutLabel.TabIndex = 5;
+            LogoutLabel.Text = "Logout";
+            LogoutLabel.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // UTDLogoBox
+            // 
+            UTDLogoBox.Image = Properties.Resources.utdlogo;
+            UTDLogoBox.Location = new Point(0, 0);
+            UTDLogoBox.Margin = new Padding(2);
+            UTDLogoBox.Name = "UTDLogoBox";
+            UTDLogoBox.Size = new Size(107, 61);
+            UTDLogoBox.SizeMode = PictureBoxSizeMode.Zoom;
+            UTDLogoBox.TabIndex = 0;
+            UTDLogoBox.TabStop = false;
             // 
             // WelcomeScreen
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.WhiteSmoke;
-            ClientSize = new Size(960, 600);
-            Controls.Add(SuggestionBox);
+            ClientSize = new Size(672, 360);
+            Controls.Add(BannerPanel);
             Controls.Add(WelcomeLabel);
-            Controls.Add(testconnectionbutton);
-            Controls.Add(maintabControl);
             FormBorderStyle = FormBorderStyle.None;
-            Margin = new Padding(4);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "WelcomeScreen";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "WelcomeScreen";
             Load += WelcomeScreen_Load;
-            maintabControl.ResumeLayout(false);
-            usertabpage.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)userdatagridview).EndInit();
+            BannerPanel.ResumeLayout(false);
+            BannerPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private TabControl maintabControl;
-        private TabPage usertabpage;
-        private Button testconnectionbutton;
-        private DataGridView userdatagridview;
         private Label WelcomeLabel;
-        private TextBox SuggestionBox;
+        private Panel BannerPanel;
+        private Label LogoutLabel;
+        private PictureBox UTDLogoBox;
     }
 }

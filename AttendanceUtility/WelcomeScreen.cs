@@ -2,10 +2,10 @@
  * Welcome Screen for the Professor Desktop app. Also functions as the starter form.
  * Welcomes the user and after three seconds moves to the login screen.
  * 
- * For connection testing, the 'testconnectionbutton' remains.
+ * 
  * 
  * Written by Olivia Anderson (ova210001) and Cristina Adame (caa220007)
- * starting March XX, 2025???
+ * 
  */
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -38,7 +38,7 @@ namespace AttendanceUtility
          * Creates instance of database if it does not exits, connects to database and loads students.
          * Likely to be deleted toward end of project
          */
-        private void testconnectionbutton_Click(object sender, EventArgs e)
+        private void wakeupDatabase()
         {
             if (dbobject == null)
             {
@@ -46,8 +46,14 @@ namespace AttendanceUtility
             }
             try
             {
+                // Initiate a query to wake up the database.
+                // The Azure cloub database is configure to go to sleep
+                // when no one is using it. For this project, we are using
+                // the free version of this from Microsoft. However,
+                // it is only free for a limit amount of time each month.
+                // Once the limit is reached it begins to accrue charges.
+                // It's better to let it sleep as much as possible.
                 DataTable usertable = dbobject.GetStudents();
-                userdatagridview.DataSource = usertable;
             }
             catch (Exception ex)
             {
@@ -60,7 +66,10 @@ namespace AttendanceUtility
          */
         private async void MoveToLoginScreen()
         {
-            dbobject = InitDbObject();
+            if (dbobject == null)
+            {
+                dbobject = InitDbObject();
+            }
             await Task.Delay(5000);
             this.Hide();
             new LoginScreen(dbobject).Show();
@@ -71,6 +80,7 @@ namespace AttendanceUtility
          */
         private void WelcomeScreen_Load(object sender, EventArgs e)
         {
+            wakeupDatabase();
             MoveToLoginScreen();
         }
     }

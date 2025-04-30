@@ -516,14 +516,17 @@ namespace AttendanceUtility
                     // select the last id added to the database.
                     string quizInsert = @"INSERT INTO quiz (title, password, class_id, validate_answers) 
                                  VALUES (@title, @passcode, @classId, @valanswers); 
-                                 SELECT LAST_INSERT_ID();";
+                                 SELECT SCOPE_IDENTITY();";
+                    // Azure SQL needs to useL:   SELECT SCOPE_IDENTITY();
+                    // instead of LAST_INSERT_ID() which is for MySQL
+
                     using (SqlCommand command = new SqlCommand(quizInsert, connection))
                     {
                         // Set parameter values
                         command.Parameters.AddWithValue("@title", title);
                         command.Parameters.AddWithValue("@passcode", passcode);
                         command.Parameters.AddWithValue("@classId", courseId);
-                        command.Parameters.AddWithValue("@valanswers", validatequiz ? 1 : 0); // Converts bool to MySQL TINYINT
+                        command.Parameters.AddWithValue("@valanswers", validatequiz ? 'T' : 'F'); 
 
                         object result = command.ExecuteScalar();
                         if (result != null)
@@ -550,6 +553,58 @@ namespace AttendanceUtility
 
         }
 
+        /*
+         * Collects infomation about the quiz questions and answers
+         * Olivia Anderson
+        */
+        public DataSet GetQuizData(int quizId)
+        {
+            DataSet quizDataSet = new DataSet();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    // select statments to get info about the quiz questions and answers
+                    string sqlQuery = @"
+                    -- Get quiz details
+                    SELECT id, title, password, validate_answers 
+                    FROM quiz 
+                    WHERE id = @quizId;
 
+                    -- Get related quiz questions
+                    SELECT quiz_id, question_id 
+                    FROM quiz_question;
+
+                    -- Get question details
+                    SELECT id AS question_id, question_text 
+                    FROM question;
+
+                    -- Get answers
+                    -- SELECT id as answer_id, question_id, answer_text, correct_value FROM answer;
+                    SELECT 
+                        id AS answer_id, 
+                        question_id, 
+                        answer_text, 
+                        COALESCE(correct_value, 'default_value') AS correct_value
+                    FROM answer;
+                ";
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(sqlQuery, connection))
+                    {
+                        adapter.SelectCommand.Parameters.AddWithValue("@quizId", quizId);
+
+                        // Fill DataSet with multiple tables
+                        adapter.Fill(quizDataSet);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting quiz: " + e.Message);
+            }
+
+            return quizDataSet;
+        }
     }
 }

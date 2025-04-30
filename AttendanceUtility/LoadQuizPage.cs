@@ -142,7 +142,7 @@ namespace AttendanceUtility
                 // select first item in list by default
                 if (quizComboBox.Items.Count > 0)
                 {
-                    quizComboBox.SelectedItem = 0;
+                    quizComboBox.SelectedIndex = 0;
                 }
             }
         }

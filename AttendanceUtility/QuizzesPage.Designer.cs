@@ -34,12 +34,18 @@
             CourseLabel = new Label();
             UTDLogoBox = new PictureBox();
             BackButtonBox = new PictureBox();
-            PasswordDataGrid = new DataGridView();
+            questionDataGridView = new DataGridView();
             NewQuizButton = new Button();
+            saveButton = new Button();
+            quiztitleTextBox = new TextBox();
+            passcodeTextBox = new TextBox();
+            validateLabel = new Label();
+            answersDataGridView = new DataGridView();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)BackButtonBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)PasswordDataGrid).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)questionDataGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)answersDataGridView).BeginInit();
             SuspendLayout();
             // 
             // BannerPanel
@@ -50,7 +56,7 @@
             BannerPanel.Controls.Add(UTDLogoBox);
             BannerPanel.Dock = DockStyle.Top;
             BannerPanel.Location = new Point(0, 0);
-            BannerPanel.Margin = new Padding(2, 2, 2, 2);
+            BannerPanel.Margin = new Padding(2);
             BannerPanel.Name = "BannerPanel";
             BannerPanel.Size = new Size(768, 82);
             BannerPanel.TabIndex = 1;
@@ -88,7 +94,7 @@
             // 
             UTDLogoBox.Image = Properties.Resources.utdlogo;
             UTDLogoBox.Location = new Point(0, 0);
-            UTDLogoBox.Margin = new Padding(2, 2, 2, 2);
+            UTDLogoBox.Margin = new Padding(2);
             UTDLogoBox.Name = "UTDLogoBox";
             UTDLogoBox.Size = new Size(122, 81);
             UTDLogoBox.SizeMode = PictureBoxSizeMode.Zoom;
@@ -99,7 +105,7 @@
             // 
             BackButtonBox.Image = Properties.Resources.backButton;
             BackButtonBox.Location = new Point(5, 93);
-            BackButtonBox.Margin = new Padding(2, 2, 2, 2);
+            BackButtonBox.Margin = new Padding(2);
             BackButtonBox.Name = "BackButtonBox";
             BackButtonBox.Size = new Size(45, 30);
             BackButtonBox.SizeMode = PictureBoxSizeMode.Zoom;
@@ -107,13 +113,14 @@
             BackButtonBox.TabStop = false;
             BackButtonBox.Click += BackButtonBox_Click;
             // 
-            // PasswordDataGrid
+            // questionDataGridView
             // 
-            PasswordDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            PasswordDataGrid.Location = new Point(36, 141);
-            PasswordDataGrid.Margin = new Padding(2, 2, 2, 2);
-            PasswordDataGrid.Name = "PasswordDataGrid";
-            PasswordDataGrid.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+            questionDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            questionDataGridView.Location = new Point(11, 141);
+            questionDataGridView.Margin = new Padding(2);
+            questionDataGridView.MultiSelect = false;
+            questionDataGridView.Name = "questionDataGridView";
+            questionDataGridView.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = SystemColors.ButtonFace;
             dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
@@ -121,14 +128,17 @@
             dataGridViewCellStyle1.SelectionBackColor = SystemColors.GradientActiveCaption;
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.MenuHighlight;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            PasswordDataGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            PasswordDataGrid.RowHeadersWidth = 62;
-            PasswordDataGrid.Size = new Size(696, 320);
-            PasswordDataGrid.TabIndex = 9;
+            questionDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            questionDataGridView.RowHeadersWidth = 62;
+            questionDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            questionDataGridView.Size = new Size(746, 150);
+            questionDataGridView.TabIndex = 9;
+            questionDataGridView.CellValueChanged += questionDataGridView_CellValueChanged;
+            questionDataGridView.SelectionChanged += questionDataGridView_SelectionChanged;
             // 
             // NewQuizButton
             // 
-            NewQuizButton.Location = new Point(76, 94);
+            NewQuizButton.Location = new Point(55, 93);
             NewQuizButton.Name = "NewQuizButton";
             NewQuizButton.Size = new Size(94, 29);
             NewQuizButton.TabIndex = 10;
@@ -136,18 +146,66 @@
             NewQuizButton.UseVisualStyleBackColor = true;
             NewQuizButton.Click += NewQuizButton_Click;
             // 
+            // saveButton
+            // 
+            saveButton.Location = new Point(155, 93);
+            saveButton.Name = "saveButton";
+            saveButton.Size = new Size(94, 29);
+            saveButton.TabIndex = 11;
+            saveButton.Text = "Save";
+            saveButton.UseVisualStyleBackColor = true;
+            // 
+            // quiztitleTextBox
+            // 
+            quiztitleTextBox.Location = new Point(255, 94);
+            quiztitleTextBox.Name = "quiztitleTextBox";
+            quiztitleTextBox.Size = new Size(220, 27);
+            quiztitleTextBox.TabIndex = 12;
+            // 
+            // passcodeTextBox
+            // 
+            passcodeTextBox.Location = new Point(481, 93);
+            passcodeTextBox.Name = "passcodeTextBox";
+            passcodeTextBox.Size = new Size(152, 27);
+            passcodeTextBox.TabIndex = 13;
+            // 
+            // validateLabel
+            // 
+            validateLabel.AutoSize = true;
+            validateLabel.Location = new Point(639, 96);
+            validateLabel.Name = "validateLabel";
+            validateLabel.Size = new Size(63, 20);
+            validateLabel.TabIndex = 14;
+            validateLabel.Text = "Validate";
+            // 
+            // answersDataGridView
+            // 
+            answersDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            answersDataGridView.Location = new Point(11, 305);
+            answersDataGridView.MultiSelect = false;
+            answersDataGridView.Name = "answersDataGridView";
+            answersDataGridView.RowHeadersWidth = 51;
+            answersDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            answersDataGridView.Size = new Size(745, 163);
+            answersDataGridView.TabIndex = 15;
+            // 
             // QuizzesPage
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.WhiteSmoke;
             ClientSize = new Size(768, 480);
+            Controls.Add(answersDataGridView);
+            Controls.Add(validateLabel);
+            Controls.Add(passcodeTextBox);
+            Controls.Add(quiztitleTextBox);
+            Controls.Add(saveButton);
             Controls.Add(NewQuizButton);
-            Controls.Add(PasswordDataGrid);
+            Controls.Add(questionDataGridView);
             Controls.Add(BackButtonBox);
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
-            Margin = new Padding(2, 2, 2, 2);
+            Margin = new Padding(2);
             Name = "QuizzesPage";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "QuizzesPage";
@@ -155,8 +213,10 @@
             BannerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)BackButtonBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)PasswordDataGrid).EndInit();
+            ((System.ComponentModel.ISupportInitialize)questionDataGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)answersDataGridView).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -166,7 +226,12 @@
         private Label CourseLabel;
         private Label LogoutLabel;
         private PictureBox BackButtonBox;
-        private DataGridView PasswordDataGrid;
+        private DataGridView questionDataGridView;
         private Button NewQuizButton;
+        private Button saveButton;
+        private TextBox quiztitleTextBox;
+        private TextBox passcodeTextBox;
+        private Label validateLabel;
+        private DataGridView answersDataGridView;
     }
 }
