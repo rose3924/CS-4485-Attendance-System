@@ -606,5 +606,344 @@ namespace AttendanceUtility
 
             return quizDataSet;
         }
+
+        // Collects only the question for a quiz
+        // Olivia Anderson
+        public DataTable GetQuestions(int courseId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    // Query for table, specific to the class table in the database
+                    string quizQuery = @"SELECT id AS question_id, question_text FROM question 
+                                            where class_id = @courseId ";
+                    using (SqlCommand command = new SqlCommand(quizQuery, connection))
+                    {
+                        command.Parameters.Add("@courseId", SqlDbType.Int).Value = courseId;
+                        using (var dataAdapter = new SqlDataAdapter(command))
+                        {
+                            connection.Open();
+                            dataAdapter.Fill(dataTable);
+                        }
+                    }
+                    connection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            return dataTable;
+        }
+
+        // Links a set of questions to a quiz
+        // Olivia Anderson
+        public bool AssociateQuestion(int quizId, int questionId)
+        {
+            bool assocResult = false;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    // Insert a new quiz association record into the Azure database.
+                    string associateQuizInsert = @"INSERT into quiz_question (quiz_id, question_id) VALUES (@quizId, @questionId) ";
+                    using (SqlCommand command = new SqlCommand(associateQuizInsert, connection))
+                    {
+                        // Set parameter values
+                        command.Parameters.AddWithValue("@quizId", quizId);
+                        command.Parameters.AddWithValue("@questionId", questionId);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error adding the association between a quiz and question: " + e.Message);
+            }
+            return assocResult;
+        }
+
+       
+        /*
+         * Insert the new question into the question TABLE and associate the 
+         * question with the quiz by inserting a new entry into the 
+         * quiz_question TABLE.
+         * Olivia Anderson
+         */
+        public int InsertQuestion(int classId, int quizId, int questionId, string value, ref Dictionary<int, int> newQuestionMapping)
+        {
+            int newQuestionId = 0;
+            int tempQuestionId = questionId;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    // Insert a new quiz record into the Azure database, then
+                    // select the last id added to the database.
+                    string questionInsert = @"INSERT into question (question_text, class_id) VALUES (@questionText, @classId);
+                                         SELECT SCOPE_IDENTITY();  ";
+                    // Azure SQL needs to useL:   SELECT SCOPE_IDENTITY();
+                    //     instead of LAST_INSERT_ID()
+                    using (SqlCommand command = new SqlCommand(questionInsert, connection))
+                    {
+                        // Set parameter values
+                        command.Parameters.AddWithValue("@questionText", value);
+                        command.Parameters.AddWithValue("@classId", classId);
+
+                        object result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            newQuestionId = Convert.ToInt32(result);
+                        }
+                    }
+                    newQuestionMapping.Add(tempQuestionId, newQuestionId);
+                    if (newQuestionId > 0)
+                    {
+                        // This is a new question that needs to be associated with
+                        // the quiz the user is editing.
+                        string associateQuizInsert = @"INSERT into quiz_question (quiz_id, question_id) VALUES (@quizId, @questionId) ";
+                        using (SqlCommand command = new SqlCommand(associateQuizInsert, connection))
+                        {
+                            // Set parameter values
+                            command.Parameters.AddWithValue("@quizId", quizId);
+                            command.Parameters.AddWithValue("@questionId", newQuestionId);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting question: " + e.Message);
+            }
+            return newQuestionId;
+        }
+
+        // Allows the user to modify a question
+        // Olivia Anderson
+        public bool UpdateQuestion(int questionId, string newValue)
+        {
+            // IF the questionId is less then 1 an error must have occured.
+            if (questionId < 1)
+            {
+                return false;
+            }
+            bool updateResult = false;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    // Update an existing question in the Azure database.
+                    string questionUpdate = @"UPDATE question
+                                           SET question_text = @questionText
+                                        WHERE id = @questionId ";
+                    // TODO: Azure SQL needs to useL:   SELECT SCOPE_IDENTITY();
+                    //     instead of LAST_INSERT_ID()
+                    using (SqlCommand command = new SqlCommand(questionUpdate, connection))
+                    {
+                        // Set parameter values
+                        command.Parameters.AddWithValue("@questionText", newValue);
+                        command.Parameters.AddWithValue("@questionId", questionId);
+
+                        command.ExecuteScalar();
+                        updateResult = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting quiz: " + e.Message);
+            }
+            return updateResult;
+        }
+
+        // Deletes a question
+        // It checks to see if there is more than one quiz associated with the question
+        // If there another quiz it just removes the reference
+        // If there is no other quiz it deletes the question
+        // Olivia Anderson
+        public int DeleteQuestion(int questionId, int quizId)
+        {
+            int alteredrows = 0;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    int associationCount = 0;
+                    // Query to check if there are any other quiz associates of the question 
+                    // before completely deleting the    question. If there are multiple quiz associations,
+                    // remove the association for this quiz but do NOT delete the question.
+                    // When there is only 1 association then delete both the association and
+                    // the question.
+                    //
+                    string quizQuery = @"select count(*) from quiz_question where question_id = @questionId ";
+                    using (SqlCommand command = new SqlCommand(quizQuery, connection))
+                    {
+                        command.Parameters.Add("@questionId", SqlDbType.Int).Value = questionId;
+
+                        // Need to execute the query and collect the value from the count(*)
+                        // ExecuteScalar() returns the single value from COUNT(*)
+                        object result = command.ExecuteScalar();
+                        associationCount = result != null ? Convert.ToInt32(result) : 0;
+                    }
+
+                    // Insert a new quiz record into the Azure database, then
+                    // select the last id added to the database.
+                    string quizQuestionDelete = @"DELETE FROM quiz_question WHERE quiz_id = @quizId and question_id = @questionId ";
+                    using (SqlCommand command = new SqlCommand(quizQuestionDelete, connection))
+                    {
+                        // Set parameter values
+                        command.Parameters.AddWithValue("@quizId", quizId);
+                        command.Parameters.AddWithValue("@questionId", questionId);
+                        command.ExecuteNonQuery();
+                    }
+
+                    if (associationCount <= 1)
+                    {
+                        // Delete the question record from database, if
+                        // it was associated with only 1 quiz.
+                        string questionDelete = @"DELETE FROM question WHERE id = @questionId ";
+                        using (SqlCommand command = new SqlCommand(questionDelete, connection))
+                        {
+                            // Set parameter values
+                            command.Parameters.AddWithValue("@questionId", questionId);
+                            alteredrows = command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error deleting quiz: " + e.Message);
+            }
+            return alteredrows;
+        }
+
+        
+        /*
+         * Insert the new answer into the answer TABLE. Set the correct_value
+         * column to either 'F' or 'T'. 
+         * Olivia Anderson
+         */
+        public int InsertAnswer(int questionId, string value, string isCorrectAnswer)
+        {
+            int newAnswerId = 0;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    // Answer table columns: id, question_id, answer_text, correct_value
+                    // Insert a new answer record into the Azure database, then
+                    // select the last id added to the database.
+                    string questionInsert = @"INSERT into answer (question_id, answer_text, correct_value) VALUES 
+                                               (@questionId, @answerText, @correctValue); 
+                                            SELECT SCOPE_IDENTITY(); ";
+                    // Azure SQL needs to use:   SELECT SCOPE_IDENTITY();
+                    //     instead of LAST_INSERT_ID() like MySQL.
+                    using (SqlCommand command = new SqlCommand(questionInsert, connection))
+                    {
+                        // Set parameter values
+                        command.Parameters.AddWithValue("@questionId", questionId);
+                        command.Parameters.AddWithValue("@answerText", value);
+                        command.Parameters.AddWithValue("@correctValue", isCorrectAnswer);
+
+                        object result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            newAnswerId = Convert.ToInt32(result);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting an answer: " + e.Message);
+            }
+            return newAnswerId;
+        }
+
+        /*
+         * If this is an update, the answer id cannot be less than 1. When adding
+         * a new answer, the answer id is a negative number as a placeholder.
+         */
+        public bool UpdateAnswer(int answerId, string value, string isCorrectAnswer)
+        {
+            // IF the questionId is less then 1 an error must have occured.
+            if (answerId < 1)
+            {
+                return false;
+            }
+            bool updateResult = false;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    // Answer table columns: id, question_id, answer_text, correct_value
+                    // Update an existing answer in the Azure database.
+                    string answerUpdate = @"UPDATE answer
+                                           SET answer_text = @answerText,
+                                               correct_value = @isCorrectAnswer
+                                        WHERE id = @answerId ";
+                    using (SqlCommand command = new SqlCommand(answerUpdate, connection))
+                    {
+                        // Set parameter values
+                        command.Parameters.AddWithValue("@answerText", value);
+                        command.Parameters.AddWithValue("@isCorrectAnswer", isCorrectAnswer);
+                        command.Parameters.AddWithValue("@answerId", answerId);
+
+                        command.ExecuteScalar();
+                        updateResult = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting an answer: " + e.Message);
+            }
+            return updateResult;
+        }
+        /*
+         * The answer can be delete just by matching the question_id and answer id
+         * Olivia Anderson
+         */
+        public int DeleteAnswer(int answerId, int questionId)
+        {
+            int alteredrows = 0;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    int associationCount = 0;
+                    if (associationCount <= 1)
+                    {
+                        // An answer can only be associated with a single question.
+                        string questionDelete = @"DELETE FROM answer WHERE id = @answerId and question_id = @questionId  ";
+                        using (SqlCommand command = new SqlCommand(questionDelete, connection))
+                        {
+                            // Set parameter values
+                            command.Parameters.AddWithValue("@answerId", answerId);
+                            command.Parameters.AddWithValue("@questionId", questionId);
+                            alteredrows = command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error deleting answer: " + e.Message);
+            }
+            return alteredrows;
+        }
     }
 }

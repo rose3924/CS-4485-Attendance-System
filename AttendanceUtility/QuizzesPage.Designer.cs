@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             BannerPanel = new Panel();
             LogoutLabel = new Label();
@@ -41,11 +42,15 @@
             passcodeTextBox = new TextBox();
             validateLabel = new Label();
             answersDataGridView = new DataGridView();
+            questionContextMenuStrip = new ContextMenuStrip(components);
+            deleteToolStripMenuItem = new ToolStripMenuItem();
+            addExistingQuestionToolStripMenuItem = new ToolStripMenuItem();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)BackButtonBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)questionDataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)answersDataGridView).BeginInit();
+            questionContextMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
             // BannerPanel
@@ -135,6 +140,8 @@
             questionDataGridView.TabIndex = 9;
             questionDataGridView.CellValueChanged += questionDataGridView_CellValueChanged;
             questionDataGridView.SelectionChanged += questionDataGridView_SelectionChanged;
+            questionDataGridView.UserDeletingRow += questionDataGridView_UserDeletingRow;
+            questionDataGridView.MouseDown += questionDataGridView_MouseDown;
             // 
             // NewQuizButton
             // 
@@ -154,6 +161,7 @@
             saveButton.TabIndex = 11;
             saveButton.Text = "Save";
             saveButton.UseVisualStyleBackColor = true;
+            saveButton.Click += saveButton_Click;
             // 
             // quiztitleTextBox
             // 
@@ -188,6 +196,28 @@
             answersDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             answersDataGridView.Size = new Size(745, 163);
             answersDataGridView.TabIndex = 15;
+            answersDataGridView.CellValueChanged += answersDataGridView_CellValueChanged;
+            // 
+            // questionContextMenuStrip
+            // 
+            questionContextMenuStrip.ImageScalingSize = new Size(20, 20);
+            questionContextMenuStrip.Items.AddRange(new ToolStripItem[] { deleteToolStripMenuItem, addExistingQuestionToolStripMenuItem });
+            questionContextMenuStrip.Name = "contextMenuStrip1";
+            questionContextMenuStrip.Size = new Size(225, 52);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            deleteToolStripMenuItem.Size = new Size(224, 24);
+            deleteToolStripMenuItem.Text = "Delete Question";
+            deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
+            // 
+            // addExistingQuestionToolStripMenuItem
+            // 
+            addExistingQuestionToolStripMenuItem.Name = "addExistingQuestionToolStripMenuItem";
+            addExistingQuestionToolStripMenuItem.Size = new Size(224, 24);
+            addExistingQuestionToolStripMenuItem.Text = "Add Existing Question";
+            addExistingQuestionToolStripMenuItem.Click += addExistingQuestionToolStripMenuItem_Click;
             // 
             // QuizzesPage
             // 
@@ -215,6 +245,7 @@
             ((System.ComponentModel.ISupportInitialize)BackButtonBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)questionDataGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)answersDataGridView).EndInit();
+            questionContextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -233,5 +264,8 @@
         private TextBox passcodeTextBox;
         private Label validateLabel;
         private DataGridView answersDataGridView;
+        private ContextMenuStrip questionContextMenuStrip;
+        private ToolStripMenuItem deleteToolStripMenuItem;
+        private ToolStripMenuItem addExistingQuestionToolStripMenuItem;
     }
 }

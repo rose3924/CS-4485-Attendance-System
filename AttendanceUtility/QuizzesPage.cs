@@ -187,6 +187,14 @@ namespace AttendanceUtility
             questionDataGridView.Columns["question_text"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             questionDataGridView.Columns["question_text"].HeaderText = "Question";
 
+
+            // Need to ensure dictotionary that track modified data are initlized 
+            // If the question table is redrawn, reset the  modifiedQuestions dictionary.
+            modifiedQuestions = new Dictionary<int, Question>();
+            // Key = temporary question id, Value = new question id
+            newQuestionMapping = new Dictionary<int, int>();
+            modifiedAnswers = new Dictionary<int, Answer>();
+
             answersDataGridView.Columns.Clear();
 
             // If there are no questions related to the quiz
@@ -256,11 +264,7 @@ namespace AttendanceUtility
                 (quizAnswerBindingSource.DataSource as DataView).RowFilter = $"question_id = {selectedQuestionId} ";
             }
 
-            // If the question table is redrawn, reset the  modifiedQuestions dictionary.
-            modifiedQuestions = new Dictionary<int, Question>();
-            // Key = temporary question id, Value = new question id
-            newQuestionMapping = new Dictionary<int, int>();
-            modifiedAnswers = new Dictionary<int, Answer>();
+
             saveButton.Enabled = false;
         }
 
@@ -326,9 +330,12 @@ namespace AttendanceUtility
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                string columnName = questionDataGridView.Columns[e.ColumnIndex].Name;
+                //string columnName = questionDataGridView.Columns[e.ColumnIndex].Name;
+                // The "question_text" is the ONLY column the user can edit
+                // in the question DataGridView.
+                string columnName = "question_text";
 
-                string newValue = questionDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString() ?? string.Empty;
+                string newValue = questionDataGridView.Rows[e.RowIndex].Cells[columnName].Value?.ToString() ?? string.Empty;
 
                 int question_id = GetQuestionId(e.RowIndex);
                 if (question_id < 0)
@@ -352,6 +359,271 @@ namespace AttendanceUtility
                 saveButton.Enabled = true;
             }
         }
-        
+
+        // lets you delete a question is the quiz
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Ensure there are rows in the datagrid a row cannot be deleted.
+            if (questionDataGridView.Rows.Count == 0)
+            {
+                return;
+            }
+            if (questionDataGridView.SelectedRows.Count > 0)
+            {
+                int selectedQuestionId = Convert.ToInt32(questionDataGridView.SelectedRows[0].Cells["question_id"].Value);
+                Console.WriteLine($"Deleting Question ID: {selectedQuestionId}");
+
+                if (!modifiedQuestions.ContainsKey(selectedQuestionId))
+                {
+                    modifiedQuestions[selectedQuestionId] = new Question
+                    {
+                        QuestionText = "",
+                        ClassId = courseId,
+                        QuestionId = selectedQuestionId, // Ensure QuizId exists in your class
+                        ActionType = DatabaseAction.Delete
+                    };
+                    saveButton.Enabled = true;
+                    Console.WriteLine($"Row with question_id {selectedQuestionId} is being deleted.");
+                }
+                // Remove it from the DataGridView by calling RemoveAt(index)
+                // which will registed the deleted row with modifiedQuestions
+                // Dictionary.
+                questionDataGridView.Rows.RemoveAt(questionDataGridView.SelectedRows[0].Index);
+            }
+        }
+
+        // helps users delete unwanted question when hitting delete key on keyboard
+        private void questionDataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            // Ensure 'question_id' column exists and has a valid value
+            object questionIdValue = e.Row.Cells["question_id"]?.Value;
+
+            if (questionIdValue != null && questionIdValue != DBNull.Value)
+            {
+                int question_id = Convert.ToInt32(questionIdValue);
+
+                if (!modifiedQuestions.ContainsKey(question_id))
+                {
+                    modifiedQuestions[question_id] = new Question
+                    {
+                        QuestionText = "",
+                        ClassId = courseId,
+                        QuestionId = question_id, // Ensure QuizId exists in your class
+                        ActionType = DatabaseAction.Delete
+                    };
+                    saveButton.Enabled = true;
+                    Console.WriteLine($"Row with question_id {question_id} is being deleted.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Warning: question_id is missing or null.");
+            }
+        }
+
+        // Lets user select from quiestions that already exists
+        private void addExistingQuestionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            QuestionsPage qpage = new QuestionsPage(dbobject, profId, courseId);
+            qpage.ShowDialog();
+            List<int> selectedquestions = qpage.SelectedQuestionIds;
+            foreach (int qid in selectedquestions)
+            {
+                dbobject.AssociateQuestion(quizId, qid);
+            }
+            DialogResult warningResult = DialogResult.Yes;
+            if (modifiedQuestions != null && modifiedQuestions.Count > 0)
+            {
+                warningResult = MessageBox.Show("There are unsaved changes. Do you want to Save the changes before leave the page?", "Save Changes?", MessageBoxButtons.YesNo);
+                if (warningResult == DialogResult.Yes)
+                {
+                    saveButton_Click(this, new EventArgs());
+                }
+            }
+            // if there were previous 
+            LoadDataGridContent();
+        }
+
+        // A button that lets the user save changes that they have made
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            if (modifiedQuestions != null && modifiedQuestions.Count > 0)
+            {
+                foreach (KeyValuePair<int, Question> question in modifiedQuestions)
+                {
+                    int qIndex = question.Key;
+                    switch (question.Value.ActionType)
+                    {
+                        case DatabaseAction.Add:
+                            // If the index is less than zero, it's a new question and it needs to be added.
+                            dbobject.InsertQuestion(courseId, quizId, question.Value.QuestionId, question.Value.QuestionText, ref newQuestionMapping);
+                            break;
+
+                        case DatabaseAction.Update:
+                            // This is an update for an existing question.
+                            dbobject.UpdateQuestion(qIndex, question.Value.QuestionText);
+                            break;
+
+                        case DatabaseAction.Delete:
+                            dbobject.DeleteQuestion(qIndex, quizId);
+                            break;
+
+                        default:
+                            Console.WriteLine("Unknown action type.");
+                            break;
+                    }
+                }
+            }
+
+            if (modifiedAnswers != null && modifiedAnswers.Count > 0)
+            {
+                foreach (KeyValuePair<int, Answer> ans in modifiedAnswers)
+                {
+                    int qIndex = ans.Key;
+                    int realQuestionId = ans.Value.QuestionId;
+                    if (ans.Value.QuestionId < 0 && newQuestionMapping.ContainsKey(ans.Value.QuestionId))
+                    {
+                        realQuestionId = newQuestionMapping[ans.Value.QuestionId];
+                    }
+                    switch (ans.Value.ActionType)
+                    {
+                        case DatabaseAction.Add:
+                            // If the index is less than zero, it's a new question and it needs to be added.
+                            dbobject.InsertAnswer(realQuestionId, ans.Value.AnswerText, ans.Value.CorrectValue);
+                            break;
+
+                        case DatabaseAction.Update:
+                            // This is an update for an existing question.
+                            dbobject.UpdateAnswer(ans.Value.AnswerId, ans.Value.AnswerText, ans.Value.CorrectValue);
+                            break;
+
+                        case DatabaseAction.Delete:
+                            dbobject.DeleteAnswer(ans.Value.AnswerId, realQuestionId);
+                            break;
+
+                        default:
+                            Console.WriteLine("Unknown action type.");
+                            break;
+                    }
+                }
+            }
+            if (modifiedQuestions != null)
+            {
+                modifiedQuestions.Clear();
+                newQuestionMapping.Clear();
+            }
+            if (modifiedAnswers != null)
+            {
+                modifiedAnswers.Clear();
+            }
+            saveButton.Enabled = false;
+            LoadDataGridContent();
+        }
+
+        // Records when a question gets added
+        private void answersDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                // This assumes the DataGridViewCellEventArgs event is referencing
+                // the correct column that was edited.
+                // It is trying to get the Name so that it can check it the edited
+                // column is one of two possible columns the user can edit:
+                //    "answer_text"  or  "correct_value".
+                // This DataGridView.Columns[e.ColumnIndex].Name  finds the correct 
+                // column dispite the having the DisplayIndex property set.
+                string columnName = answersDataGridView.Columns[e.ColumnIndex].Name;
+
+                // However using this call:
+                //    dataGridViewAnswers.Rows[e.RowIndex].Cells[e.ColumnIndex].Value
+                // does NOT access the correct column because of the DisplayIndex.
+                // Because the above call to get the column name works, the column name
+                // can be used and it does collect the value from the correct column.
+                object valObj = answersDataGridView.Rows[e.RowIndex].Cells[columnName].Value;
+
+                string newValue = valObj?.ToString() ?? string.Empty;
+                // This must be a new empty row
+                if (newValue == null || newValue == string.Empty) { return; }
+
+                string answertext = string.Empty;
+                string correctvalue = string.Empty;
+                switch (columnName)
+                {
+                    case "answer_text":
+                        answertext = newValue;
+                        correctvalue = answersDataGridView.Rows[e.RowIndex].Cells["correct_value"].Value?.ToString() ?? "F";
+                        break;
+                    case "correct_value":
+                        correctvalue = newValue;
+                        answertext = answersDataGridView.Rows[e.RowIndex].Cells["answer_text"].Value?.ToString() ?? string.Empty;
+                        break;
+                }
+
+                // 
+                // Access 'question_id' as an object and then convert the data type.
+                object qIdObject = answersDataGridView.Rows[e.RowIndex].Cells["answer_id"];
+                DataGridViewCell qIdGridViewCell = (DataGridViewCell)qIdObject;
+                object answerIdValue = qIdGridViewCell.Value;
+
+                // If the row is new (missing an ID), assign a temporary one
+                int answer_id;
+                if (answerIdValue == null || answerIdValue == DBNull.Value || string.IsNullOrEmpty(answerIdValue.ToString()))
+                {
+                    answer_id = -1 * (e.RowIndex + 1);  // Use a negative ID based on row index
+                    answersDataGridView.Rows[e.RowIndex].Cells["answer_id"].Value = answer_id; // Assign temporary ID
+                }
+                else
+                {
+                    answer_id = Convert.ToInt32(answerIdValue); // Use existing ID
+                }
+                int questionIndex = questionDataGridView.SelectedRows[0].Index;
+                int question_id = GetQuestionId(questionIndex);
+                // NOTE: Because there is a filter for the answer table,
+                //        the question id MUST be set otherwise the newly added 
+                //        answer will dispear.
+                answersDataGridView.Rows[e.RowIndex].Cells["question_id"].Value = question_id;
+
+                DatabaseAction newaction = DatabaseAction.Update;
+                if (answer_id < 0)
+                {
+                    newaction = DatabaseAction.Add;
+                }
+
+                // Store the modified question
+                modifiedAnswers[answer_id] = new Answer
+                {
+                    AnswerText = answertext,
+                    AnswerId = answer_id,
+                    QuestionId = question_id,
+                    CorrectValue = correctvalue,
+                    ActionType = newaction
+                };
+
+
+                saveButton.Enabled = true;
+
+            }
+
+        }
+
+        // Opens a user pop up menu for question datagrid
+        private void questionDataGridView_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (questionDataGridView.Rows.Count == 0)
+                {
+                    // If there are no rows in the datagrid a row cannot be deleted.
+                    return;
+                }
+                var hitTest = questionDataGridView.HitTest(e.X, e.Y);
+                if (hitTest.RowIndex >= 0)
+                {
+                    questionDataGridView.ClearSelection();
+                    questionDataGridView.Rows[hitTest.RowIndex].Selected = true;
+                    questionContextMenuStrip.Show(questionDataGridView, e.Location);
+                }
+            }
+        }
     }
 }
