@@ -30,8 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginScreen));
             BannerPanel = new Panel();
+            ExitLabel = new Label();
             UTDLogoBox = new PictureBox();
-<<<<<<< HEAD
             groupBox1 = new GroupBox();
             label1 = new Label();
             labelError = new Label();
@@ -41,44 +41,45 @@
             textBoxID = new TextBox();
             buttonLogin = new Button();
             pictureBoxWarning = new PictureBox();
-            ExitLabel = new Label();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxWarning).BeginInit();
-=======
-            LoginButton = new Button();
-            ExitPictureBox = new PictureBox();
-            BannerPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ExitPictureBox).BeginInit();
->>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
             SuspendLayout();
             // 
             // BannerPanel
             // 
             BannerPanel.BackColor = Color.FromArgb(29, 75, 54);
-<<<<<<< HEAD
             BannerPanel.Controls.Add(ExitLabel);
-=======
-            BannerPanel.Controls.Add(ExitPictureBox);
->>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
             BannerPanel.Controls.Add(UTDLogoBox);
             BannerPanel.Dock = DockStyle.Top;
             BannerPanel.Location = new Point(0, 0);
-            BannerPanel.Margin = new Padding(2);
+            BannerPanel.Margin = new Padding(2, 3, 2, 3);
             BannerPanel.Name = "BannerPanel";
             BannerPanel.RightToLeft = RightToLeft.Yes;
-            BannerPanel.Size = new Size(672, 62);
+            BannerPanel.Size = new Size(768, 83);
             BannerPanel.TabIndex = 0;
+            // 
+            // ExitLabel
+            // 
+            ExitLabel.AutoSize = true;
+            ExitLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            ExitLabel.ForeColor = Color.FromArgb(192, 92, 31);
+            ExitLabel.Location = new Point(713, 61);
+            ExitLabel.Margin = new Padding(2, 0, 2, 0);
+            ExitLabel.Name = "ExitLabel";
+            ExitLabel.Size = new Size(35, 20);
+            ExitLabel.TabIndex = 5;
+            ExitLabel.Text = "Exit";
+            ExitLabel.Click += ExitLabel_Click;
             // 
             // UTDLogoBox
             // 
             UTDLogoBox.Image = Properties.Resources.utdlogo;
             UTDLogoBox.Location = new Point(0, 0);
-            UTDLogoBox.Margin = new Padding(2);
+            UTDLogoBox.Margin = new Padding(2, 3, 2, 3);
             UTDLogoBox.Name = "UTDLogoBox";
-            UTDLogoBox.Size = new Size(107, 61);
+            UTDLogoBox.Size = new Size(122, 81);
             UTDLogoBox.SizeMode = PictureBoxSizeMode.Zoom;
             UTDLogoBox.TabIndex = 0;
             UTDLogoBox.TabStop = false;
@@ -93,11 +94,9 @@
             groupBox1.Controls.Add(textBoxID);
             groupBox1.Controls.Add(buttonLogin);
             groupBox1.Controls.Add(pictureBoxWarning);
-            groupBox1.Location = new Point(75, 74);
-            groupBox1.Margin = new Padding(3, 2, 3, 2);
+            groupBox1.Location = new Point(86, 99);
             groupBox1.Name = "groupBox1";
-            groupBox1.Padding = new Padding(3, 2, 3, 2);
-            groupBox1.Size = new Size(518, 275);
+            groupBox1.Size = new Size(592, 367);
             groupBox1.TabIndex = 4;
             groupBox1.TabStop = false;
             // 
@@ -106,9 +105,9 @@
             label1.AutoSize = true;
             label1.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.FromArgb(255, 128, 0);
-            label1.Location = new Point(101, 23);
+            label1.Location = new Point(115, 31);
             label1.Name = "label1";
-            label1.Size = new Size(321, 29);
+            label1.Size = new Size(391, 36);
             label1.TabIndex = 9;
             label1.Text = "Welcome to myAttendance";
             // 
@@ -117,9 +116,9 @@
             labelError.AutoSize = true;
             labelError.Font = new Font("Microsoft Sans Serif", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelError.ForeColor = Color.Red;
-            labelError.Location = new Point(212, 188);
+            labelError.Location = new Point(242, 251);
             labelError.Name = "labelError";
-            labelError.Size = new Size(139, 13);
+            labelError.Size = new Size(166, 16);
             labelError.TabIndex = 8;
             labelError.Text = "Invalid ID or Password!";
             // 
@@ -127,9 +126,9 @@
             // 
             labelPassword.AutoSize = true;
             labelPassword.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            labelPassword.Location = new Point(38, 133);
+            labelPassword.Location = new Point(43, 177);
             labelPassword.Name = "labelPassword";
-            labelPassword.Size = new Size(91, 20);
+            labelPassword.Size = new Size(113, 25);
             labelPassword.TabIndex = 7;
             labelPassword.Text = "Password:";
             // 
@@ -137,28 +136,26 @@
             // 
             labelID.AutoSize = true;
             labelID.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            labelID.Location = new Point(38, 73);
+            labelID.Location = new Point(43, 97);
             labelID.Name = "labelID";
-            labelID.Size = new Size(82, 20);
+            labelID.Size = new Size(99, 25);
             labelID.TabIndex = 6;
             labelID.Text = "Login ID:";
             // 
             // textBoxPassword
             // 
             textBoxPassword.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            textBoxPassword.Location = new Point(212, 130);
-            textBoxPassword.Margin = new Padding(3, 2, 3, 2);
+            textBoxPassword.Location = new Point(242, 173);
             textBoxPassword.Name = "textBoxPassword";
-            textBoxPassword.Size = new Size(260, 26);
+            textBoxPassword.Size = new Size(297, 30);
             textBoxPassword.TabIndex = 4;
             // 
             // textBoxID
             // 
             textBoxID.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            textBoxID.Location = new Point(212, 70);
-            textBoxID.Margin = new Padding(3, 2, 3, 2);
+            textBoxID.Location = new Point(242, 93);
             textBoxID.Name = "textBoxID";
-            textBoxID.Size = new Size(260, 26);
+            textBoxID.Size = new Size(297, 30);
             textBoxID.TabIndex = 3;
             // 
             // buttonLogin
@@ -166,10 +163,9 @@
             buttonLogin.BackColor = Color.FromArgb(255, 128, 0);
             buttonLogin.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             buttonLogin.ForeColor = Color.White;
-            buttonLogin.Location = new Point(212, 224);
-            buttonLogin.Margin = new Padding(3, 2, 3, 2);
+            buttonLogin.Location = new Point(242, 299);
             buttonLogin.Name = "buttonLogin";
-            buttonLogin.Size = new Size(114, 34);
+            buttonLogin.Size = new Size(130, 45);
             buttonLogin.TabIndex = 0;
             buttonLogin.Text = "Login";
             buttonLogin.UseVisualStyleBackColor = false;
@@ -178,60 +174,31 @@
             // pictureBoxWarning
             // 
             pictureBoxWarning.Image = (Image)resources.GetObject("pictureBoxWarning.Image");
-            pictureBoxWarning.Location = new Point(161, 178);
-            pictureBoxWarning.Margin = new Padding(3, 2, 3, 2);
+            pictureBoxWarning.Location = new Point(184, 237);
             pictureBoxWarning.Name = "pictureBoxWarning";
-            pictureBoxWarning.Size = new Size(30, 23);
+            pictureBoxWarning.Size = new Size(34, 31);
             pictureBoxWarning.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBoxWarning.TabIndex = 2;
             pictureBoxWarning.TabStop = false;
             // 
-            // ExitLabel
-            // 
-            ExitLabel.AutoSize = true;
-            ExitLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            ExitLabel.ForeColor = Color.FromArgb(192, 92, 31);
-            ExitLabel.Location = new Point(624, 46);
-            ExitLabel.Margin = new Padding(2, 0, 2, 0);
-            ExitLabel.Name = "ExitLabel";
-            ExitLabel.Size = new Size(28, 15);
-            ExitLabel.TabIndex = 5;
-            ExitLabel.Text = "Exit";
-            ExitLabel.Click += ExitLabel_Click;
-            // 
-            // ExitPictureBox
-            // 
-            ExitPictureBox.Image = Properties.Resources.close_window_image;
-            ExitPictureBox.Location = new Point(907, 0);
-            ExitPictureBox.Name = "ExitPictureBox";
-            ExitPictureBox.Size = new Size(53, 51);
-            ExitPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            ExitPictureBox.TabIndex = 1;
-            ExitPictureBox.TabStop = false;
-            ExitPictureBox.Click += ExitPictureBox_Click;
-            // 
             // LoginScreen
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(672, 360);
+            ClientSize = new Size(768, 480);
             Controls.Add(groupBox1);
             Controls.Add(BannerPanel);
             FormBorderStyle = FormBorderStyle.None;
-            Margin = new Padding(2);
+            Margin = new Padding(2, 3, 2, 3);
             Name = "LoginScreen";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "LoginScreen";
             BannerPanel.ResumeLayout(false);
             BannerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();
-<<<<<<< HEAD
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxWarning).EndInit();
-=======
-            ((System.ComponentModel.ISupportInitialize)ExitPictureBox).EndInit();
->>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
             ResumeLayout(false);
         }
 
@@ -239,7 +206,6 @@
 
         private Panel BannerPanel;
         private PictureBox UTDLogoBox;
-<<<<<<< HEAD
         private GroupBox groupBox1;
         private Label label1;
         private Label labelError;
@@ -250,9 +216,5 @@
         private Button buttonLogin;
         private PictureBox pictureBoxWarning;
         private Label ExitLabel;
-=======
-        private Button LoginButton;
-        private PictureBox ExitPictureBox;
->>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
     }
 }

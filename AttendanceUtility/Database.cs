@@ -956,19 +956,7 @@ namespace AttendanceUtility
             }
             return alteredrows;
         }
-<<<<<<< HEAD
 
-
-        // Verifies that the user and password combination exist in the database
-        // write by Shuang Jiang(sxj220054) (4/17) modified 
-        public int ProfVerification(String user, String password)
-        {
-            int count = 0;
-
-            Debug.WriteLine("user: " + user);
-            Debug.WriteLine("password: " + password);
-            //Debug.WriteLine("database: " + database_name);
-=======
         /*
          * Takes the course information and inserts the class into the database.
          * Returns the class id so that it can be used to add the days of the week
@@ -1058,30 +1046,13 @@ namespace AttendanceUtility
         public List<string> GetClassDays(int classId)
         {
             List<string> days = new List<string>();
->>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
+
 
             try
             {
                 using (var connection = GetAzureMySQLConnection())
                 {
-<<<<<<< HEAD
-                    string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND passcode=@password AND user_role='PROF'";
-                    //string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND user_role='PROF'";
 
-                    connection.Open();
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@username", user);
-                        cmd.Parameters.AddWithValue("@password", password);
-                        object countObject = cmd.ExecuteScalar();
-                        // If ExecuteScalar returns null convert to 0
-                        count = countObject != null ? Convert.ToInt32(countObject) : 0;
-
-                        Debug.WriteLine("count: " + count);
-                        connection.Close();
-                    }
-
-=======
                     connection.Open();
 
                     // SQL query to add day the class in session
@@ -1104,23 +1075,11 @@ namespace AttendanceUtility
                         }
 
                     }
->>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
                 }
             }
             catch (Exception e)
             {
-<<<<<<< HEAD
-                //Console.WriteLine(e.ToString());
-                Debug.WriteLine(e.ToString());
-            }
 
-            return count;
-        }
-
-
-
-
-=======
                 Console.WriteLine("Error inserting class days: " + e.Message);
             }
             return days;
@@ -1162,6 +1121,50 @@ namespace AttendanceUtility
             return dataTable;
         }
 
->>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
+
+        // verfies that the professor id and password combination exists
+        // write by Shuang Jiang(sxj220054) (4/17) modified 
+        public int ProfVerification(string user, string password)
+        {
+            int count = 0;
+
+            Debug.WriteLine("user: " + user);
+            Debug.WriteLine("password: " + password);
+            //Debug.WriteLine("database: " + database_name);
+
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND passcode=@password AND user_role='PROF'";
+                    //string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND user_role='PROF'";
+
+                    connection.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@username", user);
+                        cmd.Parameters.AddWithValue("@password", password);
+                        object countObject = cmd.ExecuteScalar();
+                        // If ExecuteScalar returns null convert to 0
+                        count = countObject != null ? Convert.ToInt32(countObject) : 0;
+
+                        Debug.WriteLine("count: " + count);
+                        connection.Close();
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
+            }
+
+            return count;
+        }
+
+
+
+
     }
 }
