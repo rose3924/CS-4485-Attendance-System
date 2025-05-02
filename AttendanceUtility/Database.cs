@@ -17,6 +17,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AttendanceUtility
 {
@@ -210,7 +212,7 @@ namespace AttendanceUtility
                 using (var connection = GetAzureMySQLConnection())
                 {
                     // Query for table, specific to get semesters 
-                    string semesterQuery = "SELECT description FROM semester";
+                    string semesterQuery = "SELECT id, description FROM semester";
 
                     using (SqlCommand command = new SqlCommand(semesterQuery, connection))
                     {
@@ -435,7 +437,7 @@ namespace AttendanceUtility
             }
             return dataTable;
         }
-        public void changeAttendenceRecord(String student_id, DateTime day)
+        public void changeAttendenceRecord(string student_id, DateTime day)
         {
             try
             {
@@ -951,6 +953,86 @@ namespace AttendanceUtility
                 Console.WriteLine("Error deleting answer: " + e.Message);
             }
             return alteredrows;
+        }
+        /*
+         * Takes the course information and inserts the class into the database.
+         * Returns the class id so that it can be used to add the days of the week
+         * Cristina Adame
+         */
+        public int CreateClass(int profId, string department, string number, string section, TimeSpan startTime, TimeSpan endTime, string name, string description, int semester)
+        {
+            // Stores the class id
+            int classId = -1;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    
+                    //SQL query to insert the class into the classes table
+                    string classInsert = @"INSERT INTO class (department, number, section, prof_id, start_time, end_time, semester_id, name, description) 
+                                 VALUES (@department, @number, @section, @profId, @startTime, @endTime, @semesterId, @name, @description); 
+                                 SELECT SCOPE_IDENTITY();";
+                    
+                    using (SqlCommand command = new SqlCommand(classInsert, connection))
+                    {
+                        // Insert the class details
+                        command.Parameters.AddWithValue("@department", department);
+                        command.Parameters.AddWithValue("@number", number);
+                        command.Parameters.AddWithValue("@section", section);
+                        command.Parameters.AddWithValue("@profId", profId);
+                        command.Parameters.AddWithValue("@startTime", startTime);
+                        command.Parameters.AddWithValue("@endTime", endTime);
+                        command.Parameters.AddWithValue("@semesterId", semester);
+                        command.Parameters.AddWithValue("@name", name);
+                        command.Parameters.AddWithValue("@description", description);
+                        object result = command.ExecuteScalar();
+
+                        // Get the last inserted id
+                        if (result != null && int.TryParse(result.ToString(), out int id))
+                        {
+                            classId = id;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting class: " + e.Message);
+            }
+
+            return classId;
+        }
+        /*
+         * Add days that the class in session into the database.
+         * Takes the class id and the day id.
+         * Cristina Adame
+         */
+        public void AddClassDays(int classId, int dayId)
+        {
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+
+                    // SQL query to add day the class in session
+                    string classInsert = @"INSERT INTO class_days (class_id, day_id) 
+                                 VALUES (@classId, @dayId); ";
+                    
+                    using (SqlCommand command = new SqlCommand(classInsert, connection))
+                    {
+                        // Insert values
+                        command.Parameters.AddWithValue("@classId", classId);
+                        command.Parameters.AddWithValue("@dayId", dayId);
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting class days: " + e.Message);
+            }
         }
     }
 }
