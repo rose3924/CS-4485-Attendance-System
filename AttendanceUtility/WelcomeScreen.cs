@@ -9,8 +9,9 @@
  * 
 =======
 >>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
- * Written by Olivia Anderson (ova210001) and Cristina Adame (caa220007)
- * starting March XX, 2025???
+ * Written by Shuang Jiang (SXJ220054) 
+ * Contributor Olivia Anderson (ova210001) and Cristina Adame (caa220007)
+ * 
  */
 using Microsoft.Data.SqlClient;
 using System.Data;
