@@ -26,12 +26,14 @@
         <ValidationMessage For="@(() => StudentModel.Identifier)" />
     </div>
     <div>
-        <label for="quizcode">Enter the attendance quiz code:</label>
+        <label for="quizcode">Attendance Code:</label>
         <InputText id="quizcode" class="form-control" style="max-width: 200px;" @bind-Value="StudentModel.QuizCode" />
         <ValidationMessage For="@(() => StudentModel.QuizCode)" />
     </div>
 
-    <button type="submit">Register</button>
+    <div style="margin-top: 15px;">
+        <button type="submit">Register</button>
+    </div>
     <p>@message</p>
 </EditForm>
 
@@ -137,17 +139,17 @@
                     }
 
                     // Add the record
-                    await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, "PRESENT");
+                    await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, qTime.AttendanceStatus);
                 }
                 else
                 {
 
-                        if (qrecord == null)
+                        if (qrecord != null)
                         {
                             message = $"The client ip address: {IpAddress} has already been used to register.";
 
                         }
-                        else if (qrecordForStudentId == null)
+                        else if (qrecordForStudentId != null)
                         {
                             message = $"The specified student id: {UserState.Identifier} has already been used to register.";
                         }

@@ -1,7 +1,31 @@
-﻿@page "/"
+﻿
 
-<PageTitle>Home</PageTitle>
+@page "/"
+@inject IHttpContextAccessor HttpContextAccessor
 
-<h1>Hello, world!</h1>
+<PageTitle>Current Quiz</PageTitle>
 
-Welcome to your new app.
+
+@if (string.IsNullOrWhiteSpace(Username))
+{
+    <h1>Please Login</h1>
+    <p>To take the attendance quiz, please login to register.</p>
+}
+else
+{
+    <h1>Welcome, @Username!</h1>
+    <p>You're now registered. Ready to take the attendance quiz?</p>
+}
+@code {
+    private string? Username;
+    private string? Identifier;
+
+    protected override void OnInitialized()
+    {
+        // Retrieve session values
+        Username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
+        Identifier = HttpContextAccessor.HttpContext?.Session.GetString("Identifier");
+
+        Console.WriteLine($"Retrieved from session: Username = {Username}, Identifier = {Identifier}");
+    }
+}

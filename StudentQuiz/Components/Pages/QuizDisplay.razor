@@ -16,7 +16,7 @@
 <PageTitle>Quiz</PageTitle>
 
 <h3>Quiz</h3>
-<p>Parameter received: @Code</p>
+<p>Quiz Code: @Code</p>
 @if (Quiz == null)
 {
     <p>Loading...</p>
@@ -168,7 +168,6 @@ else
                     return;
                 }
 
-                //TODO: Add time stuff
 
                 // Add the record
                 await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, quizTime.AttendanceStatus);
