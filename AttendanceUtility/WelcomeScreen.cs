@@ -1,8 +1,8 @@
 /*
+ * WelcomeScreen.cs
+ * 
  * Welcome Screen for the Professor Desktop app. Also functions as the starter form.
  * Welcomes the user and after three seconds moves to the login screen.
- * 
- * 
  * 
  * Written by Olivia Anderson (ova210001) and Cristina Adame (caa220007)
  * 

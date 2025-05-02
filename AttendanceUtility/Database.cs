@@ -1,4 +1,4 @@
-﻿/* Database
+﻿/* Database.cs
  * 
  * ---description here ---
  * Contains methods to retrieve information from the connected database.
@@ -91,6 +91,7 @@ namespace AttendanceUtility
          * Gathers information of the courses taught by a Professor given the professorId.
          * Creates/Returns a data table with the course id, department name, course number, course section,
          * professor id, start time, end time, and semester.
+         * Cristina Adame
          */
         public DataTable GetProfessorClasses(int professorId)
         {
@@ -125,6 +126,7 @@ namespace AttendanceUtility
         /*
          * Gathers information of the professor given the professorId.
          * Creates/Returns a data table with the first name and last name of the professor.
+         * Cristina Adame
         */
         public DataTable GetProfessorName(int professorId)
         {
@@ -163,6 +165,7 @@ namespace AttendanceUtility
          * Gathers information of the course taught given course id
          * Creates/Returns a data table with the course id, department name, course number, course section,
          * professor id, start time, end time, and semester.
+         * Cristina Adame
          */
         public DataTable GetCourseDetails(int classId)
         {
@@ -197,6 +200,7 @@ namespace AttendanceUtility
         /*
          * Gathers the semesters
          * Creates/Returns a data table with the semester description.
+         * Cristina Adame   
          */
         public DataTable GetSemesters()
         {
@@ -229,6 +233,7 @@ namespace AttendanceUtility
         /*
          * Gathers the semesters the professor teaches given the professorId.
          * Creates/Returns a data table with the semester id and description.
+         * Cristina Adame
          */
         public DataTable GetProfessorSemesters(int professorId)
         {
@@ -268,6 +273,7 @@ namespace AttendanceUtility
         * Gathers information of the courses taught by a Professor given the professorId and a semester
         * Creates/Returns a data table with the course id, department name, course number, course section,
         * professor id, start time, end time, and semester.
+        * Cristina Adame
         */
         public DataTable GetProfessorSemesterClasses(int professorId, int semesterId)
         {
@@ -306,6 +312,7 @@ namespace AttendanceUtility
         /*
          * Gathers information of the quiz passwords and day of week given a class id.
          * Creates/Returns a data table with the quiz id, title, password, and class id.
+         * Cristina Adame
          */
         public DataTable GetQuizPasswords(int classId)
         {

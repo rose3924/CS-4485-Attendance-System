@@ -1,4 +1,6 @@
 ﻿/*
+ * PasswordPage.cs
+ * 
  * Password Page for Course.
  * Will allow for professor to add questions 
  * and set password for course.

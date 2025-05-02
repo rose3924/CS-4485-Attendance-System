@@ -1,4 +1,6 @@
 ﻿/*
+ * ClassesHomePage.cs
+ * 
  * Home Page for Professors following their successful login.
  * Displays their classes as buttons to select in order to see further details.
  * Contains a functional logout button.

@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* CreateClassForm.cs
+ * 
+ * ---description here ---
+ * Form to create a class and add to the database.
+ * 
+ * Written by Cristina Adame (caa220007)
+ * starting April XX, 2025???
+ */
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;

@@ -1,4 +1,6 @@
 ﻿/*
+ * LoginScreen.cs
+ * 
  * Creation of the LoginScreen Page for continuity purposes.
  * Will be completed by Shuang Jiang
  * 
