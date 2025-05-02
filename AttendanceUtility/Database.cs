@@ -14,6 +14,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -945,5 +946,51 @@ namespace AttendanceUtility
             }
             return alteredrows;
         }
+
+
+        // Verifies that the user and password combination exist in the database
+        // write by Shuang Jiang(sxj220054) (4/17) modified 
+        public int ProfVerification(String user, String password)
+        {
+            int count = 0;
+
+            Debug.WriteLine("user: " + user);
+            Debug.WriteLine("password: " + password);
+            //Debug.WriteLine("database: " + database_name);
+
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND passcode=@password AND user_role='PROF'";
+                    //string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND user_role='PROF'";
+
+                    connection.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@username", user);
+                        cmd.Parameters.AddWithValue("@password", password);
+                        object countObject = cmd.ExecuteScalar();
+                        // If ExecuteScalar returns null convert to 0
+                        count = countObject != null ? Convert.ToInt32(countObject) : 0;
+
+                        Debug.WriteLine("count: " + count);
+                        connection.Close();
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
+            }
+
+            return count;
+        }
+
+
+
+
     }
 }
