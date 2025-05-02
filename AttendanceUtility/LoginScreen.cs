@@ -9,6 +9,7 @@
  * Written by Cristina Adame (caa220007)
  * starting March 28, 2025
  */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,6 +45,16 @@ namespace AttendanceUtility
         {
             this.Close();
             new ClassesHomePage(dbobject, profId).Show();
+        }
+
+        /*
+         * Closes the entire program
+         */
+        private void ExitPictureBox_Click(object sender, EventArgs e)
+        {
+            // Close the application
+            Application.Exit();
+
         }
     }
 }

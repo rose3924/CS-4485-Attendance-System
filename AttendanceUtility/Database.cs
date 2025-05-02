@@ -17,6 +17,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static System.Collections.Specialized.BitVector32;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -959,7 +960,7 @@ namespace AttendanceUtility
          * Returns the class id so that it can be used to add the days of the week
          * Cristina Adame
          */
-        public int CreateClass(int profId, string department, string number, string section, TimeSpan startTime, TimeSpan endTime, string name, string description, int semester)
+        public int CreateClass(int profId, string department, string number, string section, TimeSpan startTime, TimeSpan endTime, string name, int description, int semester)
         {
             // Stores the class id
             int classId = -1;
@@ -1034,5 +1035,86 @@ namespace AttendanceUtility
                 Console.WriteLine("Error inserting class days: " + e.Message);
             }
         }
+       
+        /*
+         * Get the days of the week that the class is in session.
+         * Takes the class id and returns a list of the days of the week class is in session.
+         * Cristina Adame
+         */
+        public List<string> GetClassDays(int classId)
+        {
+            List<string> days = new List<string>();
+
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+
+                    // SQL query to add day the class in session
+                    string classDays = @"SELECT days_of_week.day
+                                         FROM class_days
+                                         JOIN days_of_week ON class_days.day_id = days_of_week.id
+                                         WHERE class_days.class_id = @classId
+                                         ORDER BY days_of_week.id;";
+
+                    using (SqlCommand command = new SqlCommand(classDays, connection))
+                    {
+                        command.Parameters.AddWithValue("@classId", classId);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                days.Add(reader.GetString(0));
+                            }
+                        }
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting class days: " + e.Message);
+            }
+            return days;
+        }
+        /*
+         * Get the passwords for the quizzes in a class.
+         * Takes the class id and returns a datatable with the quiz passwords.
+         * Cristina Adame
+         */
+        public DataTable GetClassPasswords(int classId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+
+                    // Password query to get the passwords for the quizzes for the class
+                    string passwordQuery = "SELECT password FROM quiz WHERE class_id = @classId";
+
+                    using (SqlCommand command = new SqlCommand(passwordQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@classId", classId);
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        {
+                            adapter.Fill(dataTable);
+
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error filling DataGridView with quiz passwords: " + e.Message);
+            }
+
+            return dataTable;
+        }
+
     }
 }

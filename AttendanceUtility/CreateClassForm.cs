@@ -112,9 +112,10 @@ namespace AttendanceUtility
                     MessageBox.Show("Please fill in all fields." + semester);
                     return;
                 }
+                int creditHours = int.Parse(description);
 
                 // Call the method to create a class in the database
-                int classId = dbobject.CreateClass(profId, department, number, section, startTime, endTime, name, description, semester);
+                int classId = dbobject.CreateClass(profId, department, number, section, startTime, endTime, name, creditHours, semester);
                 
                 foreach (int day in selectedDays)
                 {

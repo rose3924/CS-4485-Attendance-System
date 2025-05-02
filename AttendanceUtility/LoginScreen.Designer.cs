@@ -31,13 +31,16 @@
             BannerPanel = new Panel();
             UTDLogoBox = new PictureBox();
             LoginButton = new Button();
+            ExitPictureBox = new PictureBox();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ExitPictureBox).BeginInit();
             SuspendLayout();
             // 
             // BannerPanel
             // 
             BannerPanel.BackColor = Color.FromArgb(29, 75, 54);
+            BannerPanel.Controls.Add(ExitPictureBox);
             BannerPanel.Controls.Add(UTDLogoBox);
             BannerPanel.Dock = DockStyle.Top;
             BannerPanel.Location = new Point(0, 0);
@@ -67,6 +70,17 @@
             LoginButton.UseVisualStyleBackColor = true;
             LoginButton.Click += LoginButton_Click;
             // 
+            // ExitPictureBox
+            // 
+            ExitPictureBox.Image = Properties.Resources.close_window_image;
+            ExitPictureBox.Location = new Point(907, 0);
+            ExitPictureBox.Name = "ExitPictureBox";
+            ExitPictureBox.Size = new Size(53, 51);
+            ExitPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            ExitPictureBox.TabIndex = 1;
+            ExitPictureBox.TabStop = false;
+            ExitPictureBox.Click += ExitPictureBox_Click;
+            // 
             // LoginScreen
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -80,6 +94,7 @@
             Text = "LoginScreen";
             BannerPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ExitPictureBox).EndInit();
             ResumeLayout(false);
         }
 
@@ -88,5 +103,6 @@
         private Panel BannerPanel;
         private PictureBox UTDLogoBox;
         private Button LoginButton;
+        private PictureBox ExitPictureBox;
     }
 }
