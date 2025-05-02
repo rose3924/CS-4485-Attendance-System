@@ -962,7 +962,7 @@ namespace AttendanceUtility
          * Returns the class id so that it can be used to add the days of the week
          * Cristina Adame
          */
-        public int CreateClass(int profId, string department, string number, string section, TimeSpan startTime, TimeSpan endTime, string name, int description, int semester)
+        public int CreateClass(int profId, string department, string number, string section, TimeSpan startTime, TimeSpan endTime, string name, string description, int semester)
         {
             // Stores the class id
             int classId = -1;
@@ -1161,6 +1161,38 @@ namespace AttendanceUtility
             }
 
             return count;
+        }
+        /*        
+         * Get the professor id given the username
+         * Takes the username and returns the professor id.
+         * Cristina Adame
+         */
+        public int GetProfessorId(string user)
+        {
+            int id = 0;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    string query = "SELECT id FROM users WHERE login_id=@username AND user_role='PROF'";
+                    connection.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@username", user);
+                        object idObject = cmd.ExecuteScalar();
+                        // If ExecuteScalar returns null convert to 0
+                        id = idObject != null ? Convert.ToInt32(idObject) : 0;
+                        Debug.WriteLine("id: " + id);
+                        connection.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
+            }
+            return id;
         }
 
 

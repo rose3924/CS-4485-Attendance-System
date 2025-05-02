@@ -206,5 +206,14 @@ namespace AttendanceUtility
         {
             new CreateClassForm(dbobject, profId).ShowDialog();
         }
+
+        /*
+         * Closes the current form and creates a new login screen
+         */
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            new ClassesHomePage(dbobject, profId).Show();
+        }
     }
 }

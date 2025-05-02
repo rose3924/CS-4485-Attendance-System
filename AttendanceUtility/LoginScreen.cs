@@ -67,6 +67,7 @@ namespace AttendanceUtility
                 pictureBoxWarning.Show();
                 return;
             }
+            profId = dbobject.GetProfessorId(textBoxID.Text.Trim());
             this.Close();
             new ClassesHomePage(dbobject, profId).Show();
         }
