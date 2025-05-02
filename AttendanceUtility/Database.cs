@@ -1,4 +1,4 @@
-﻿/* Database
+﻿/* Database.cs
  * 
  * ---description here ---
  * Contains methods to retrieve information from the connected database.
@@ -18,6 +18,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Collections.Specialized.BitVector32;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AttendanceUtility
 {
@@ -92,6 +95,7 @@ namespace AttendanceUtility
          * Gathers information of the courses taught by a Professor given the professorId.
          * Creates/Returns a data table with the course id, department name, course number, course section,
          * professor id, start time, end time, and semester.
+         * Cristina Adame
          */
         public DataTable GetProfessorClasses(int professorId)
         {
@@ -126,6 +130,7 @@ namespace AttendanceUtility
         /*
          * Gathers information of the professor given the professorId.
          * Creates/Returns a data table with the first name and last name of the professor.
+         * Cristina Adame
         */
         public DataTable GetProfessorName(int professorId)
         {
@@ -164,6 +169,7 @@ namespace AttendanceUtility
          * Gathers information of the course taught given course id
          * Creates/Returns a data table with the course id, department name, course number, course section,
          * professor id, start time, end time, and semester.
+         * Cristina Adame
          */
         public DataTable GetCourseDetails(int classId)
         {
@@ -198,6 +204,7 @@ namespace AttendanceUtility
         /*
          * Gathers the semesters
          * Creates/Returns a data table with the semester description.
+         * Cristina Adame   
          */
         public DataTable GetSemesters()
         {
@@ -207,7 +214,7 @@ namespace AttendanceUtility
                 using (var connection = GetAzureMySQLConnection())
                 {
                     // Query for table, specific to get semesters 
-                    string semesterQuery = "SELECT description FROM semester";
+                    string semesterQuery = "SELECT id, description FROM semester";
 
                     using (SqlCommand command = new SqlCommand(semesterQuery, connection))
                     {
@@ -230,6 +237,7 @@ namespace AttendanceUtility
         /*
          * Gathers the semesters the professor teaches given the professorId.
          * Creates/Returns a data table with the semester id and description.
+         * Cristina Adame
          */
         public DataTable GetProfessorSemesters(int professorId)
         {
@@ -269,6 +277,7 @@ namespace AttendanceUtility
         * Gathers information of the courses taught by a Professor given the professorId and a semester
         * Creates/Returns a data table with the course id, department name, course number, course section,
         * professor id, start time, end time, and semester.
+        * Cristina Adame
         */
         public DataTable GetProfessorSemesterClasses(int professorId, int semesterId)
         {
@@ -307,6 +316,7 @@ namespace AttendanceUtility
         /*
          * Gathers information of the quiz passwords and day of week given a class id.
          * Creates/Returns a data table with the quiz id, title, password, and class id.
+         * Cristina Adame
          */
         public DataTable GetQuizPasswords(int classId)
         {
@@ -429,7 +439,7 @@ namespace AttendanceUtility
             }
             return dataTable;
         }
-        public void changeAttendenceRecord(String student_id, DateTime day)
+        public void changeAttendenceRecord(string student_id, DateTime day)
         {
             try
             {
@@ -946,6 +956,7 @@ namespace AttendanceUtility
             }
             return alteredrows;
         }
+<<<<<<< HEAD
 
 
         // Verifies that the user and password combination exist in the database
@@ -957,11 +968,103 @@ namespace AttendanceUtility
             Debug.WriteLine("user: " + user);
             Debug.WriteLine("password: " + password);
             //Debug.WriteLine("database: " + database_name);
+=======
+        /*
+         * Takes the course information and inserts the class into the database.
+         * Returns the class id so that it can be used to add the days of the week
+         * Cristina Adame
+         */
+        public int CreateClass(int profId, string department, string number, string section, TimeSpan startTime, TimeSpan endTime, string name, int description, int semester)
+        {
+            // Stores the class id
+            int classId = -1;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    
+                    //SQL query to insert the class into the classes table
+                    string classInsert = @"INSERT INTO class (department, number, section, prof_id, start_time, end_time, semester_id, name, description) 
+                                 VALUES (@department, @number, @section, @profId, @startTime, @endTime, @semesterId, @name, @description); 
+                                 SELECT SCOPE_IDENTITY();";
+                    
+                    using (SqlCommand command = new SqlCommand(classInsert, connection))
+                    {
+                        // Insert the class details
+                        command.Parameters.AddWithValue("@department", department);
+                        command.Parameters.AddWithValue("@number", number);
+                        command.Parameters.AddWithValue("@section", section);
+                        command.Parameters.AddWithValue("@profId", profId);
+                        command.Parameters.AddWithValue("@startTime", startTime);
+                        command.Parameters.AddWithValue("@endTime", endTime);
+                        command.Parameters.AddWithValue("@semesterId", semester);
+                        command.Parameters.AddWithValue("@name", name);
+                        command.Parameters.AddWithValue("@description", description);
+                        object result = command.ExecuteScalar();
+
+                        // Get the last inserted id
+                        if (result != null && int.TryParse(result.ToString(), out int id))
+                        {
+                            classId = id;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting class: " + e.Message);
+            }
+
+            return classId;
+        }
+        /*
+         * Add days that the class in session into the database.
+         * Takes the class id and the day id.
+         * Cristina Adame
+         */
+        public void AddClassDays(int classId, int dayId)
+        {
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+
+                    // SQL query to add day the class in session
+                    string classInsert = @"INSERT INTO class_days (class_id, day_id) 
+                                 VALUES (@classId, @dayId); ";
+                    
+                    using (SqlCommand command = new SqlCommand(classInsert, connection))
+                    {
+                        // Insert values
+                        command.Parameters.AddWithValue("@classId", classId);
+                        command.Parameters.AddWithValue("@dayId", dayId);
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error inserting class days: " + e.Message);
+            }
+        }
+       
+        /*
+         * Get the days of the week that the class is in session.
+         * Takes the class id and returns a list of the days of the week class is in session.
+         * Cristina Adame
+         */
+        public List<string> GetClassDays(int classId)
+        {
+            List<string> days = new List<string>();
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
 
             try
             {
                 using (var connection = GetAzureMySQLConnection())
                 {
+<<<<<<< HEAD
                     string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND passcode=@password AND user_role='PROF'";
                     //string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND user_role='PROF'";
 
@@ -978,10 +1081,35 @@ namespace AttendanceUtility
                         connection.Close();
                     }
 
+=======
+                    connection.Open();
+
+                    // SQL query to add day the class in session
+                    string classDays = @"SELECT days_of_week.day
+                                         FROM class_days
+                                         JOIN days_of_week ON class_days.day_id = days_of_week.id
+                                         WHERE class_days.class_id = @classId
+                                         ORDER BY days_of_week.id;";
+
+                    using (SqlCommand command = new SqlCommand(classDays, connection))
+                    {
+                        command.Parameters.AddWithValue("@classId", classId);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                days.Add(reader.GetString(0));
+                            }
+                        }
+
+                    }
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
                 }
             }
             catch (Exception e)
             {
+<<<<<<< HEAD
                 //Console.WriteLine(e.ToString());
                 Debug.WriteLine(e.ToString());
             }
@@ -992,5 +1120,48 @@ namespace AttendanceUtility
 
 
 
+=======
+                Console.WriteLine("Error inserting class days: " + e.Message);
+            }
+            return days;
+        }
+        /*
+         * Get the passwords for the quizzes in a class.
+         * Takes the class id and returns a datatable with the quiz passwords.
+         * Cristina Adame
+         */
+        public DataTable GetClassPasswords(int classId)
+        {
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+
+                    // Password query to get the passwords for the quizzes for the class
+                    string passwordQuery = "SELECT password FROM quiz WHERE class_id = @classId";
+
+                    using (SqlCommand command = new SqlCommand(passwordQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@classId", classId);
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        {
+                            adapter.Fill(dataTable);
+
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error filling DataGridView with quiz passwords: " + e.Message);
+            }
+
+            return dataTable;
+        }
+
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
     }
 }

@@ -1,4 +1,6 @@
 ﻿/*
+ * PasswordPage.cs
+ * 
  * Password Page for Course.
  * Will allow for professor to add questions 
  * and set password for course.
@@ -36,6 +38,7 @@ namespace AttendanceUtility
             this.courseId = courseId;
             this.profId = profId;
             LoadCourseName();
+            LoadQuizPasswords();
         }
 
         /*
@@ -53,9 +56,14 @@ namespace AttendanceUtility
 
             CourseLabel.Text = courseName;
         }
+
+        /*
+         * Loads the quiz passwords for the course
+         * Binds the DataTable to the PasswordDataGrid
+         */
         public void LoadQuizPasswords()
         {
-            DataTable passwordTable = dbobject.GetQuizPasswords(courseId);
+            DataTable passwordTable = dbobject.GetClassPasswords(courseId);
 
             // Bind the DataTable to the PasswordDataGrid
             PasswordDataGrid.DataSource = passwordTable;

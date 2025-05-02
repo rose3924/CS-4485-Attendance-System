@@ -1,4 +1,6 @@
 ﻿/*
+ * AttendancePage.cs
+ * 
  * Attendance Page for Course
  * Will allow for a csv file to be uploaded into 
  * 
@@ -47,6 +49,7 @@ namespace AttendanceUtility
 
         /*
          * Adds name of current course to header
+         * Cristina Adame
          */
         public void LoadCourseName()
         {
@@ -63,6 +66,7 @@ namespace AttendanceUtility
 
         /*
          * Closes the current form and creates a new login screen
+         * Cristina Adame
          */
         private void LogoutLabel_Click(object sender, EventArgs e)
         {
@@ -74,6 +78,7 @@ namespace AttendanceUtility
         /*
         * Back Button
         * Closes the current form and creates a ClassPage form
+        * Cristina Adame
         */
         private void BackButtonBox_Click(object sender, EventArgs e)
         {

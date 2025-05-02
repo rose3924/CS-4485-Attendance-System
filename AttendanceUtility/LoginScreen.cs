@@ -1,4 +1,6 @@
 ﻿/*
+ * LoginScreen.cs
+ * 
  * Creation of the LoginScreen Page for continuity purposes.
  * 
  * Has a 'login' button to function for moving to the next page
@@ -7,6 +9,7 @@
  * Contributor Cristina Adame (caa220007)
  * starting March 28, 2025
  */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,11 +71,22 @@ namespace AttendanceUtility
             new ClassesHomePage(dbobject, profId).Show();
         }
 
+<<<<<<< HEAD
         private void ExitLabel_Click(object sender, EventArgs e)
         {
             this.Close();
             // Close all the application forms and stop the application.
             Application.Exit(); 
+=======
+        /*
+         * Closes the entire program
+         */
+        private void ExitPictureBox_Click(object sender, EventArgs e)
+        {
+            // Close the application
+            Application.Exit();
+
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
         }
     }
 }

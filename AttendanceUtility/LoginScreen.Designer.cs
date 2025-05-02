@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginScreen));
             BannerPanel = new Panel();
             UTDLogoBox = new PictureBox();
+<<<<<<< HEAD
             groupBox1 = new GroupBox();
             label1 = new Label();
             labelError = new Label();
@@ -45,12 +46,23 @@
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxWarning).BeginInit();
+=======
+            LoginButton = new Button();
+            ExitPictureBox = new PictureBox();
+            BannerPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ExitPictureBox).BeginInit();
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
             SuspendLayout();
             // 
             // BannerPanel
             // 
             BannerPanel.BackColor = Color.FromArgb(29, 75, 54);
+<<<<<<< HEAD
             BannerPanel.Controls.Add(ExitLabel);
+=======
+            BannerPanel.Controls.Add(ExitPictureBox);
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
             BannerPanel.Controls.Add(UTDLogoBox);
             BannerPanel.Dock = DockStyle.Top;
             BannerPanel.Location = new Point(0, 0);
@@ -187,6 +199,17 @@
             ExitLabel.Text = "Exit";
             ExitLabel.Click += ExitLabel_Click;
             // 
+            // ExitPictureBox
+            // 
+            ExitPictureBox.Image = Properties.Resources.close_window_image;
+            ExitPictureBox.Location = new Point(907, 0);
+            ExitPictureBox.Name = "ExitPictureBox";
+            ExitPictureBox.Size = new Size(53, 51);
+            ExitPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            ExitPictureBox.TabIndex = 1;
+            ExitPictureBox.TabStop = false;
+            ExitPictureBox.Click += ExitPictureBox_Click;
+            // 
             // LoginScreen
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -202,9 +225,13 @@
             BannerPanel.ResumeLayout(false);
             BannerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();
+<<<<<<< HEAD
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxWarning).EndInit();
+=======
+            ((System.ComponentModel.ISupportInitialize)ExitPictureBox).EndInit();
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
             ResumeLayout(false);
         }
 
@@ -212,6 +239,7 @@
 
         private Panel BannerPanel;
         private PictureBox UTDLogoBox;
+<<<<<<< HEAD
         private GroupBox groupBox1;
         private Label label1;
         private Label labelError;
@@ -222,5 +250,9 @@
         private Button buttonLogin;
         private PictureBox pictureBoxWarning;
         private Label ExitLabel;
+=======
+        private Button LoginButton;
+        private PictureBox ExitPictureBox;
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
     }
 }
