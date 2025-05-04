@@ -62,7 +62,7 @@ namespace AttendanceUtility
         /*
          * Loads the semester drop down option and displays the first semester courses
          */
-        private void LoadInitialProfClasses()
+        public void LoadInitialProfClasses()
         {
             //Loads the semesters to the combo box
             LoadSemesterComboBox();
@@ -204,16 +204,8 @@ namespace AttendanceUtility
          */
         private void AddClassButton_Click(object sender, EventArgs e)
         {
-            new CreateClassForm(dbobject, profId).ShowDialog();
+            new CreateClassForm(dbobject, profId, this).ShowDialog();
         }
-
-        /*
-         * Closes the current form and creates a new login screen
-         */
-        private void RefreshButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-            new ClassesHomePage(dbobject, profId).Show();
-        }
+        
     }
 }

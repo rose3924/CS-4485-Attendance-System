@@ -1136,8 +1136,7 @@ namespace AttendanceUtility
             {
                 using (var connection = GetAzureMySQLConnection())
                 {
-                    string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND passcode=@password AND user_role='PROF'";
-                    //string query = "SELECT COUNT(*) FROM users WHERE login_id=@username AND user_role='PROF'";
+                    string query = "SELECT COUNT(*) FROM users WHERE student_id=@username AND passcode=@password AND user_role='PROF'";
 
                     connection.Open();
                     using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -1162,6 +1161,7 @@ namespace AttendanceUtility
 
             return count;
         }
+
         /*        
          * Get the professor id given the username
          * Takes the username and returns the professor id.
@@ -1174,7 +1174,7 @@ namespace AttendanceUtility
             {
                 using (var connection = GetAzureMySQLConnection())
                 {
-                    string query = "SELECT id FROM users WHERE login_id=@username AND user_role='PROF'";
+                    string query = "SELECT id FROM users WHERE student_id=@username AND user_role='PROF'";
                     connection.Open();
                     using (SqlCommand cmd = new SqlCommand(query, connection))
                     {

@@ -37,7 +37,6 @@
             NoCoursesMessageLabel = new Label();
             SemesterComboBox = new ComboBox();
             AddClassButton = new Button();
-            RefreshButton = new Button();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             ClassesHomeLayoutPanel.SuspendLayout();
@@ -144,23 +143,11 @@
             AddClassButton.UseVisualStyleBackColor = true;
             AddClassButton.Click += AddClassButton_Click;
             // 
-            // RefreshButton
-            // 
-            RefreshButton.Location = new Point(288, 105);
-            RefreshButton.Name = "RefreshButton";
-            RefreshButton.Size = new Size(145, 33);
-            RefreshButton.TabIndex = 5;
-            RefreshButton.TabStop = false;
-            RefreshButton.Text = "Refresh";
-            RefreshButton.UseVisualStyleBackColor = true;
-            RefreshButton.Click += RefreshButton_Click;
-            // 
             // ClassesHomePage
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(960, 600);
-            Controls.Add(RefreshButton);
             Controls.Add(AddClassButton);
             Controls.Add(ProfNameLabel);
             Controls.Add(SemesterComboBox);
@@ -189,6 +176,5 @@
         private Label NoCoursesMessageLabel;
         private Label ProfNameLabel;
         private Button AddClassButton;
-        private Button RefreshButton;
     }
 }

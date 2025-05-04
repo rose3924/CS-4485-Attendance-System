@@ -28,22 +28,21 @@ namespace AttendanceUtility
         private Database dbobject;
 
         // Professor ID, following succesful login
-        private int profId = 3;
+        private int profId;
 
         public LoginScreen(Database dbobject)
         {
             InitializeComponent();
             this.dbobject = dbobject;
 
-            // hide the warning image and the msg before type any invalid input(s) - ID, password
+            // Hide the warning image and the msg before type any invalid input(s) - ID, password
             labelError.Hide();
             pictureBoxWarning.Hide();
         }
 
         /*
          * Closes current form and opens the classes page for the Professor.
-         * Not complete, just for testing.
-         * Actual successful login will need verifiacation and to store the Professor ID
+         * 
          */
         private void LoginButton_Click(object sender, EventArgs e)
         {
@@ -72,13 +71,6 @@ namespace AttendanceUtility
             new ClassesHomePage(dbobject, profId).Show();
         }
 
-
-        /* private void ExitLabel_Click(object sender, EventArgs e)
-         {
-             this.Close();
-             // Close all the application forms and stop the application.
-             Application.Exit(); 
-        */
         /*
          * Closes the entire program
          */

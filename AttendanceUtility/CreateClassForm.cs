@@ -26,15 +26,16 @@ namespace AttendanceUtility
         // Professor ID, following succesful login
         private int profId;
 
-        // Course ID, needed to pass to the ClassPage form
-        private int courseId;
+        // Previous ClassesHomePage form
+        private ClassesHomePage parentForm;
 
         // Constructor takes instance of database
-        public CreateClassForm(Database dbobject, int profId)
+        public CreateClassForm(Database dbobject, int profId, ClassesHomePage parentForm)
         {
             InitializeComponent();
             this.dbobject = dbobject;
             this.profId = profId;
+            this.parentForm = parentForm;
 
             // Load the semesters for selection
             LoadSemesterGroupBox();
@@ -121,8 +122,12 @@ namespace AttendanceUtility
                     // Add each selected day to the class
                     dbobject.AddClassDays(classId, day);
                 }
-
+                
+                // Closes the form
                 this.Close();
+
+                // Refresh the parent form to show the new class added
+                this.parentForm.LoadInitialProfClasses();
 
                 // Display success message with class name
                 MessageBox.Show("Class: \"" + department + " " + number + "." + section + " " + name + "\" was succesfully added");
