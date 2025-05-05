@@ -12,9 +12,11 @@
  */
 using Microsoft.Data.SqlClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -342,6 +344,308 @@ namespace AttendanceUtility
             return dataTable;
         }
         //angelica bell
+        public DateTime getSemStart(int courseId)
+        {
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    string query = @"
+                    SELECT s.start_date
+                    FROM semester s
+                    JOIN class c ON s.id = c.semester_id
+                    WHERE c.id = @courseId;";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.Add(new SqlParameter("@courseId", SqlDbType.Int)).Value = courseId;
+                        object result = command.ExecuteScalar();
+                        if (result != null && DateTime.TryParse(result.ToString(), out DateTime startDate))
+                        {   
+                            return startDate;
+                        }
+                    }
+                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            return DateTime.Today;
+            
+        }
+        public DateTime getSemEnd(int courseId)
+        {
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                string query = @"
+                SELECT s.end_date
+                FROM semester s
+                JOIN class c ON s.id = c.semester_id
+                WHERE id = @courseId;";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.Add(new SqlParameter("@courseId", SqlDbType.Int)).Value = courseId;
+                    object result = command.ExecuteScalar();
+                    if (result != null && DateTime.TryParse(result.ToString(), out DateTime endDate))
+                    {
+                        return endDate;
+
+                    }
+
+                }                
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+
+            }
+            return DateTime.Today;
+        }
+        public int countClassDays(int courseId)
+        {
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    string query = @"
+                        SELECT COUNT(*)
+                        FROM class_days c 
+                        WHERE c.class_id = @classId";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@classId", courseId);
+                        object result = command.ExecuteScalar();
+                        return Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            return 0;
+        }
+        public DataSet attendanceReport( int classId, bool fullRep, bool conAb, bool moreAb, int abMin, DateTime startDate, DateTime endDate)
+        {
+            //  weekdays for this class
+            var meetingWeekdays = new List<DayOfWeek>();
+            using (var conn = GetAzureMySQLConnection())
+            using (var cmd = new SqlCommand(@"
+        SELECT d.day
+        FROM class_days cd
+        JOIN days_of_week d ON cd.day_id = d.id
+        WHERE cd.class_id = @classId;", conn))
+            {
+                cmd.Parameters.AddWithValue("@classId", classId);
+                conn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                    while (rdr.Read())
+                        if (Enum.TryParse(rdr.GetString(0), true, out DayOfWeek d))
+                            meetingWeekdays.Add(d);
+            }
+
+            //actual meeting dates
+            var meetingDates = new List<DateTime>();
+            for (var dt = startDate.Date; dt <= endDate.Date; dt = dt.AddDays(1))
+                if (meetingWeekdays.Contains(dt.DayOfWeek))
+                    meetingDates.Add(dt);
+            if (meetingDates.Count == 0)
+                throw new InvalidOperationException("empty range.");
+
+            // CTE lines and pivot columns
+            string cteLines = string.Join("\nUNION ALL\n", meetingDates.Select(d => $"SELECT '{d:yyyy-MM-dd}' AS Date"));
+            string pivotCols = string.Join(", ", meetingDates.Select(d => $"[{d:yyyy-MM-dd}]"));
+            string inDateList = string.Join(", ", meetingDates.Select(d => $"'{d:yyyy-MM-dd}'"));
+            string meetingDatesCte = $@"; WITH MeetingDates AS ({cteLines})";
+
+            //grid query for full attendance
+            string gridQ = fullRep
+                ? $@"
+                ;WITH MeetingDates AS (
+                    {cteLines}
+                )
+                SELECT p.user_id, u.firstname, u.lastname, {pivotCols}
+                FROM (
+                    SELECT 
+                      usr.id        AS user_id,
+                      CONVERT(varchar(10), md.Date, 120) AS Date,
+                      CASE WHEN qr.user_id IS NOT NULL THEN 'P' ELSE 'A' END AS Status
+                    FROM users AS usr
+                    CROSS JOIN MeetingDates AS md
+                    LEFT JOIN quiz_records AS qr
+                      ON qr.user_id = usr.id
+                     AND CONVERT(date, qr.submitted) = md.Date
+                    WHERE usr.user_role = 'STUDENT'
+                ) AS src
+                PIVOT (
+                    MAX(Status) FOR Date IN ({pivotCols})
+                ) AS p
+                JOIN users AS u ON p.user_id = u.id
+                ORDER BY u.lastname, u.firstname;"
+                : "";
+            string gridQX = moreAb
+                ? $@"
+                SELECT u.id AS user_id, u.firstname, u.lastname, @totalDays - COUNT(q.user_id) AS Absences
+                FROM users u 
+                LEFT JOIN quiz_records q 
+                    ON q.user_id = u.id
+                    AND CONVERT(date, q.submitted) IN ({inDateList})
+                 WHERE u.user_role = 'STUDENT'
+                 GROUP BY u.id, u.firstname, u.lastname
+                HAVING (@totalDays - COUNT(q.user_id)) > @threshold"
+                :"";
+            string gridQC = conAb
+                ? $@";
+                WITH MeetingDates AS (
+                {cteLines} ),
+                StudentAttendance AS (
+                 SELECT u.id AS user_id, md.Date AS class_date,
+                CASE WHEN qr.user_id IS NULL 
+                THEN 0 ELSE 1 
+                 END                         
+                AS Present
+                FROM users u
+                CROSS JOIN MeetingDates md
+                LEFT JOIN quiz_records qr
+                    ON qr.user_id = u.id
+                    AND CONVERT(date, qr.submitted) = md.Date
+                WHERE u.user_role = 'STUDENT' ),
+                Numbered AS (
+                SELECT user_id, class_date, Present, ROW_NUMBER() 
+                OVER (
+                PARTITION BY user_id 
+                     ORDER BY class_date
+                ) AS rn
+                FROM StudentAttendance
+                ),
+                WithLag AS (
+                SELECT user_id, class_date, Present,
+                LAG(Present, 1) OVER (PARTITION BY user_id ORDER BY class_date) AS Prev1,
+                LAG(Present, 2) OVER (PARTITION BY user_id ORDER BY class_date) AS Prev2
+                FROM Numbered
+                )
+                SELECT DISTINCT u.student_id, u.firstname, u.lastname
+                FROM WithLag wl
+                JOIN users u 
+                    ON wl.user_id = u.id
+                WHERE wl.Present = 0 
+                AND wl.Prev1   = 0 
+                AND wl.Prev2   = 0
+               ORDER BY u.lastname, u.firstname;"
+                : "";
+
+            // summary query
+            string summQ = "";
+            if (moreAb || fullRep)
+            {
+                // summary for both fullRep  and moreAb 
+                            summQ = $@"
+            SELECT 
+                u.id        AS user_id,
+                u.firstname,
+                u.lastname,
+                @totalDays - COUNT(qr.user_id) AS Absences
+            FROM users AS u
+            LEFT JOIN quiz_records AS qr
+              ON qr.user_id = u.id
+             AND CONVERT(date, qr.submitted) IN ({inDateList})
+            WHERE u.user_role = 'STUDENT'
+            GROUP BY u.id, u.firstname, u.lastname
+            " + (moreAb
+                            ? "HAVING (@totalDays - COUNT(qr.user_id)) > @threshold;"
+                            : "");
+                        }
+
+            // combined SQL
+            string combine = string.Join("\n", new[] { gridQ, gridQC, gridQX }.Where(sql => !string.IsNullOrWhiteSpace(sql)));
+            using (var conn = GetAzureMySQLConnection())
+            using (var cmd = new SqlCommand(combine + Environment.NewLine + summQ, conn))
+            {
+                cmd.Parameters.AddWithValue("@classId", classId);
+                cmd.Parameters.AddWithValue("@totalDays", meetingDates.Count);
+                if (moreAb)
+                    cmd.Parameters.AddWithValue("@threshold", abMin);
+                
+                
+                conn.Open();
+                var ds = new DataSet();
+                using (var da = new SqlDataAdapter(cmd))
+                    da.Fill(ds);
+                return ds;
+            }
+        }
+
+        /*public void attendanceReport(filterReport filters, out List<SqlParameter> parameters)
+          {
+              parameters = new List<SqlParameter>();
+              string baseQ = "";
+              string date = "";
+
+              if (filters.dateRange.Checked)
+              {
+                  date = " AND DATE (q.submitted) BETWEEN @startDate AND @EndDate ";
+                  parameters.Add(new SqlParameter("@startDate", filters.dateStart.Value.Date));
+                  parameters.Add(new SqlParameter("@endDate", filters.dateEnd.Value.Date));
+
+              }
+              if (filters.fullReport.Checked)
+              {
+                  baseQ = @"
+                      SELECT u.student_id, u.firstname,u.lastname,
+                          DATE(q.submitted) AS date, q.status
+                      FROM quiz_records q
+                      JOIN users u ON q.user_id = u.id 
+                      WHERE u.user_role = 'STUDENT'" + date + @"
+                      ORDER BY u.lastanme, u.firstname, DATE (q.submitted)";
+
+              }
+              else if (filters.numAb.Checked)
+              {
+                  baseQ = @"
+                      SELECT U.student_id, u.firstname, u.lastname, COUNT (*) AS absence_count 
+                          FROM users u 
+                          LEFT JOIN (
+                              SELECT user_id, DATE(submitted) AS date 
+                              FROM quiz_records 
+                              WHERE status = 'Absent'
+                          ) a ON u.id = a.user_id 
+                          WHERE u.user_role = 'STUDENT; 
+                          GROUP BY u.id, u.student_id,u.firstname, u.latsname
+                          HAVING COUNT(a.date) > @limit";
+
+                  parameters.Add(new SqlParameter("@Absence"
+
+
+
+              }
+              try
+              {
+  =
+                  using (var connection = GetAzureMySQLConnection())
+                  {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand(baseQ, connection))
+                      {
+
+                      }
+                  }
+              }
+              catch (Exception e)
+              {
+                  Console.WriteLine(e.ToString());
+
+              }*/
+
         public void insertAttendenceRec(DataTable csvTable)
         {
             DataTable dataTable = new DataTable();
@@ -414,6 +718,7 @@ namespace AttendanceUtility
 
                         SqlDataAdapter adapter = new SqlDataAdapter(command);
                         adapter.Fill(dataTable);
+
 
 
                     }

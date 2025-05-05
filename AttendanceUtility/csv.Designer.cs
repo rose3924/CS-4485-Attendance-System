@@ -48,7 +48,7 @@
             BannerPanel.Location = new Point(0, 0);
             BannerPanel.Margin = new Padding(5);
             BannerPanel.Name = "BannerPanel";
-            BannerPanel.Size = new Size(2035, 169);
+            BannerPanel.Size = new Size(1600, 169);
             BannerPanel.TabIndex = 2;
             // 
             // LogoutLabel
@@ -58,7 +58,7 @@
             LogoutLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             LogoutLabel.ForeColor = Color.FromArgb(192, 92, 31);
             LogoutLabel.ImageAlign = ContentAlignment.BottomRight;
-            LogoutLabel.Location = new Point(3339, 189);
+            LogoutLabel.Location = new Point(2904, 189);
             LogoutLabel.Margin = new Padding(5, 0, 5, 0);
             LogoutLabel.Name = "LogoutLabel";
             LogoutLabel.Size = new Size(116, 41);
@@ -80,10 +80,10 @@
             // csvUpload
             // 
             csvUpload.Font = new Font("Yu Gothic UI", 11.1F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            csvUpload.Location = new Point(1695, 189);
+            csvUpload.Location = new Point(1338, 181);
             csvUpload.Margin = new Padding(5);
             csvUpload.Name = "csvUpload";
-            csvUpload.Size = new Size(266, 93);
+            csvUpload.Size = new Size(248, 86);
             csvUpload.TabIndex = 9;
             csvUpload.Text = "Choose File";
             csvUpload.UseVisualStyleBackColor = true;
@@ -92,20 +92,20 @@
             // AttendanceDataGrid
             // 
             AttendanceDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            AttendanceDataGrid.Location = new Point(67, 305);
+            AttendanceDataGrid.Location = new Point(23, 285);
             AttendanceDataGrid.Margin = new Padding(5);
             AttendanceDataGrid.Name = "AttendanceDataGrid";
             AttendanceDataGrid.RowHeadersWidth = 62;
-            AttendanceDataGrid.Size = new Size(1894, 803);
+            AttendanceDataGrid.Size = new Size(1552, 600);
             AttendanceDataGrid.TabIndex = 10;
             // 
             // confirmChanges
             // 
             confirmChanges.Font = new Font("Yu Gothic UI", 11.1F, FontStyle.Bold);
-            confirmChanges.Location = new Point(1386, 189);
+            confirmChanges.Location = new Point(1077, 181);
             confirmChanges.Margin = new Padding(5);
             confirmChanges.Name = "confirmChanges";
-            confirmChanges.Size = new Size(266, 93);
+            confirmChanges.Size = new Size(248, 86);
             confirmChanges.TabIndex = 11;
             confirmChanges.Text = "Confirm";
             confirmChanges.UseVisualStyleBackColor = true;
@@ -116,7 +116,7 @@
             // 
             AutoScaleDimensions = new SizeF(17F, 41F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(2035, 1138);
+            ClientSize = new Size(1600, 896);
             Controls.Add(confirmChanges);
             Controls.Add(csvUpload);
             Controls.Add(AttendanceDataGrid);

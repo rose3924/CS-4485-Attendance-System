@@ -41,6 +41,7 @@ namespace AttendanceUtility
             LoadCourseName();
             label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
             attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+            dataGridDropDow();
             attendecneDataGrid.Columns["attendance"].ReadOnly = false;
             //timer();
         }
@@ -160,6 +161,7 @@ namespace AttendanceUtility
         {
             date = new System.Windows.Forms.Timer();
             attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+            dataGridDropDow();
         }
 
         private void label1_Click_1(object sender, EventArgs e)
@@ -171,6 +173,7 @@ namespace AttendanceUtility
         {
             label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
             attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+            dataGridDropDow();
         }
 
         private void TodayButton_Click(object sender, EventArgs e)
@@ -183,6 +186,7 @@ namespace AttendanceUtility
             monthCalendar1.SelectionStart = monthCalendar1.SelectionStart.AddDays(-1);
             label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
             attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+            dataGridDropDow();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -190,6 +194,7 @@ namespace AttendanceUtility
             monthCalendar1.SelectionStart = monthCalendar1.SelectionStart.AddDays(1);
             label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
             attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+            dataGridDropDow();
         }
         private void changeDate()
         {
@@ -201,36 +206,74 @@ namespace AttendanceUtility
             {
                 var row = attendecneDataGrid.Rows[e.RowIndex];
                 string cellChanged = row.Cells["attendance"].Value?.ToString();
-                if (cellChanged == "Present")
+                //if (cellChanged == "Present")
+                //{
+                string sid = row.Cells["student_id"].Value.ToString();
+                DateTime day = monthCalendar1.SelectionRange.Start.Date;
+
+                DialogResult confirmation = MessageBox.Show(
+                    "Confirming will change " + row.Cells["firstname"].Value.ToString() + " " + row.Cells["lastname"].Value.ToString() + " to " + row.Cells["attendance"].Value.ToString(),
+                    "Confirm Change",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (confirmation == DialogResult.Yes)
                 {
-                    string sid = row.Cells["student_id"].Value.ToString();
-                    DateTime day = monthCalendar1.SelectionRange.Start.Date;
+                    dbobject.changeAttendenceRecord(sid, day);
 
-                    DialogResult confirmation = MessageBox.Show(
-                        "Confirming will change " + row.Cells["firstname"].Value.ToString() + " " + row.Cells["lastname"].Value.ToString() + " to " + row.Cells["attendance"].Value.ToString(),
-                        "Confirm Change",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
-
-                    if (confirmation == DialogResult.Yes)
-                    {
-                        dbobject.changeAttendenceRecord(sid, day);
-
-                    }
-                    else
-                    {
-
-
-                    }
+                }
+                else
+                {
 
 
                 }
-                else 
-                {
-                    MessageBox.Show("Please enter valid attendance status: Present, Absent, or Late", "Invalid Attendance Status",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+
+                // }
+                ///else
+                //{
+                //  MessageBox.Show("Please enter valid attendance status: Present, Absent, or Late", "Invalid Attendance Status",
+                //    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // }
 
             }
         }
-    } }
+        private void dataGridDropDow()
+        {
+            string col = "attendance";
+            DataGridViewComboBoxColumn dropDowCol = new DataGridViewComboBoxColumn();
+            dropDowCol.Name = col;
+            dropDowCol.HeaderText = "attendance";
+            dropDowCol.DataPropertyName = col;
+            dropDowCol.Items.AddRange("Present", "Absent", "Late", "Excused");
+
+            int index = attendecneDataGrid.Columns[col].Index;
+            attendecneDataGrid.Columns.RemoveAt(index);
+            attendecneDataGrid.Columns.Insert(index, dropDowCol);
+        }
+        public class attendenceStat
+        {
+            public string Name { get; set; }
+        }
+        private void bind()
+        {
+
+        }
+        // private List<status> get
+        private void AttendancePage_Load(object sender, EventArgs e)
+        {
+
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            new csv(dbobject).Show();
+        }
+
+        private void label2_Click_1(object sender, EventArgs e)
+        {
+            new filterReport(dbobject, courseId).Show();
+
+        }
+    }
+}
