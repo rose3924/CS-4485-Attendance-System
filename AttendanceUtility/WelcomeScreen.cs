@@ -1,10 +1,16 @@
 /*
+ * WelcomeScreen.cs
+ * 
  * Welcome Screen for the Professor Desktop app. Also functions as the starter form.
  * Welcomes the user and after three seconds moves to the login screen.
  * 
+<<<<<<< HEAD
+ * For connection testing, the 'testconnectionbutton' remains.
  * 
- * 
- * Written by Olivia Anderson (ova210001) and Cristina Adame (caa220007)
+=======
+>>>>>>> 0353722a6c9c80f7c9cbdba7f4aa5c45a2762bcb
+ * Written by Shuang Jiang (SXJ220054) 
+ * Contributor Olivia Anderson (ova210001) and Cristina Adame (caa220007)
  * 
  */
 using Microsoft.Data.SqlClient;
@@ -12,11 +18,11 @@ using System.Data;
 
 namespace AttendanceUtility
 {
-    public partial class WelcomeScreen: Form
+    public partial class WelcomeScreen : Form
     {
         // Instance of database object
         private Database dbobject;
-        public WelcomeScreen ()
+        public WelcomeScreen()
         {
             InitializeComponent();
             dbobject = InitDbObject();
@@ -70,6 +76,9 @@ namespace AttendanceUtility
             {
                 dbobject = InitDbObject();
             }
+            // Add ProgressBar
+            welcomeProgressBar.MarqueeAnimationSpeed = 30; // Adjust animation speed
+
             await Task.Delay(5000);
             this.Hide();
             new LoginScreen(dbobject).Show();
@@ -83,5 +92,6 @@ namespace AttendanceUtility
             wakeupDatabase();
             MoveToLoginScreen();
         }
+
     }
 }

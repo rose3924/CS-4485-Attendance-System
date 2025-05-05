@@ -625,5 +625,59 @@ namespace AttendanceUtility
                 }
             }
         }
+
+        // Lets you delete an answer for a question
+        private void deleteAnswerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Ensure there are rows in the answer datagrid a row cannot be deleted.
+            if (answersDataGridView.Rows.Count == 0)
+            {
+                return;
+            }
+            if (answersDataGridView.SelectedRows.Count > 0)
+            {
+                // id AS answer_id, question_id, answer_text, correct_value
+                int selectedAnswerId = Convert.ToInt32(answersDataGridView.SelectedRows[0].Cells["answer_id"].Value);
+                int questionId = Convert.ToInt32(answersDataGridView.SelectedRows[0].Cells["question_id"].Value);
+                Console.WriteLine($"Deleting Answer ID: {selectedAnswerId}");
+
+                // Remove it from the DataGridView by calling RemoveAt(index)
+                // and register the deleted row with modifiedQuestions
+                // Dictionary.
+                if (!modifiedAnswers.ContainsKey(selectedAnswerId))
+                {
+                    modifiedAnswers[selectedAnswerId] = new Answer
+                    {
+                        AnswerText = "",
+                        AnswerId = selectedAnswerId, // Ensure AnswerId is set
+                        QuestionId = questionId, // Ensure QuestionId is set
+                        ActionType = DatabaseAction.Delete
+                    };
+                    saveButton.Enabled = true;
+                    Console.WriteLine($"Row with answer_id {selectedAnswerId} and question_id {questionId} is being recorded for deletion.");
+                }
+                answersDataGridView.Rows.RemoveAt(answersDataGridView.SelectedRows[0].Index);
+            }
+        }
+
+        // Lets you see the option to delete an answer
+        private void answersDataGridView_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (answersDataGridView.Rows.Count == 0)
+                {
+                    // If there are no rows in the datagrid a row cannot be deleted.
+                    return;
+                }
+                var hitTest = answersDataGridView.HitTest(e.X, e.Y);
+                if (hitTest.RowIndex >= 0)
+                {
+                    answersDataGridView.ClearSelection();
+                    answersDataGridView.Rows[hitTest.RowIndex].Selected = true;
+                    answerContextMenuStrip.Show(answersDataGridView, e.Location);
+                }
+            }
+        }
     }
 }

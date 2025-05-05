@@ -1,4 +1,6 @@
 ﻿/*
+ * ClassesHomePage.cs
+ * 
  * Home Page for Professors following their successful login.
  * Displays their classes as buttons to select in order to see further details.
  * Contains a functional logout button.
@@ -60,7 +62,7 @@ namespace AttendanceUtility
         /*
          * Loads the semester drop down option and displays the first semester courses
          */
-        private void LoadInitialProfClasses()
+        public void LoadInitialProfClasses()
         {
             //Loads the semesters to the combo box
             LoadSemesterComboBox();
@@ -81,19 +83,24 @@ namespace AttendanceUtility
         private void LoadSelectedSemesterProfClasses(int semesterId)
         {
             DataTable profClasses = dbobject.GetProfessorSemesterClasses(profId, semesterId);
-
             // Clear the layout panel before adding new buttons 
             ClassesHomeLayoutPanel.Controls.Clear();
 
             foreach (DataRow row in profClasses.Rows)
             {
+                // Get class days
+                List<string> days = dbobject.GetClassDays((int)row["id"]);
+                string daysString = string.Join(", ", days);
+
+
                 // Details of the construction of the buttons (text, tag, dimensions)
                 Button CourseButton = new Button
                 {
                     // Displays for example: 'CS 1337.002' on button with time of class hh:mm tt so 10:23 AM
                     Text = $"{row["department"]}{row["number"]}.{row["section"]} - {row["name"]}" +
-                            $"\n{row["description"]}" +
-                            $"\nTime: {DateTime.Today.Add((TimeSpan)row["start_time"]).ToString("hh:mm tt")} - {DateTime.Today.Add((TimeSpan)row["end_time"]).ToString("hh:mm tt")}",
+                            $"\n{row["description"]} Credit Hours" +
+                            $"\nTime: {DateTime.Today.Add((TimeSpan)row["start_time"]).ToString("hh:mm tt")} - {DateTime.Today.Add((TimeSpan)row["end_time"]).ToString("hh:mm tt")}" +
+                            $"\nDays: " + daysString,
 
 
                     // Tag stores the course id, to be retrieved later and passed to ClassPage
@@ -197,7 +204,8 @@ namespace AttendanceUtility
          */
         private void AddClassButton_Click(object sender, EventArgs e)
         {
-            new CreateClassForm(dbobject, profId).ShowDialog();
+            new CreateClassForm(dbobject, profId, this).ShowDialog();
         }
+        
     }
 }

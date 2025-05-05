@@ -208,8 +208,8 @@
             // 
             // pictureBox1
             // 
-            pictureBox1.Image = Properties.Resources.right_arrow_3094;
-            pictureBox1.Location = new Point(902, 191);
+            //pictureBox1.Image = Properties.Resources.right_arrow_3094;
+            pictureBox1.Location = new Point(1026, 191);
             pictureBox1.Margin = new Padding(5);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(85, 84);

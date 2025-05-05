@@ -45,12 +45,15 @@
             questionContextMenuStrip = new ContextMenuStrip(components);
             deleteToolStripMenuItem = new ToolStripMenuItem();
             addExistingQuestionToolStripMenuItem = new ToolStripMenuItem();
+            answerContextMenuStrip = new ContextMenuStrip(components);
+            deleteAnswerToolStripMenuItem = new ToolStripMenuItem();
             BannerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)BackButtonBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)questionDataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)answersDataGridView).BeginInit();
             questionContextMenuStrip.SuspendLayout();
+            answerContextMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
             // BannerPanel
@@ -167,6 +170,7 @@
             // 
             quiztitleTextBox.Location = new Point(255, 94);
             quiztitleTextBox.Name = "quiztitleTextBox";
+            quiztitleTextBox.ReadOnly = true;
             quiztitleTextBox.Size = new Size(220, 27);
             quiztitleTextBox.TabIndex = 12;
             // 
@@ -174,6 +178,7 @@
             // 
             passcodeTextBox.Location = new Point(481, 93);
             passcodeTextBox.Name = "passcodeTextBox";
+            passcodeTextBox.ReadOnly = true;
             passcodeTextBox.Size = new Size(152, 27);
             passcodeTextBox.TabIndex = 13;
             // 
@@ -197,6 +202,7 @@
             answersDataGridView.Size = new Size(745, 163);
             answersDataGridView.TabIndex = 15;
             answersDataGridView.CellValueChanged += answersDataGridView_CellValueChanged;
+            answersDataGridView.MouseDown += answersDataGridView_MouseDown;
             // 
             // questionContextMenuStrip
             // 
@@ -218,6 +224,20 @@
             addExistingQuestionToolStripMenuItem.Size = new Size(224, 24);
             addExistingQuestionToolStripMenuItem.Text = "Add Existing Question";
             addExistingQuestionToolStripMenuItem.Click += addExistingQuestionToolStripMenuItem_Click;
+            // 
+            // answerContextMenuStrip
+            // 
+            answerContextMenuStrip.ImageScalingSize = new Size(20, 20);
+            answerContextMenuStrip.Items.AddRange(new ToolStripItem[] { deleteAnswerToolStripMenuItem });
+            answerContextMenuStrip.Name = "answerContextMenuStrip";
+            answerContextMenuStrip.Size = new Size(175, 28);
+            // 
+            // deleteAnswerToolStripMenuItem
+            // 
+            deleteAnswerToolStripMenuItem.Name = "deleteAnswerToolStripMenuItem";
+            deleteAnswerToolStripMenuItem.Size = new Size(174, 24);
+            deleteAnswerToolStripMenuItem.Text = "Delete Answer";
+            deleteAnswerToolStripMenuItem.Click += deleteAnswerToolStripMenuItem_Click;
             // 
             // QuizzesPage
             // 
@@ -246,6 +266,7 @@
             ((System.ComponentModel.ISupportInitialize)questionDataGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)answersDataGridView).EndInit();
             questionContextMenuStrip.ResumeLayout(false);
+            answerContextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -267,5 +288,7 @@
         private ContextMenuStrip questionContextMenuStrip;
         private ToolStripMenuItem deleteToolStripMenuItem;
         private ToolStripMenuItem addExistingQuestionToolStripMenuItem;
+        private ContextMenuStrip answerContextMenuStrip;
+        private ToolStripMenuItem deleteAnswerToolStripMenuItem;
     }
 }
