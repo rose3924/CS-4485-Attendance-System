@@ -356,7 +356,7 @@ namespace AttendanceUtility
             return dataTable;
         }
         //angelica bell
-        //gets date of the end of a semester based on course id
+        //gets date of the start of a semester based on course id
         public DateTime getSemStart(int courseId)
         {
             try
@@ -401,7 +401,7 @@ namespace AttendanceUtility
                 SELECT s.end_date
                 FROM semester s
                 JOIN class c ON s.id = c.semester_id
-                WHERE id = @courseId;";
+                WHERE c.id = @courseId;";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {

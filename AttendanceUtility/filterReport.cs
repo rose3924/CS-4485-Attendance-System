@@ -142,6 +142,8 @@ namespace AttendanceUtility
             dateRange.Visible = false;
             startDate.Visible = false;
             endDate.Visible = false;
+            cancel.Visible = false;
+            generate.Visible = false;
             reportFilter.Text = "Report.";
             gridDetails.Visible = true;
             gridSummary.Visible = true;

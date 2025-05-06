@@ -226,7 +226,7 @@
             // gridDetails
             // 
             gridDetails.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridDetails.Location = new Point(74, 224);
+            gridDetails.Location = new Point(74, 294);
             gridDetails.Name = "gridDetails";
             gridDetails.RowHeadersWidth = 102;
             gridDetails.Size = new Size(689, 415);
@@ -236,7 +236,7 @@
             // gridSummary
             // 
             gridSummary.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridSummary.Location = new Point(813, 224);
+            gridSummary.Location = new Point(813, 294);
             gridSummary.Name = "gridSummary";
             gridSummary.RowHeadersWidth = 102;
             gridSummary.Size = new Size(689, 415);
