@@ -42,17 +42,17 @@
             addStudents = new Label();
             panel1 = new Panel();
             TodayButton = new Button();
-            pictureBox1 = new PictureBox();
-            pictureBox2 = new PictureBox();
-            label1 = new Label();
+            incrementDate = new PictureBox();
+            decrementDay = new PictureBox();
+            dateLabel = new Label();
             attendecneDataGrid = new DataGridView();
             timer1 = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)BackButtonBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).BeginInit();
             BannerPanel.SuspendLayout();
             panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)incrementDate).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)decrementDay).BeginInit();
             ((System.ComponentModel.ISupportInitialize)attendecneDataGrid).BeginInit();
             SuspendLayout();
             // 
@@ -206,43 +206,43 @@
             TodayButton.UseVisualStyleBackColor = true;
             TodayButton.Click += TodayButton_Click;
             // 
-            // pictureBox1
+            // incrementDate
             // 
-            //pictureBox1.Image = Properties.Resources.right_arrow_3094;
-            pictureBox1.Location = new Point(1026, 191);
-            pictureBox1.Margin = new Padding(5);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(85, 84);
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.TabIndex = 17;
-            pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
+            incrementDate.Image = Properties.Resources.right_arrow_3094;
+            incrementDate.Location = new Point(896, 191);
+            incrementDate.Margin = new Padding(5);
+            incrementDate.Name = "incrementDate";
+            incrementDate.Size = new Size(85, 84);
+            incrementDate.SizeMode = PictureBoxSizeMode.Zoom;
+            incrementDate.TabIndex = 17;
+            incrementDate.TabStop = false;
+            incrementDate.Click += incrementDate_Click;
             // 
-            // pictureBox2
+            // decrementDay
             // 
-            pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
-            pictureBox2.Location = new Point(810, 191);
-            pictureBox2.Margin = new Padding(5);
-            pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(85, 84);
-            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.TabIndex = 18;
-            pictureBox2.TabStop = false;
-            pictureBox2.Click += pictureBox2_Click;
+            decrementDay.Image = (Image)resources.GetObject("decrementDay.Image");
+            decrementDay.Location = new Point(810, 191);
+            decrementDay.Margin = new Padding(5);
+            decrementDay.Name = "decrementDay";
+            decrementDay.Size = new Size(85, 84);
+            decrementDay.SizeMode = PictureBoxSizeMode.Zoom;
+            decrementDay.TabIndex = 18;
+            decrementDay.TabStop = false;
+            decrementDay.Click += decrementDate_Click;
             // 
-            // label1
+            // dateLabel
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 14.1F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.ForeColor = Color.Black;
-            label1.Location = new Point(994, 200);
-            label1.Margin = new Padding(5, 0, 5, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(335, 62);
-            label1.TabIndex = 11;
-            label1.Text = "April 23, 2025";
-            label1.TextAlign = ContentAlignment.BottomLeft;
-            label1.Click += label1_Click_1;
+            dateLabel.AutoSize = true;
+            dateLabel.Font = new Font("Segoe UI", 14.1F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dateLabel.ForeColor = Color.Black;
+            dateLabel.Location = new Point(1056, 200);
+            dateLabel.Margin = new Padding(5, 0, 5, 0);
+            dateLabel.Name = "dateLabel";
+            dateLabel.Size = new Size(335, 62);
+            dateLabel.TabIndex = 11;
+            dateLabel.Text = "April 23, 2025";
+            dateLabel.TextAlign = ContentAlignment.BottomLeft;
+            dateLabel.Click += label1_Click_1;
             // 
             // attendecneDataGrid
             // 
@@ -266,9 +266,9 @@
             BackColor = Color.WhiteSmoke;
             ClientSize = new Size(1632, 984);
             Controls.Add(attendecneDataGrid);
-            Controls.Add(label1);
-            Controls.Add(pictureBox2);
-            Controls.Add(pictureBox1);
+            Controls.Add(dateLabel);
+            Controls.Add(decrementDay);
+            Controls.Add(incrementDate);
             Controls.Add(TodayButton);
             Controls.Add(panel1);
             Controls.Add(BannerPanel);
@@ -284,8 +284,8 @@
             BannerPanel.PerformLayout();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)incrementDate).EndInit();
+            ((System.ComponentModel.ISupportInitialize)decrementDay).EndInit();
             ((System.ComponentModel.ISupportInitialize)attendecneDataGrid).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -303,9 +303,9 @@
         private Panel BannerPanel;
         private Panel panel1;
         private Button TodayButton;
-        private PictureBox pictureBox1;
-        private PictureBox pictureBox2;
-        private Label label1;
+        private PictureBox incrementDate;
+        private PictureBox decrementDay;
+        private Label dateLabel;
         private DataGridView attendecneDataGrid;
         private System.Windows.Forms.Timer timer1;
         private Label addStudents;

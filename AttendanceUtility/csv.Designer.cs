@@ -123,6 +123,7 @@
             Controls.Add(BannerPanel);
             Name = "csv";
             Text = "csv";
+            Load += csv_Load;
             BannerPanel.ResumeLayout(false);
             BannerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)UTDLogoBox).EndInit();

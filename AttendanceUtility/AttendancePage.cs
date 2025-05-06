@@ -4,7 +4,7 @@
  * Attendance Page for Course
  * Will allow for a csv file to be uploaded into 
  * 
- * Written by Cristina Adame (caa220007)
+ * Written by Cristina Adame (caa220007) and Angelica Bell
  * starting April , 2025
  */
 using System;
@@ -33,7 +33,7 @@ namespace AttendanceUtility
         // Course ID, needed to pass to the following forms
         private int courseId;
 
-
+        //
         public AttendancePage(Database dbobject, int profId, int courseId)
         {
             InitializeComponent();
@@ -41,9 +41,12 @@ namespace AttendanceUtility
             this.courseId = courseId;
             this.profId = profId;
             LoadCourseName();
-            label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            //sets label to the current date
+            dateLabel.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            //pulls quizzes for current day from database and displays attendance information
             attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
             dataGridDropDow();
+            //making attendance  column editable so user can change attendance status 
             attendecneDataGrid.Columns["attendance"].ReadOnly = false;
             //timer();
         }
@@ -96,38 +99,7 @@ namespace AttendanceUtility
 
         }
 
-        private void CSVButton_Click(object sender, EventArgs e)
-        {
-            /*    OpenFileDialog openCSV = new OpenFileDialog();
-                //openCSV.Filter = "Text files| *.txt | All files | *.*";
-                if (openCSV.ShowDialog() == DialogResult.OK)
-                {
-                    filePath = openCSV.FileName;
-                    string[] data = File.ReadAllLines(filePath);
-                    string[] fields;
-                    fields = data[0].Split(new char[] { '\t' });
-                    int col = fields.GetLength(0);
-                    DataTable csvTable = new DataTable();
-                    for (int i = 0; i < col; i++)
-                    {
-                        csvTable.Columns.Add(fields[i].ToLower(), typeof(String));
 
-                    }
-                    DataRow row;
-                    for (int i = 1; i < data.GetLength(0); i++)
-                    {
-                        fields = data[i].Split(new char[] { '\t' });
-                        row = csvTable.NewRow();
-                        for (int x = 0; x < col; x++)
-                        {
-                            row[x] = fields[x];
-                        }
-                        csvTable.Rows.Add(row);
-                    }
-                    AttendanceDataGrid.DataSource = csvTable;
-                    dbobject.insertAttendenceRec(csvTable);
-                }*/
-        }
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -152,21 +124,25 @@ namespace AttendanceUtility
 
         }
         System.Windows.Forms.Timer date = null;
+        //tracks current date and time
         private void timer()
         {
             date = new System.Windows.Forms.Timer();
             date.Interval = 1000;
             date.Tick += new EventHandler(currentDate_Tick);
             date.Enabled = true;
-            label1.Text = DateOnly.FromDateTime(DateTime.Now).ToString("MMMM dd, yyyy");
+            dateLabel.Text = DateOnly.FromDateTime(DateTime.Now).ToString("MMMM dd, yyyy");
+            monthCalendar1.SelectionStart = DateTime.Now;
             //attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(DateOnly.FromDateTime(DateTime.Now));
 
         }
+        //shows quizzes from current day if 'today button' is clicked 
         private void currentDate_Tick(object sender, EventArgs e)
         {
             date = new System.Windows.Forms.Timer();
             attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
             dataGridDropDow();
+
         }
 
         private void label1_Click_1(object sender, EventArgs e)
@@ -174,9 +150,11 @@ namespace AttendanceUtility
 
         }
 
+        //displays attendance infromation for
         private void monthCalendar1_DateSelected(object sender, DateRangeEventArgs e)
         {
-            label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            dateLabel.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+
             attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
             dataGridDropDow();
         }
@@ -186,25 +164,10 @@ namespace AttendanceUtility
             timer();
         }
 
-        private void pictureBox2_Click(object sender, EventArgs e)
-        {
-            monthCalendar1.SelectionStart = monthCalendar1.SelectionStart.AddDays(-1);
-            label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
-            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
-            dataGridDropDow();
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-            monthCalendar1.SelectionStart = monthCalendar1.SelectionStart.AddDays(1);
-            label1.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
-            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
-            dataGridDropDow();
-        }
         private void changeDate()
         {
         }
-
+        //user change attendance status in database by changing data in dropdown 
         private void attendecneDataGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (attendecneDataGrid.Columns[e.ColumnIndex].Name == "attendance")
@@ -215,7 +178,7 @@ namespace AttendanceUtility
                 //{
                 string sid = row.Cells["student_id"].Value.ToString();
                 DateTime day = monthCalendar1.SelectionRange.Start.Date;
-
+                //asking user for confirmation
                 DialogResult confirmation = MessageBox.Show(
                     "Confirming will change " + row.Cells["firstname"].Value.ToString() + " " + row.Cells["lastname"].Value.ToString() + " to " + row.Cells["attendance"].Value.ToString(),
                     "Confirm Change",
@@ -224,7 +187,7 @@ namespace AttendanceUtility
 
                 if (confirmation == DialogResult.Yes)
                 {
-                    dbobject.changeAttendenceRecord(sid, day);
+                    dbobject.changeAttendenceRecord(sid, day, row.Cells["attendance"].Value.ToString());
 
                 }
                 else
@@ -233,15 +196,10 @@ namespace AttendanceUtility
 
                 }
 
-                // }
-                ///else
-                //{
-                //  MessageBox.Show("Please enter valid attendance status: Present, Absent, or Late", "Invalid Attendance Status",
-                //    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                // }
 
             }
         }
+        //drap down defintion of dropdown that allows user to change attendance information 
         private void dataGridDropDow()
         {
             string col = "attendance";
@@ -249,20 +207,14 @@ namespace AttendanceUtility
             dropDowCol.Name = col;
             dropDowCol.HeaderText = "attendance";
             dropDowCol.DataPropertyName = col;
-            dropDowCol.Items.AddRange("Present", "Absent", "Late", "Excused");
+            dropDowCol.Items.AddRange("Present", "Absent");
 
             int index = attendecneDataGrid.Columns[col].Index;
             attendecneDataGrid.Columns.RemoveAt(index);
             attendecneDataGrid.Columns.Insert(index, dropDowCol);
         }
-        public class attendenceStat
-        {
-            public string Name { get; set; }
-        }
-        private void bind()
-        {
 
-        }
+   
         // private List<status> get
         private void AttendancePage_Load(object sender, EventArgs e)
         {
@@ -279,6 +231,22 @@ namespace AttendanceUtility
         {
             new filterReport(dbobject, courseId).Show();
 
+        }
+        //add one to selected date and get attendance data for that day
+        private void incrementDate_Click(object sender, EventArgs e)
+        {
+            monthCalendar1.SelectionStart = monthCalendar1.SelectionStart.AddDays(1);
+            dateLabel.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+            dataGridDropDow();
+        }
+        //subtrack one to selected date and get attendance data for that day
+        private void decrementDate_Click(object sender, EventArgs e)
+        {
+            monthCalendar1.SelectionStart = monthCalendar1.SelectionStart.AddDays(-1);
+            dateLabel.Text = monthCalendar1.SelectionStart.ToString("MMMM dd, yyyy");
+            attendecneDataGrid.DataSource = dbobject.getStudentQuizzesForDay(monthCalendar1.SelectionStart.Date);
+            dataGridDropDow();
         }
     }
 }

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -355,6 +356,7 @@ namespace AttendanceUtility
             return dataTable;
         }
         //angelica bell
+        //gets date of the end of a semester based on course id
         public DateTime getSemStart(int courseId)
         {
             try
@@ -386,6 +388,8 @@ namespace AttendanceUtility
             return DateTime.Today;
             
         }
+        //angelica bell
+        //gets date of the end of a semester based on course id
         public DateTime getSemEnd(int courseId)
         {
             try
@@ -421,6 +425,8 @@ namespace AttendanceUtility
             }
             return DateTime.Today;
         }
+        //angelica bell
+        //counts class days in a week
         public int countClassDays(int courseId)
         {
             try
@@ -446,6 +452,8 @@ namespace AttendanceUtility
             }
             return 0;
         }
+        //angelica bell
+        //generates attendance report based on selected filters 
         public DataSet attendanceReport( int classId, bool fullRep, bool conAb, bool moreAb, int abMin, DateTime startDate, DateTime endDate)
         {
             //  weekdays for this class
@@ -596,67 +604,8 @@ namespace AttendanceUtility
             }
         }
 
-        /*public void attendanceReport(filterReport filters, out List<SqlParameter> parameters)
-          {
-              parameters = new List<SqlParameter>();
-              string baseQ = "";
-              string date = "";
-
-              if (filters.dateRange.Checked)
-              {
-                  date = " AND DATE (q.submitted) BETWEEN @startDate AND @EndDate ";
-                  parameters.Add(new SqlParameter("@startDate", filters.dateStart.Value.Date));
-                  parameters.Add(new SqlParameter("@endDate", filters.dateEnd.Value.Date));
-
-              }
-              if (filters.fullReport.Checked)
-              {
-                  baseQ = @"
-                      SELECT u.student_id, u.firstname,u.lastname,
-                          DATE(q.submitted) AS date, q.status
-                      FROM quiz_records q
-                      JOIN users u ON q.user_id = u.id 
-                      WHERE u.user_role = 'STUDENT'" + date + @"
-                      ORDER BY u.lastanme, u.firstname, DATE (q.submitted)";
-
-              }
-              else if (filters.numAb.Checked)
-              {
-                  baseQ = @"
-                      SELECT U.student_id, u.firstname, u.lastname, COUNT (*) AS absence_count 
-                          FROM users u 
-                          LEFT JOIN (
-                              SELECT user_id, DATE(submitted) AS date 
-                              FROM quiz_records 
-                              WHERE status = 'Absent'
-                          ) a ON u.id = a.user_id 
-                          WHERE u.user_role = 'STUDENT; 
-                          GROUP BY u.id, u.student_id,u.firstname, u.latsname
-                          HAVING COUNT(a.date) > @limit";
-
-                  parameters.Add(new SqlParameter("@Absence"
-
-
-
-              }
-              try
-              {
-  =
-                  using (var connection = GetAzureMySQLConnection())
-                  {
-                    connection.Open();
-                    using (SqlCommand command = new SqlCommand(baseQ, connection))
-                      {
-
-                      }
-                  }
-              }
-              catch (Exception e)
-              {
-                  Console.WriteLine(e.ToString());
-
-              }*/
-
+       //angelica bell
+       //adds students to user table from a csv
         public void insertAttendenceRec(DataTable csvTable)
         {
             DataTable dataTable = new DataTable();
@@ -702,9 +651,12 @@ namespace AttendanceUtility
             }
 
         }
+        //angelica bell
+        //pulls attendance status based on a day.
         public DataTable getStudentQuizzesForDay(DateTime day)
         {
             DataTable dataTable = new DataTable();
+            //if student has a entry in quiz_records for a certian day, they are displayed as present else displayed as absent 
             string query = @"
                 Select u.student_id, u.firstname, u.lastname, 
                     CASE WHEN q.user_id IS NOT NULL THEN 'Present' ELSE 'Absent' END AS attendance
@@ -744,31 +696,43 @@ namespace AttendanceUtility
             }
             return dataTable;
         }
-        public void changeAttendenceRecord(string student_id, DateTime day)
+        //changes attendance status based on user input
+        public void changeAttendenceRecord(string student_id, DateTime day, string status)
         {
             try
             {
+
                 using (var connection = GetAzureMySQLConnection())
                 {
+                    string query = "";
                     connection.Open();
-                    string query = @"
-                        INSERT INTO quiz_records (quiz_id, user_id, submitted, status)
-                            SELECT 1, u.id, @Date, 'excused' 
-                            FROM users u 
-                        WHERE u.student_id = @student_id
-                            AND NOT EXISTS (
-                                SELECT 1 FROM quiz_records q
-                                WHERE q.user_id = u.id AND CAST(q.submitted AS DATE) = @Date
-                            )";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@student_id", student_id);
-                        command.Parameters.AddWithValue("@Date", day);
-
-                        command.ExecuteNonQuery();
-
+                    //inserts into quiz_records to change status to present 
+                    if (status == "Present") {
+                        query = @"
+                            INSERT INTO quiz_records (quiz_id, user_id, submitted, status)
+                                SELECT 1, u.id, @Date, 'excused' 
+                                FROM users u 
+                            WHERE u.student_id = @student_id
+                                AND NOT EXISTS (
+                                    SELECT 1 FROM quiz_records q
+                                    WHERE q.user_id = u.id AND CAST(q.submitted AS DATE) = @Date
+                                )";
                     }
+                    else
+                    {//deletes from quiz_records to change status to absent 
+                        query = @"
+                            DELETE FROM quiz_records q
+                                WHERE q.user_id = @student_id AND CAST(q.submitted AS DATE) = @Date;
+                                ";
+                    }
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@student_id", student_id);
+                            command.Parameters.AddWithValue("@Date", day);
+
+                            command.ExecuteNonQuery();
+
+                        }
                 }
             }
             catch (Exception e)

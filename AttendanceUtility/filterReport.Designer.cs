@@ -34,7 +34,7 @@
             addStudents = new Label();
             LogoutLabel = new Label();
             fullRep = new CheckBox();
-            label1 = new Label();
+            reportFilter = new Label();
             threeAb = new CheckBox();
             cusAb = new CheckBox();
             numAb = new NumericUpDown();
@@ -131,18 +131,18 @@
             fullRep.UseVisualStyleBackColor = true;
             fullRep.CheckedChanged += fullRep_CheckedChanged;
             // 
-            // label1
+            // reportFilter
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 14.1F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.ForeColor = Color.Black;
-            label1.Location = new Point(74, 204);
-            label1.Margin = new Padding(5, 0, 5, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(324, 62);
-            label1.TabIndex = 12;
-            label1.Text = "Report Filters";
-            label1.TextAlign = ContentAlignment.BottomLeft;
+            reportFilter.AutoSize = true;
+            reportFilter.Font = new Font("Segoe UI", 14.1F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            reportFilter.ForeColor = Color.Black;
+            reportFilter.Location = new Point(74, 204);
+            reportFilter.Margin = new Padding(5, 0, 5, 0);
+            reportFilter.Name = "reportFilter";
+            reportFilter.Size = new Size(324, 62);
+            reportFilter.TabIndex = 12;
+            reportFilter.Text = "Report Filters";
+            reportFilter.TextAlign = ContentAlignment.BottomLeft;
             // 
             // threeAb
             // 
@@ -209,7 +209,7 @@
             generate.TabIndex = 21;
             generate.Text = "Generate";
             generate.UseVisualStyleBackColor = true;
-            generate.Click += TodayButton_Click;
+            generate.Click += generateButton_Click;
             // 
             // cancel
             // 
@@ -221,25 +221,27 @@
             cancel.TabIndex = 22;
             cancel.Text = "Cancel";
             cancel.UseVisualStyleBackColor = true;
-            cancel.Click += button1_Click;
+            cancel.Click += cancel_Click;
             // 
             // gridDetails
             // 
             gridDetails.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridDetails.Location = new Point(109, 255);
+            gridDetails.Location = new Point(74, 224);
             gridDetails.Name = "gridDetails";
             gridDetails.RowHeadersWidth = 102;
             gridDetails.Size = new Size(689, 415);
             gridDetails.TabIndex = 23;
+            gridDetails.Visible = false;
             // 
             // gridSummary
             // 
             gridSummary.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridSummary.Location = new Point(838, 255);
+            gridSummary.Location = new Point(813, 224);
             gridSummary.Name = "gridSummary";
             gridSummary.RowHeadersWidth = 102;
             gridSummary.Size = new Size(689, 415);
             gridSummary.TabIndex = 24;
+            gridSummary.Visible = false;
             // 
             // filterReport
             // 
@@ -256,7 +258,7 @@
             Controls.Add(numAb);
             Controls.Add(cusAb);
             Controls.Add(threeAb);
-            Controls.Add(label1);
+            Controls.Add(reportFilter);
             Controls.Add(fullRep);
             Controls.Add(BannerPanel);
             Name = "filterReport";
@@ -279,7 +281,7 @@
         private Label addStudents;
         private Label LogoutLabel;
         private CheckBox fullRep;
-        private Label label1;
+        private Label reportFilter;
         private CheckBox threeAb;
         private CheckBox cusAb;
         private NumericUpDown numAb;

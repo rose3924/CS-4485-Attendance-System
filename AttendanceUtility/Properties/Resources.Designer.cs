@@ -63,6 +63,16 @@ namespace AttendanceUtility.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap back_arrow_3095 {
+            get {
+                object obj = ResourceManager.GetObject("back-arrow-3095", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap backButton {
             get {
                 object obj = ResourceManager.GetObject("backButton", resourceCulture);
@@ -76,6 +86,16 @@ namespace AttendanceUtility.Properties {
         internal static System.Drawing.Bitmap close_window_image {
             get {
                 object obj = ResourceManager.GetObject("close-window-image", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap left_arrow_7159 {
+            get {
+                object obj = ResourceManager.GetObject("left-arrow-7159", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

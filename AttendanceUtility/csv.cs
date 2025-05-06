@@ -7,7 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+/*Angelica Bell
+ * allows user to upload a csv 
+ * file is displayed in datagrid 
+ * after confirmation of changes CSV is added to database 
+ */
 namespace AttendanceUtility
 {
     public partial class csv : Form
@@ -24,7 +28,7 @@ namespace AttendanceUtility
         private void csvUpload_Click(object sender, EventArgs e)
         {
             OpenFileDialog openCSV = new OpenFileDialog();
-            //openCSV.Filter = "Text files| *.txt | All files | *.*";
+            //processes CSV bASEED ON TAB DELIMITING
             if (openCSV.ShowDialog() == DialogResult.OK)
             {
                 filePath = openCSV.FileName;
@@ -32,7 +36,7 @@ namespace AttendanceUtility
                 string[] fields;
                 fields = data[0].Split(new char[] { '\t' });
                 int col = fields.GetLength(0);
-                
+
                 for (int i = 0; i < col; i++)
                 {
                     csvTable.Columns.Add(fields[i].ToLower(), typeof(String));
@@ -51,10 +55,11 @@ namespace AttendanceUtility
                 }
                 AttendanceDataGrid.DataSource = csvTable;
                 confirmChanges.Visible = true;
-                
+
             }
         }
 
+        //asks yser for confirmation
         private void confirmChanges_Click(object sender, EventArgs e)
         {
             DialogResult confirmation = MessageBox.Show(
@@ -68,10 +73,15 @@ namespace AttendanceUtility
                 dbobject.insertAttendenceRec(csvTable);
 
             }
-            else 
+            else
             {
                 confirmChanges.Visible = false;
             }
+
+        }
+
+        private void csv_Load(object sender, EventArgs e)
+        {
 
         }
     }
