@@ -96,7 +96,7 @@ namespace StudentQuiz.Components
             }
         }
 
-
+        // Nested class that handles the timing logic and attendance status for a quiz
         public class QuizTime
         {
             private TimeOnly start_range = TimeOnly.MinValue;
@@ -125,21 +125,23 @@ namespace StudentQuiz.Components
                 get { return end_range; }
                 set { end_range = value; }
             }
+            // Constructor to initialize QuizTime based on a quiz object and code
             public QuizTime(Quiz quizObj, string code)
             {
                 TimeOnly locTime = TimeOnly.FromDateTime(DateTime.Now);
                 init(quizObj, code, locTime);
             }
+            // Constructor to initialize QuizTime with custom current time
             public QuizTime(Quiz quizObj, string code, TimeOnly currTime)
             {
                 init(quizObj, code, currTime);
             }
-
+            // Initialize the time ranges and set the attendance status
             public void init(Quiz quizObj, string code, TimeOnly currTime)
             {
                 if (quizObj != null && quizObj.Class != null && quizObj.Class.StartTime.HasValue)
                 {
-                    // TODO make be able to chnage
+                    
                     start_range = quizObj.Class.StartTime.Value.AddMinutes(-15); // Subtract 15 minutes
                     end_range = quizObj.Class.StartTime.Value.AddMinutes(15);
                     if (quizObj.Class.EndTime.HasValue) {
@@ -147,6 +149,7 @@ namespace StudentQuiz.Components
                     }
                 }
 
+                // Determine attendance status based on the current time and class schedule
                 if (currTime < start_range)
                 {
                     errorMessage = "It's to early to register for class, wait until " + start_range.ToString() + ".";

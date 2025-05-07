@@ -1458,7 +1458,42 @@ namespace AttendanceUtility
             return id;
         }
 
+        /*
+         * Checks to see if passcode for quiz is alrady used
+         * Olivia Anderson
+        */
+        public bool PasscodeIsUsed(string code, ref string title)
+        {
+            bool foundpasscode = false;
+            try
+            {
+                using (var connection = GetAzureMySQLConnection())
+                {
+                    connection.Open();
+                    string pCodeQuery = "select title from quiz where password = @passcode ";
+                    using (SqlCommand command = new SqlCommand(pCodeQuery, connection))
+                    {
+                        // Need to execute the query and get the title if it exists and set 
+                        //   foundpasscode = true; If passcode is not found foundpasscode can stay false.
+                        command.Parameters.AddWithValue("@passcode", code);
 
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read()) // If a row is found
+                            {
+                                title = reader["title"].ToString();
+                                foundpasscode = true;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error searching if passcode exists: " + e.Message);
+            }
+            return foundpasscode;
+        }
 
 
     }

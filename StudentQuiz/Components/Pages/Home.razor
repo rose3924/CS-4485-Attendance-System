@@ -1,11 +1,17 @@
-﻿
+﻿<!--
+    
+    This Blazor page displays a personalized welcome or login prompt based on the user's session state.
+    If a username is present in the session, it welcomes the user and invites them to take the quiz.
+    Otherwise, it prompts them to log in. The session values are retrieved during component initialization.
+    Olivia Anderson
+-->
 
 @page "/"
 @inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Current Quiz</PageTitle>
 
-
+<!-- Conditional rendering based on whether the user is logged in -->
 @if (string.IsNullOrWhiteSpace(Username))
 {
     <h1>Please Login</h1>
@@ -17,8 +23,8 @@ else
     <p>You're now registered. Ready to take the attendance quiz?</p>
 }
 @code {
-    private string? Username;
-    private string? Identifier;
+    private string? Username; // Holds the user's name retrieved from the session
+    private string? Identifier; // Holds an additional identifier from the session
 
     protected override void OnInitialized()
     {

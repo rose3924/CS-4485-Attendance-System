@@ -1,4 +1,13 @@
-﻿<!-- Olivia Anderson -->
+﻿<!--
+    
+    This Razor component represents the login page for the StudentQuiz application.
+    It allows a student to enter their UTD Identifier and a quiz (attendance) code.
+    Upon successful validation, the user's details are verified against the database.
+    If valid, the user session is initialized, a new quiz record is created if needed,
+    and the student is redirected to either the quiz display or completion page depending on quiz availability.
+
+   Olivia Anderson
+-->
 
 @page "/login"
 @using System.ComponentModel.DataAnnotations;
@@ -12,60 +21,75 @@
 @inject QuizResult QuizResult
 @inject QuizRegistration QuizService
 
+<!-- Login Form -->
+
 <h3>Login</h3>
 <EditForm Model="StudentModel" OnValidSubmit="HandleRegistration" FormName="UserRegistration">
     <DataAnnotationsValidator />
     <ValidationSummary />
+
+    <!-- Show validation error message if exists -->
     @if (!string.IsNullOrWhiteSpace(StudentModel.ValidationErrorMessage))
     {
         <div class="alert alert-danger">@StudentModel.ValidationErrorMessage</div>
     }
+
+    <!-- Student ID input field -->
     <div>
         <label for="username">StudentID:</label>
         <InputText id="username" class="form-control" style="max-width: 200px;" @bind-Value="StudentModel.Identifier" />
         <ValidationMessage For="@(() => StudentModel.Identifier)" />
     </div>
+    <!-- Quiz code input field -->
     <div>
         <label for="quizcode">Attendance Code:</label>
         <InputText id="quizcode" class="form-control" style="max-width: 200px;" @bind-Value="StudentModel.QuizCode" />
         <ValidationMessage For="@(() => StudentModel.QuizCode)" />
     </div>
 
+    
     <div style="margin-top: 15px;">
         <button type="submit">Register</button>
     </div>
     <p>@message</p>
+    
+
 </EditForm>
 
-
 @code {
-    [SupplyParameterFromForm]
+ // Form model to hold user input
+[SupplyParameterFromForm]
     protected UserData StudentModel { get; set; } = new();
     private Quiz? Quiz { get; set; }
     private String message = string.Empty;
 
-    private async Task HandleRegistration()
+ // Handles the form submission logic
+private async Task HandleRegistration()
     {
         Console.WriteLine("Form submitted successfully.");
 
         // This is where you'd handle DB insertion or API call
         Console.WriteLine($"User: {StudentModel.Identifier}");
 
+        // Validate input fields
         if (string.IsNullOrWhiteSpace(StudentModel.Identifier) || string.IsNullOrWhiteSpace(StudentModel.QuizCode))
         {
             Console.WriteLine("Validation failed!");
             return;
         }
+        // Ensure DbContext is available
         if (DbContext == null)
         {
             throw new InvalidOperationException("DbContext is not initialized.");
         }
 
+        // Try to find the user based on Identifier
         var username = await GetUserByStudentId();
 
         // make sure that user object isn't null
         if (username != null)
         {
+            // Set username in model and global state
             Console.WriteLine("Quiz found!");
             StudentModel.Username = username.LoginId;
             UserState.Username = StudentModel.Username;
@@ -73,6 +97,7 @@
         }
         else
         {
+            // Identifier not found in DB
             // Set validation error manually
             StudentModel.ValidationErrorMessage = "Identifier not found. Please enter a valid UTD Identifier.";
             return;
@@ -89,6 +114,7 @@
             HttpContextAccessor.HttpContext.Session.SetString("Username", UserState.Username);
         }
 
+        // Load quiz using the provided quiz code
         // Before continuing, ensure the quiz has at least one question.
         Quiz = await QuizService.GetQuizzes(DbContext, StudentModel.QuizCode);
         if (Quiz == null)
@@ -97,6 +123,7 @@
             return;
         }
 
+        // Validate quiz timing and eligibility
         QuizRegistration.QuizTime qTime = new QuizRegistration.QuizTime(Quiz, StudentModel.QuizCode);
         if (qTime.ErrorMessage.Equals("") == false)
         {
@@ -104,67 +131,71 @@
             return;
 
         }
-        
-        
-            if (Quiz != null && Quiz.Questions.Count > 0)
+
+
+        if (Quiz != null && Quiz.Questions.Count > 0)
+        {
+            // Navigate to quizdisplay page
+            await InvokeAsync(() => NavigationManager.NavigateTo("/quizdisplay/" + StudentModel.QuizCode));
+        }
+        else
+        {
+            // Fallback: auto-register user if no questions exist
+
+            int correctAnswers = 0;
+
+            string IpAddress = QuizService.GetIpAddress();
+            Console.WriteLine($"Login.razor GetIpAddress() = {IpAddress}");
+
+            string uname = "";
+            if (StudentModel.Username != null)
             {
-                // Navigate to quizdisplay page
-                await InvokeAsync(() => NavigationManager.NavigateTo("/quizdisplay/" + StudentModel.QuizCode));
+                uname = StudentModel.Username;
+            }
+
+            var qrecord = await QuizService.GetQRecordByQuizIdIpAddress(DbContext, Quiz.Id, IpAddress);
+            var qrecordForStudentId = await QuizService.GetQRecordByQuizIdStudentID(DbContext, Quiz.Id, UserState.Identifier);
+
+            if (qrecord == null && qrecordForStudentId == null)
+            {
+                decimal percentage = 100;
+                var currentuser = await QuizService.GetUserByLoginId(DbContext, uname);
+                if (currentuser == null)
+                {
+                    Console.WriteLine("User not found!");
+                    message = "Invalid user name";
+                    return;
+                }
+
+                // Add the record
+                await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, qTime.AttendanceStatus);
             }
             else
             {
-                int correctAnswers = 0;
 
-                string IpAddress = QuizService.GetIpAddress();
-                Console.WriteLine($"Login.razor GetIpAddress() = {IpAddress}");
-
-                string uname = "";
-                if (StudentModel.Username != null)
+                if (qrecord != null)
                 {
-                    uname = StudentModel.Username;
+                    message = $"The client ip address: {IpAddress} has already been used to register.";
+
                 }
-
-                var qrecord = await QuizService.GetQRecordByQuizIdIpAddress(DbContext, Quiz.Id, IpAddress);
-                var qrecordForStudentId = await QuizService.GetQRecordByQuizIdStudentID(DbContext, Quiz.Id, UserState.Identifier);
-
-                if (qrecord == null && qrecordForStudentId == null)
+                else if (qrecordForStudentId != null)
                 {
-                    decimal percentage = 100;
-                    var currentuser = await QuizService.GetUserByLoginId(DbContext, uname);
-                    if (currentuser == null)
-                    {
-                        Console.WriteLine("User not found!");
-                        message = "Invalid user name";
-                        return;
-                    }
-
-                    // Add the record
-                    await QuizService.AddQuizRecordAsync(DbContext, Quiz.Id, currentuser.Id, IpAddress, correctAnswers, percentage, qTime.AttendanceStatus);
+                    message = $"The specified student id: {UserState.Identifier} has already been used to register.";
                 }
                 else
                 {
-
-                        if (qrecord != null)
-                        {
-                            message = $"The client ip address: {IpAddress} has already been used to register.";
-
-                        }
-                        else if (qrecordForStudentId != null)
-                        {
-                            message = $"The specified student id: {UserState.Identifier} has already been used to register.";
-                        }
-                        else
-                        {
-                            message = $"Either the ip address: {IpAddress} or the specified student id: {UserState.Identifier} has been used for this quiz.";
-                        }
-                        return;
-                    
+                    message = $"Either the ip address: {IpAddress} or the specified student id: {UserState.Identifier} has been used for this quiz.";
                 }
-                QuizResult.CorrectAnswers = 0;
-                QuizResult.QuizCount = 0;
-                QuizResult.IncorrectAnswers = 0;
-                string navUrl = $"/quizcomplete";
-                await InvokeAsync(() => NavigationManager.NavigateTo(navUrl));
+                return;
+
+            }
+
+            // Reset quiz result state
+            QuizResult.CorrectAnswers = 0;
+            QuizResult.QuizCount = 0;
+            QuizResult.IncorrectAnswers = 0;
+            string navUrl = $"/quizcomplete";
+            await InvokeAsync(() => NavigationManager.NavigateTo(navUrl));
             //TODO see if person is in class
         }
 
@@ -172,6 +203,7 @@
         await InvokeAsync(() => NavigationManager.NavigateTo("/quizdisplay/"+StudentModel.QuizCode));
     }
 
+    // Retrieve user from DB based on Identifier
     public async Task<User?> GetUserByStudentId()
     {
         return await DbContext.Users.FirstOrDefaultAsync(q => q.StudentId == StudentModel.Identifier);
@@ -192,4 +224,6 @@
 
         public string? ValidationErrorMessage { get; set; }
     }
+
+
 }

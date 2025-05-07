@@ -1,47 +1,61 @@
-﻿<!-- Olivia Anderson -->
+﻿<!--
+    Overview:
+    This Blazor layout component defines the structure for pages within the application, including
+    a sidebar navigation menu, a top bar with the page title and user login status, and the main content area.
+    It also includes logic to retrieve the current user's username from session state and display it if available.
+    Errors encountered by the Blazor runtime are shown in a dismissible UI element.
 
+    Author: Olivia Anderson
+-->
 @inherits LayoutComponentBase
-@inject IHttpContextAccessor HttpContextAccessor
+@inject IHttpContextAccessor HttpContextAccessor 
 
 <div class="page">
+    <!-- Sidebar navigation menu-->
     <div class="sidebar">
+        <!-- custom componet for apps navigation menu-->
         <NavMenu />
     </div>
 
     <main>
+        <!-- Top row with title and user info-->
         <div class="top-row px-4 d-flex justify-content-between align-items-center"> 
             <div class="title">
+                <!-- page title-->
                 <h2>Attendance</h2>
             </div>
             <div class="right-side">
+                <!-- check if user is logged in-->
                 @if (string.IsNullOrEmpty(Username))
                 {
                     <a href="/login" class="text-right small ml-3">Login</a>
                 }
                 else
                 {
+                    <!-- dislay username and disable login-->
                     <span class="text-right small mr-3">Hello, @Username</span>
                     <a class="text-right small ml-3 disabled-link" style="pointer-events: none; color: gray;">Login</a>
                 }
             </div>
         </div>
         
-
+        <!-- main body content will be injected here-->
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
 
+<!-- error ui shown if an unhandled error-->
 <div id="blazor-error-ui">
     An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
+    <a href="" class="reload">Reload</a> 
     <a class="dismiss">🗙</a>
 </div>
 
 
 @code {
-    private string Username = string.Empty;
+    private string Username = string.Empty; // Field to store the logged-in user's name
 
     protected override void OnInitialized()
     {

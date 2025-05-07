@@ -1,11 +1,21 @@
-﻿@page "/Error"
+﻿<!--
+    
+    This is the Blazor error page component that displays a user-friendly message when an unhandled exception occurs.
+    It optionally shows the request ID to help with debugging and provides guidance about enabling development mode
+    for more detailed error information. The request ID is retrieved from either the current Activity or the HTTP context.
+    Olivia Anderson
+-->
+
+@page "/Error"
 @using System.Diagnostics
 
 <PageTitle>Error</PageTitle>
 
+<!-- Main error messages -->
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
 
+<!-- Conditionally display the request ID if it's available -->
 @if (ShowRequestId)
 {
     <p>
@@ -26,11 +36,12 @@
 
 @code{
     [CascadingParameter]
-    private HttpContext? HttpContext { get; set; }
+    private HttpContext? HttpContext { get; set; } // Access to the current HTTP context (injected via cascading parameter)
 
-    private string? RequestId { get; set; }
-    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    private string? RequestId { get; set; } // Stores the request ID for tracking/debugging
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId); // Only show if there's a valid request ID
 
     protected override void OnInitialized() =>
+        // Attempt to retrieve the request ID from current activity or HTTP context
         RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
 }

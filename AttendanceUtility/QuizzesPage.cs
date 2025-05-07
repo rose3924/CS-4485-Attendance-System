@@ -80,6 +80,7 @@ namespace AttendanceUtility
          */
         private void LogoutLabel_Click(object sender, EventArgs e)
         {
+            SaveModifiedData();
             // Close the current form and show the login form
             this.Close();
             new LoginScreen(dbobject).Show();
@@ -91,8 +92,26 @@ namespace AttendanceUtility
         */
         private void BackButtonBox_Click(object sender, EventArgs e)
         {
+            SaveModifiedData();
             this.Close();
             new ClassPage(dbobject, profId, courseId).Show();
+        }
+        /*
+         * A function that will ask the user if they want to save modifications
+         * it should ask if added/deleted question, answers
+         */
+        private void SaveModifiedData()
+        {
+            DialogResult warningResult = DialogResult.Yes;
+            if ((modifiedQuestions != null && modifiedQuestions.Count > 0) ||
+                (modifiedAnswers != null && modifiedAnswers.Count > 0))
+            {
+                warningResult = MessageBox.Show("There are unsaved changes. Do you want to Save the changes before leave the page?", "Save Changes?", MessageBoxButtons.YesNo);
+                if (warningResult == DialogResult.Yes)
+                {
+                    saveButton_Click(this, new EventArgs());
+                }
+            }
         }
 
         /*
@@ -195,6 +214,17 @@ namespace AttendanceUtility
             newQuestionMapping = new Dictionary<int, int>();
             modifiedAnswers = new Dictionary<int, Answer>();
 
+            // Limit what can be entered in the "correct_value" column,
+            // by intiializing it as a ComboBox.
+            DataGridViewComboBoxColumn comboColumn = new DataGridViewComboBoxColumn();
+            comboColumn.DataPropertyName = "correct_value";
+            comboColumn.Name = "correct_value";
+            comboColumn.HeaderText = "Is Correct";
+            comboColumn.Items.Add("T");
+            comboColumn.Items.Add("F");
+
+           
+
             answersDataGridView.Columns.Clear();
 
             // If there are no questions related to the quiz
@@ -209,10 +239,13 @@ namespace AttendanceUtility
                 answersDataGridView.Columns.Add("answer_id", "answer_id");
                 answersDataGridView.Columns.Add("question_id", "question_id");
                 answersDataGridView.Columns.Add("answer_text", "Answer");
-                answersDataGridView.Columns.Add("correct_value", "Is Correct");
+                // Add the column to DataGridView **before** setting the DataSource
+                answersDataGridView.Columns.Add(comboColumn);
 
                 answersDataGridView.Columns["answer_id"].Visible = false;
                 answersDataGridView.Columns["question_id"].Visible = false;
+                // Set the answer text column to be the widest
+                answersDataGridView.Columns["answer_text"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 saveButton.Enabled = false;
                 return;
             }
@@ -220,15 +253,6 @@ namespace AttendanceUtility
             // Bind the answers to the Table
             DataView view1 = new DataView(answerTable);
             quizAnswerBindingSource = new BindingSource();
-
-            // Limit what can be entered in the "correct_value" column,
-            // by intiializing it as a ComboBox.
-            DataGridViewComboBoxColumn comboColumn = new DataGridViewComboBoxColumn();
-            comboColumn.DataPropertyName = "correct_value";
-            comboColumn.Name = "correct_value";
-            comboColumn.HeaderText = "Is Correct";
-            comboColumn.Items.Add("T");
-            comboColumn.Items.Add("F");
 
             // Add the column to DataGridView **before** setting the DataSource
             answersDataGridView.Columns.Add(comboColumn);
@@ -431,15 +455,9 @@ namespace AttendanceUtility
             {
                 dbobject.AssociateQuestion(quizId, qid);
             }
-            DialogResult warningResult = DialogResult.Yes;
-            if (modifiedQuestions != null && modifiedQuestions.Count > 0)
-            {
-                warningResult = MessageBox.Show("There are unsaved changes. Do you want to Save the changes before leave the page?", "Save Changes?", MessageBoxButtons.YesNo);
-                if (warningResult == DialogResult.Yes)
-                {
-                    saveButton_Click(this, new EventArgs());
-                }
-            }
+
+            SaveModifiedData();
+
             // if there were previous 
             LoadDataGridContent();
         }

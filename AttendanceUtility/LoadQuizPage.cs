@@ -162,6 +162,28 @@ namespace AttendanceUtility
                     return;
                 }
 
+                // Check to ensure the specified passcode does not already exist.
+                string message = string.Empty;
+                bool passcodeIsAlreadyUsed = dbobject.PasscodeIsUsed(passcodeTextBox.Text, ref message);
+                if (passcodeIsAlreadyUsed)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("The specified passcode is already assigned ");
+                    sb.Append(Environment.NewLine);
+                    if (message.Equals(""))
+                    {
+                        sb.Append("to another quiz. Please specify a different password.");
+                    }
+                    else
+                    {
+                        sb.Append("to another quiz, ");
+                        sb.Append(message);
+                        sb.Append(". Please specify a different password.");
+                    }
+                    MessageBox.Show(sb.ToString());
+                    return;
+                }
+
                 QuizId = dbobject.CreateNewQuiz(titleTextBox.Text, passcodeTextBox.Text, validateCheckBox.Checked, courseId);
             }
             else

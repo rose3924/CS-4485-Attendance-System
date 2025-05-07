@@ -1,4 +1,10 @@
-﻿<!-- > Olivia Anderson -->
+﻿<!-- 
+    This page displays a completion message after a student finishes a quiz or attendance check.
+    If the quiz involved no questions (i.e., CorrectAnswers and QuizCount are both 0),
+    it simply thanks the student for their participation. Otherwise, it shows a brief
+    result summary of how many questions were answered correctly.
+    Olivia Anderson 
+-->
 @page "/quizcomplete"
 @using StudentQuiz.Components.Service 
 @inject QuizResult QuizResult
@@ -7,6 +13,7 @@
 
 <h3>Complete!</h3>
 
+<!-- Display different messages based on whether any questions were answered -->
 @if (QuizResult.CorrectAnswers == 0 && QuizResult.QuizCount == 0)
 {
     <p>Thank you for completing the class attendance. Simply close the web application.</p>
@@ -14,6 +21,7 @@
 }
 else
 {
+    // Show quiz results if questions were answered -->
     <p>
         You got @QuizResult.CorrectAnswers
         out of @QuizResult.QuizCount

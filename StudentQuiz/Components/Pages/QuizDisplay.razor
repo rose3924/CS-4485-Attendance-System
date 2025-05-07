@@ -1,4 +1,10 @@
-﻿<!-- Olivia Anderson -->
+﻿<!-- 
+    This page displays a quiz to the student based on the provided quiz code.
+    It renders the quiz questions and answer options dynamically and handles user submission.
+    On submission, it checks for correct answers, records the attempt if it hasn't already
+    been submitted from the same IP, and then navigates the student to a quiz completion page.
+    Olivia Anderson 
+-->
 @page "/quizdisplay/{code}"
 @rendermode InteractiveServer
 @inject IHttpContextAccessor HttpContextAccessor
@@ -24,6 +30,7 @@
 else
 {
     <h4>@Quiz.Title</h4>
+    <!-- Main quiz form -->
     <EditForm Model="this" method="post" OnValidSubmit="SubmitAnswers" FormName="UserAnswers" Enhance>
         <DataAnnotationsValidator />
         @* Initialize a question number *@
@@ -60,9 +67,10 @@ else
 
 @code {
     [Parameter]
+    // Quiz code from URL
     public string? Code { get; set; } // Parameter from the route
 
-
+    // Stores selected answers keyed by question ID
     private Dictionary<int, int> UserAnswers = new();
 
     private Quiz? Quiz { get; set; }
@@ -76,12 +84,13 @@ else
     {
         // Retrieve session values
         Username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
-
+        Identifier = HttpContextAccessor.HttpContext?.Session.GetString("Identifier");
         Console.WriteLine($"Quiz Display (OnInitializedAsync) retrieved from session: Username = {Username}");
         IpAddress = QuizService.GetIpAddress();
 
         if (Code != null)
         {
+            // Load quiz using quiz code
             Quiz = await QuizService.GetQuizzes(DbContext, Code);
             QTime = TimeOnly.FromDateTime(DateTime.Now);
         }
@@ -90,6 +99,7 @@ else
 
     }
 
+    // Record the selected answer for a question
     private void OnAnswerSelected(int questionId, int answerId)
     {
         Console.WriteLine("OnAnswerSelected(" + questionId + ", " + answerId + ")");
@@ -98,6 +108,7 @@ else
         UserAnswers[questionId] = answerId;
     }
 
+    // Process submitted answers
     private async Task SubmitAnswers()
     {
         Console.WriteLine("SubmitAnswers()");
@@ -105,17 +116,19 @@ else
         if (Quiz == null)
         {
             Console.WriteLine("Quiz is null for SubmitAnswers!");
+            ResultMessage = "Quiz is null for SubmitAnswers!";
             return;
         }
         if (SelectedAnswers() == false)
         {
             Console.WriteLine("User did not enter all values for all questions.");
-
+            ResultMessage = "User did not enter all values for all questions.";
             return;
         }
         int correctAnswers = 0;
         int incorrectAnswers = Quiz.Questions.Count();
 
+        // Grade the quiz
         foreach (var entry in UserAnswers)
         {
             int questionId = entry.Key;
@@ -140,6 +153,7 @@ else
             // Grabbed the QTime when the page was first loaded
             quizTime = new QuizRegistration.QuizTime(Quiz, Code, QTime);
         }
+        // Show error message if QuizTime says user isn't eligible
         if (quizTime != null && quizTime.ErrorMessage.Equals("") == false)
         {
             ResultMessage = quizTime.ErrorMessage;
@@ -149,6 +163,7 @@ else
         if (Username == null || IpAddress == null || Quiz == null)
         {
             Console.WriteLine("Unable to process Quiz information! User name or ip address are not available.");
+            ResultMessage = "Unable to process Quiz information! User name or ip address are not available.";
             return;
         }
         else
@@ -165,6 +180,7 @@ else
                 if (currentuser == null)
                 {
                     Console.WriteLine("User not found!");
+                    ResultMessage = "The application could NOT find the user information.";
                     return;
                 }
 
@@ -195,7 +211,7 @@ else
         }
 
         
-
+        // Save result in shared state for display on completion page
         QuizResult.CorrectAnswers = correctAnswers;
         QuizResult.QuizCount = Quiz.Questions.Count;
         QuizResult.IncorrectAnswers = incorrectAnswers;
@@ -204,6 +220,7 @@ else
         await InvokeAsync(() => NavigationManager.NavigateTo(navUrl)); 
     }
 
+    // Ensures user answered all questions
     private bool SelectedAnswers()
     {
         if (UserAnswers.Count() == 0)
@@ -217,6 +234,7 @@ else
         return true;
     }
 
+    // Lookup user by ID
     public async Task<User?> GetUserById(int uId)
     {
         return await DbContext.Users.FirstOrDefaultAsync(q => q.Id == uId);

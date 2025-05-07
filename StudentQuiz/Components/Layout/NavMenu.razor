@@ -1,17 +1,29 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿<!--
+    Top navigation bar with picture
+    Olivia Anderson
+-->
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
+        <!-- name linking to the homepage -->
         <a class="navbar-brand" href="">StudentQuiz</a>
     </div>
 </div>
 
+<!-- buger for when page is small-->
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
+<!--
+    Scrollable sidebar navigation container
+    Clicking anywhere in this container triggers the toggler to close the nav
+-->
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
         <div class="container-fluid">
             <img src="utdlogo.png" alt="UTD Logo" width="150" height="105">
         </div>
 
+        <!-- Navigation link to the homepage -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
