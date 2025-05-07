@@ -174,26 +174,31 @@ namespace AttendanceUtility
             {
                 var row = attendecneDataGrid.Rows[e.RowIndex];
                 string cellChanged = row.Cells["attendance"].Value?.ToString();
-                //if (cellChanged == "Present")
-                //{
-                string sid = row.Cells["student_id"].Value.ToString();
-                DateTime day = monthCalendar1.SelectionRange.Start.Date;
-                //asking user for confirmation
-                DialogResult confirmation = MessageBox.Show(
-                    "Confirming will change " + row.Cells["firstname"].Value.ToString() + " " + row.Cells["lastname"].Value.ToString() + " to " + row.Cells["attendance"].Value.ToString(),
-                    "Confirm Change",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (confirmation == DialogResult.Yes)
+                if (cellChanged == "Present")
                 {
-                    dbobject.changeAttendenceRecord(sid, day, row.Cells["attendance"].Value.ToString());
+                    string sid = row.Cells["student_id"].Value.ToString();
+                    DateTime day = monthCalendar1.SelectionRange.Start.Date;
+                    //asking user for confirmation
+                    DialogResult confirmation = MessageBox.Show(
+                        "Confirming will change " + row.Cells["firstname"].Value.ToString() + " " + row.Cells["lastname"].Value.ToString() + " to " + row.Cells["attendance"].Value.ToString(),
+                        "Confirm Change",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
 
+                    if (confirmation == DialogResult.Yes)
+                    {
+                        dbobject.changeAttendenceRecord(sid, day);
+
+                    }
+                    else
+                    {
+
+
+                    }
                 }
                 else
                 {
-
-
+                    DialogResult warning = MessageBox.Show("can only change attendance to present.");
                 }
 
 

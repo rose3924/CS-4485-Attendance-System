@@ -697,18 +697,18 @@ namespace AttendanceUtility
             return dataTable;
         }
         //changes attendance status based on user input
-        public void changeAttendenceRecord(string student_id, DateTime day, string status)
+        public void changeAttendenceRecord(string student_id, DateTime day)
         {
             try
             {
 
                 using (var connection = GetAzureMySQLConnection())
                 {
-                    string query = "";
+                   
                     connection.Open();
                     //inserts into quiz_records to change status to present 
-                    if (status == "Present") {
-                        query = @"
+                    
+                        string query = @"
                             INSERT INTO quiz_records (quiz_id, user_id, submitted, status)
                                 SELECT 1, u.id, @Date, 'excused' 
                                 FROM users u 
@@ -717,14 +717,8 @@ namespace AttendanceUtility
                                     SELECT 1 FROM quiz_records q
                                     WHERE q.user_id = u.id AND CAST(q.submitted AS DATE) = @Date
                                 )";
-                    }
-                    else
-                    {//deletes from quiz_records to change status to absent 
-                        query = @"
-                            DELETE FROM quiz_records q
-                                WHERE q.user_id = @student_id AND CAST(q.submitted AS DATE) = @Date;
-                                ";
-                    }
+                    
+
                         using (SqlCommand command = new SqlCommand(query, connection))
                         {
                             command.Parameters.AddWithValue("@student_id", student_id);
