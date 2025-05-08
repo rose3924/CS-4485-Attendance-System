@@ -1,7 +1,9 @@
-﻿// Olivia Anderson
+﻿
 /*
  * Contains functions for the razor pages 
- * The functions provide quereis for the database 
+ * The functions provide queries for the database 
+ * 
+ *  Olivia Anderson
  */
 
 using Microsoft.EntityFrameworkCore;
