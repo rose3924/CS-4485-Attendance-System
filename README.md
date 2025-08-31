@@ -5,10 +5,11 @@ An attendance management system composed of a web-based student portal paired wi
 - Secure login for both students and professors  
 - Course management (create, view, and edit courses) for professors
 - Quiz creation and management for each course
+- CSV import to upload class rosters via the desktop app
 - Attendance tracking tied to daily quiz/password entry
+- Quiz submission records student IP to prevent duplicate or fraudulent submissions
 - Late / excused absence handling  
 - Attendance reports exportable for professor review  
-- CSV import to upload class rosters via the desktop app
 
 ## :hammer_and_wrench: Tools & Technologies
 - **Languages:** C#, SQL  
@@ -29,7 +30,7 @@ With a web-based system tied to a desktop app, professors will be able to take a
 
 <img alt="Login_Screen" src="https://github.com/user-attachments/assets/ca0b1600-0f35-4ef7-9adc-06ae73133609" width="500" />
 
-*Figure 1. Professor Login Page with secure validation*
+*Figure 1. Professor Login Screen*
 
 <br>
 
@@ -60,7 +61,7 @@ With a web-based system tied to a desktop app, professors will be able to take a
 
 <img alt="Student_Login" src="https://github.com/user-attachments/assets/9b61478e-1c38-4cdb-8a75-da8d50cc2188" width="500" />
 
-*Figure 5. Student Login*
+*Figure 5. Student Login Screen*
 
 <br>
 
