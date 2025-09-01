@@ -28,25 +28,25 @@ With a web-based system tied to a desktop app, professors will be able to take a
 ##  :computer: Professor Desktop App 
 ### Built with: WinForms, C#
 
-<img alt="Login_Screen" src="https://github.com/user-attachments/assets/ca0b1600-0f35-4ef7-9adc-06ae73133609" width="500" />
+![Login_Screen](Assets/Professor_Login_Screen.png)
 
 *Figure 1. Professor Login Screen*
 
 <br>
 
-<img alt="Courses_Screen" src="https://github.com/user-attachments/assets/f9e27e43-c101-46bd-82b6-7e632c3487f5" width="500" />
+![Courses_Screen](Assets/Courses_Screen.png)
 
 *Figure 2. Courses Overview Screen*
 
 <br>
 
-<img alt="Course_Home_Screen" src="https://github.com/user-attachments/assets/90b5edc1-88bb-4505-b8f0-bec2d9555931" width="500" />
+![Course_Home_Screen](Assets/Course_Home_Screen.png)
 
 *Figure 3. Course Home Screen*
 
 <br>
 
-<img alt="Create_Course_Screen" src="https://github.com/user-attachments/assets/e2b15e31-ba69-49e3-b561-740c79ffd46f" width="400" />
+![Create_Course_Screen](Assets/Create_Course_Screen.png)
 
 *Figure 4. Create Course Form*
 
@@ -59,13 +59,13 @@ With a web-based system tied to a desktop app, professors will be able to take a
 - :clock4: Attendance submissions tied to session times  
 - :link: Synced with the professor’s desktop app  
 
-<img alt="Student_Login" src="https://github.com/user-attachments/assets/9b61478e-1c38-4cdb-8a75-da8d50cc2188" width="500" />
+![Student_Login](Assets/Student_Login.png)
 
 *Figure 5. Student Login Screen*
 
 <br>
 
-<img alt="Student_Quiz" src ="https://github.com/user-attachments/assets/622dd80e-42cb-4cbb-a7cc-e8ad1ee67114" width="500" />
+![Student_Question_Page](Assets/Student_Question_Page.png)
 
 *Figure 6. Sample Student Quiz Page*
 
